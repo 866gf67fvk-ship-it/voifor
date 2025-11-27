@@ -1,0 +1,255 @@
+/* ベースリセット */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #4a1b6e 50%, #1a2a6e 100%);
+    background-size: 400% 400%;
+    animation: auroraBg 10s ease infinite;
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+@keyframes auroraBg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 星空エフェクト */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 60% 70%, white, transparent),
+        radial-gradient(1px 1px at 80% 10%, white, transparent),
+        radial-gradient(1px 1px at 40% 80%, white, transparent);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 画面共通 */
+.screen {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.screen.active {
+    display: block;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+/* ヘッダー */
+.app-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.app-header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+}
+
+.app-header p {
+    font-size: 1em;
+    opacity: 0.8;
+}
+
+/* キャラ画像エリア */
+.character-area {
+    margin-bottom: 15px;
+}
+
+.character-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border-radius: 20px;
+    background-size: cover;
+    background-position: center;
+}
+
+/* カレンダー＆情報エリア */
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.calendar-area {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.status-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.speech-bubble {
+    background: rgba(255,255,255,0.95);
+    color: #333;
+    padding: 12px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    text-align: center;
+    flex: 1;
+}
+
+.user-stats {
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.85em;
+}
+/* メイン占いボタン */
+.main-fortune-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 18px;
+    font-size: 1.3em;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.main-fortune-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* アクション行 */
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.ticket-info {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ticket-info:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.side-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.side-buttons button {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.side-buttons button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.ad-btn, .invite-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ad-btn:hover, .invite-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* その他占いセクション */
+.other-fortune-section {
+    margin-top: 20px;
+}
+
+.other-fortune-section h2 {
+    text-align: center;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.fortune-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.fortune-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+    border: 2px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.fortune-card:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.fortune-card.coming-soon {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* タップ反応 */
+button, .ticket-info, .fortune-card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
