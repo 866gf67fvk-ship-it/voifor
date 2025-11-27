@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -32,8 +32,8 @@
 
 <!-- キャラ＆カレンダーエリア -->
             <div class="main-info-row">
-                <!-- 左：キャラ画像 -->
-                <div class="character-area">
+<!-- 左：キャラ画像（タップで選択画面へ） -->
+                <div class="character-area" onclick="showCharacterSelect()">
                     <div id="characterImage" class="character-image"></div>
                 </div>
                 <!-- 右：カレンダー（上）＋プロフ（下） -->
@@ -97,6 +97,22 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+<!-- キャラ選択画面 -->
+    <div id="characterSelectScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>キャラ選択</h1>
+                <p>占い師を選んでね</p>
+            </header>
+            
+            <div class="character-grid" id="characterGrid">
+                <!-- JSで生成 -->
+            </div>
+            
+            <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
         </div>
     </div>
 
