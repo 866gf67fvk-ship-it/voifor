@@ -2,6 +2,70 @@
 // VOIFOR -声占い- メインアプリ
 // ========================================
 
+// キャラクターデータ
+const characterTemplates = {
+    devilMale: {
+        defaultName: 'デビル♂',
+        image: 'https://i.ibb.co/01nW5ww/image.png',
+        emoji: '😈',
+        speech: '占ってやるぜ！😈'
+    },
+    devilFemale: {
+        defaultName: 'デビル♀',
+        image: 'https://i.ibb.co/hRZ01YYc/image.png',
+        emoji: '😈',
+        speech: '占ってあげるわよ😈'
+    },
+    angelMale: {
+        defaultName: 'エンジェル♂',
+        image: 'https://i.ibb.co/twgFt4bw/image.png',
+        emoji: '😇',
+        speech: '一緒に占いましょう😇'
+    },
+    angelFemale: {
+        defaultName: 'エンジェル♀',
+        image: 'https://i.ibb.co/YBwzYFsR/image.png',
+        emoji: '😇',
+        speech: '占わせてくださいね😇'
+    },
+    jesterMale: {
+        defaultName: 'ピエロ♂',
+        image: 'https://i.ibb.co/yBRGrDVq/image.png',
+        emoji: '🃏',
+        speech: '占っちゃうよん！🃏'
+    },
+    jesterFemale: {
+        defaultName: 'ピエロ♀',
+        image: 'https://i.ibb.co/MwK55pk/image.png',
+        emoji: '🃏',
+        speech: '占うよ〜！🃏'
+    },
+    elfMale: {
+        defaultName: 'エルフ♂',
+        image: 'https://i.ibb.co/7NXKp7dx/image.png',
+        emoji: '🧝',
+        speech: '未来を見せてあげよう🧝'
+    },
+    elfFemale: {
+        defaultName: 'エルフ♀',
+        image: 'https://i.ibb.co/SXtb5s1w/image.png',
+        emoji: '🧝',
+        speech: '占わせていただきますわ🧝'
+    },
+    fairy: {
+        defaultName: 'フェアリー',
+        image: 'https://i.ibb.co/LLn9Mwd/image.png',
+        emoji: '🧚',
+        speech: '占うの！楽しみだね！🧚'
+    },
+    cat: {
+        defaultName: 'クロネコ',
+        image: 'https://i.ibb.co/bR7xCTKz/image.png',
+        emoji: '🐱',
+        speech: '別に...占ってあげるにゃ🐱'
+    }
+};
+
 // ユーザーデータ
 let userData = {
     oduu: null,
@@ -42,6 +106,26 @@ function updateUI() {
     // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
+    
+    // キャラ画像表示
+    updateCharacterDisplay();
+}
+
+// キャラ画像表示
+function updateCharacterDisplay() {
+    const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+    
+    // キャラ画像
+    const charImage = document.getElementById('characterImage');
+    if (charImage) {
+        charImage.style.backgroundImage = `url('${character.image}')`;
+    }
+    
+    // 吹き出し
+    const speechBubble = document.getElementById('speechBubble');
+    if (speechBubble) {
+        speechBubble.textContent = character.speech;
+    }
 }
 
 // 画面切り替え
