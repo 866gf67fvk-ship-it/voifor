@@ -4,9 +4,9 @@
 
 // キャラクターデータ
 const characterTemplates = {
-    devilMale: {
+devilMale: {
         defaultName: 'デビル♂',
-        image: 'https://i.ibb.co/01nW5ww/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764268818/u4834658121_A_cute_chibi_demon_fortune_teller_character_small_b8d8bc81-26e3-4456-a478-b2a609fc70fe_3_s14cdn.png',
         emoji: '😈',
         speech: '占ってやるぜ！😈'
     },
