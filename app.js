@@ -66,20 +66,86 @@ function showMainScreen() {
 // データ読み込み・保存
 // ========================================
 
+// デバイスID取得・生成
+function getDeviceId() {
+    let deviceId = localStorage.getItem('voifor_device_id');
+    if (!deviceId) {
+        deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem('voifor_device_id', deviceId);
+    }
+    return deviceId;
+}
+
 // ユーザーデータ読み込み
 async function loadUserData() {
-    // まずローカルストレージから
-    const saved = localStorage.getItem('voifor_user');
-    if (saved) {
-        userData = { ...userData, ...JSON.parse(saved) };
+    const deviceId = getDeviceId();
+    
+    try {
+        // Supabaseから取得
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('device_id', deviceId)
+            .single();
+        
+        if (error && error.code === 'PGRST116') {
+            // ユーザーが存在しない→新規作成
+            console.log('🆕 新規ユーザー作成');
+            await createNewUser(deviceId);
+        } else if (data) {
+            // 既存ユーザー
+            userData.freeTickets = data.free_tickets;
+            userData.earnedTickets = data.earned_tickets;
+            userData.paidTickets = data.paid_tickets;
+            userData.streak = data.streak;
+            userData.totalReadings = data.total_readings;
+            userData.checkedDates = data.checked_dates ? JSON.parse(data.checked_dates) : [];
+            userData.selectedCharacter = data.selected_character;
+            userData.oduu = data.id;
+            console.log('📁 ユーザーデータ読み込み完了');
+        }
+    } catch (err) {
+        console.error('❌ データ読み込みエラー:', err);
     }
-    console.log('📁 ユーザーデータ読み込み完了');
+}
+
+// 新規ユーザー作成
+async function createNewUser(deviceId) {
+    const { data, error } = await supabase
+        .from('users')
+        .insert([{ device_id: deviceId }])
+        .select()
+        .single();
+    
+    if (data) {
+        userData.oduu = data.id;
+        console.log('✅ 新規ユーザー作成完了');
+    }
 }
 
 // ユーザーデータ保存
 async function saveUserData() {
-    localStorage.setItem('voifor_user', JSON.stringify(userData));
-    console.log('💾 ユーザーデータ保存完了');
+    const deviceId = getDeviceId();
+    
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update({
+                free_tickets: userData.freeTickets,
+                earned_tickets: userData.earnedTickets,
+                paid_tickets: userData.paidTickets,
+                streak: userData.streak,
+                total_readings: userData.totalReadings,
+                checked_dates: JSON.stringify(userData.checkedDates),
+                selected_character: userData.selectedCharacter
+            })
+            .eq('device_id', deviceId);
+        
+        if (error) throw error;
+        console.log('💾 ユーザーデータ保存完了');
+    } catch (err) {
+        console.error('❌ データ保存エラー:', err);
+    }
 }
 
 // ========================================
