@@ -4,63 +4,65 @@
 
 // キャラクターデータ
 const characterTemplates = {
-devilMale: {
-        defaultName: 'デビル♂',
+// キャラクターデータ
+const characterTemplates = {
+    devilMale: {
+        defaultName: '鬼術師',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764268818/u4834658121_A_cute_chibi_demon_fortune_teller_character_small_b8d8bc81-26e3-4456-a478-b2a609fc70fe_3_s14cdn.png',
-        emoji: '😈',
-        speech: '占ってやるぜ！😈'
+        emoji: '👹',
+        speech: '占ってやるぜ！👹'
     },
     devilFemale: {
-        defaultName: 'デビル♀',
-        image: 'https://i.ibb.co/hRZ01YYc/image.png',
-        emoji: '😈',
-        speech: '占ってあげるわよ😈'
+        defaultName: '鬼巫女',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269013/u4834658121_A_cute_chibi_demon_fortune_teller_character_small_b8d8bc81-26e3-4456-a478-b2a609fc70fe_2_eileck.png',
+        emoji: '👹',
+        speech: '占ってあげるわよ👹'
     },
     angelMale: {
         defaultName: 'エンジェル♂',
-        image: 'https://i.ibb.co/twgFt4bw/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269049/u4834658121_A_cute_chibi_angel_fortune_teller_character_white_6469a933-2db5-40bf-af2f-7a4757fab116_3_nqhd7q.png',
         emoji: '😇',
         speech: '一緒に占いましょう😇'
     },
-    angelFemale: {
+angelFemale: {
         defaultName: 'エンジェル♀',
-        image: 'https://i.ibb.co/YBwzYFsR/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269392/u4834658121_A_cute_chibi_angel_fortune_teller_character_white_dfe8d8c8-cff0-447d-8c3c-7d8b417105b4_1_e5ddvi.png',
         emoji: '😇',
         speech: '占わせてくださいね😇'
     },
     jesterMale: {
         defaultName: 'ピエロ♂',
-        image: 'https://i.ibb.co/yBRGrDVq/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269038/u4834658121_A_cute_chibi_jester_fortune_teller_character_colo_70f0ae95-dfef-4686-9415-3e3dca5130a2_0_o74bse.png',
         emoji: '🃏',
         speech: '占っちゃうよん！🃏'
     },
     jesterFemale: {
         defaultName: 'ピエロ♀',
-        image: 'https://i.ibb.co/MwK55pk/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269038/u4834658121_A_cute_chibi_jester_fortune_teller_character_colo_70f0ae95-dfef-4686-9415-3e3dca5130a2_3_rhnwuu.png',
         emoji: '🃏',
         speech: '占うよ〜！🃏'
     },
     elfMale: {
         defaultName: 'エルフ♂',
-        image: 'https://i.ibb.co/7NXKp7dx/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269024/u4834658121_____--v_7_dc3fac00-dc89-440c-b28e-9fe33ff8b3a8_0_1_uabcje.png',
         emoji: '🧝',
         speech: '未来を見せてあげよう🧝'
     },
     elfFemale: {
         defaultName: 'エルフ♀',
-        image: 'https://i.ibb.co/SXtb5s1w/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269094/u4834658121_____--v_7_1a2a511d-936c-447f-9525-f2358094ae5c_0_zinx1g.png',
         emoji: '🧝',
         speech: '占わせていただきますわ🧝'
     },
     fairy: {
         defaultName: 'フェアリー',
-        image: 'https://i.ibb.co/LLn9Mwd/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269036/u4834658121_A_cute_chibi_fairy_fortune_teller_character_trans_a96b325e-fc10-43ed-aec5-dadff09ae0db_2_npiwaf.png',
         emoji: '🧚',
         speech: '占うの！楽しみだね！🧚'
     },
     cat: {
         defaultName: 'クロネコ',
-        image: 'https://i.ibb.co/bR7xCTKz/image.png',
+        image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269055/u4834658121_A_cute_black_cat_fortune_teller_sitting_on_mystic_b1566c70-0a16-4513-aea5-6bc94f8b8f98_2_uvkr3s.png',
         emoji: '🐱',
         speech: '別に...占ってあげるにゃ🐱'
     }
@@ -288,6 +290,38 @@ function renderCalendar() {
 // ========================================
 // 画面表示関数
 // ========================================
+
+// キャラ選択画面
+function showCharacterSelect() {
+    showScreen('characterSelectScreen');
+    renderCharacterGrid();
+}
+
+// キャラ一覧を表示
+function renderCharacterGrid() {
+    const grid = document.getElementById('characterGrid');
+    if (!grid) return;
+    
+    let html = '';
+    for (const [id, char] of Object.entries(characterTemplates)) {
+        const isSelected = userData.selectedCharacter === id;
+        html += `
+            <div class="character-select-card ${isSelected ? 'selected' : ''}" onclick="selectCharacter('${id}')">
+                <img src="${char.image}" alt="${char.defaultName}">
+                <div class="name">${char.emoji} ${char.defaultName}</div>
+            </div>
+        `;
+    }
+    grid.innerHTML = html;
+}
+
+// キャラ選択
+async function selectCharacter(characterId) {
+    userData.selectedCharacter = characterId;
+    await saveUserData();
+    updateUI();
+    showMainScreen();
+}
 
 // 設定画面
 function showSettingsScreen() {
