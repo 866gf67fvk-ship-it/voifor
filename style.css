@@ -259,3 +259,21 @@ button, .ticket-info, .fortune-card {
     touch-action: manipulation;
     user-select: none;
 }
+/* ========================================
+   カレンダー追加スタイル
+   ======================================== */
+
+.calendar-header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 0.85em;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+    font-size: 0.7em;
+}
