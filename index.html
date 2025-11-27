@@ -30,19 +30,16 @@
                 <p>-声占い-</p>
             </header>
 
-            <!-- キャラ画像 -->
-            <div class="character-area">
-                <div id="characterImage" class="character-image"></div>
-            </div>
-
-            <!-- カレンダー＆情報エリア -->
-            <div class="info-row">
-                <div class="calendar-area">
-                    <div id="calendarDisplay" class="mini-calendar"></div>
+<!-- キャラ＆カレンダーエリア -->
+            <div class="main-info-row">
+                <!-- 左：キャラ画像（縦長） -->
+                <div class="character-area">
+                    <div id="characterImage" class="character-image"></div>
                 </div>
-                <div class="status-area">
-                    <div class="speech-bubble" id="speechBubble">
-                        占いの準備ができました！
+                <!-- 右：カレンダー＋プロフ -->
+                <div class="right-column">
+                    <div class="calendar-area">
+                        <div id="calendarDisplay" class="mini-calendar"></div>
                     </div>
                     <div class="user-stats">
                         <span>🔥 <span id="streakCount">0</span>日連続</span>
@@ -51,6 +48,10 @@
                 </div>
             </div>
 
+            <!-- キャラの言葉/占い結果 -->
+            <div class="speech-bubble" id="speechBubble">
+                占いの準備ができました！
+            </div>
             <!-- 今日の占いボタン -->
             <button class="main-fortune-btn" onclick="startVoiceFortune()">
                 🔮 今日の占い！
