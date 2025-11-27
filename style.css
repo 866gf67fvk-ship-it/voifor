@@ -85,6 +85,7 @@ body::before {
     background: rgba(255,255,255,0.1);
     border-radius: 15px;
     overflow: hidden;
+    min-width: 0;
 }
 
 .character-image {
@@ -105,6 +106,8 @@ body::before {
     border-radius: 15px;
     padding: 10px;
     flex: 2;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .user-stats {
