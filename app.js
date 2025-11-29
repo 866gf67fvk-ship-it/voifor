@@ -412,8 +412,8 @@ function showCompatibilityScreen() {
 
 // タロット画面
 function showTarotScreen() {
-    alert('タロット占いは準備中です');
-    // TODO: タロット実装
+    showScreen('tarotScreen');
+    resetTarot();
 }
 
 // 夢占い画面
@@ -1034,5 +1034,234 @@ function showHistoryDetail(date) {
     if (data) {
         alert(`📅 ${formatDate(date)}\n\n${data.fortune || '詳細なし'}\n\n${data.summary || ''}`);
     }
+}
+// ========================================
+// タロット占い
+// ========================================
+
+// タロットカードデータ
+const tarotCardData = [
+    { name: "愚者", meaning: "新しい始まり、自由、冒険" },
+    { name: "魔術師", meaning: "創造力、技術、意志" },
+    { name: "女教皇", meaning: "直感、秘密、知恵" },
+    { name: "女帝", meaning: "豊穣、母性、愛情" },
+    { name: "皇帝", meaning: "権威、安定、父性" },
+    { name: "法王", meaning: "伝統、教え、精神性" },
+    { name: "恋人", meaning: "愛、選択、調和" },
+    { name: "戦車", meaning: "勝利、意志、前進" },
+    { name: "力", meaning: "勇気、忍耐、内なる強さ" },
+    { name: "隠者", meaning: "内省、孤独、真理の探求" },
+    { name: "運命の輪", meaning: "変化、運命、転機" },
+    { name: "正義", meaning: "公平、真実、因果" },
+    { name: "吊るされた男", meaning: "犠牲、視点の転換、忍耐" },
+    { name: "死神", meaning: "終わりと始まり、変容、再生" },
+    { name: "節制", meaning: "バランス、調和、自制" },
+    { name: "悪魔", meaning: "誘惑、束縛、物質主義" },
+    { name: "塔", meaning: "破壊、突然の変化、解放" },
+    { name: "星", meaning: "希望、インスピレーション、癒し" },
+    { name: "月", meaning: "不安、幻想、潜在意識" },
+    { name: "太陽", meaning: "成功、喜び、明瞭さ" },
+    { name: "審判", meaning: "復活、判断、新生" },
+    { name: "世界", meaning: "完成、達成、統合" }
+];
+
+// タロット状態
+let tarotState = {
+    spread: 1,
+    category: '',
+    selectedCards: [],
+    ticketCost: 1
+};
+
+// タロットリセット
+function resetTarot() {
+    tarotState = {
+        spread: 1,
+        category: '',
+        selectedCards: [],
+        ticketCost: 1
+    };
+    
+    document.getElementById('tarotStep1').style.display = 'block';
+    document.getElementById('tarotStep2').style.display = 'none';
+    document.getElementById('tarotStep3').style.display = 'none';
+    document.getElementById('tarotLoading').style.display = 'none';
+    document.getElementById('tarotResult').style.display = 'none';
+    
+    document.querySelectorAll('.spread-option').forEach(el => el.classList.remove('selected'));
+}
+
+// スプレッド選択
+function selectSpread(num) {
+    tarotState.spread = num;
+    tarotState.ticketCost = num === 1 ? 1 : 2;
+    
+    // チケット確認
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    if (totalTickets < tarotState.ticketCost) {
+        alert('チケットが足りません');
+        return;
+    }
+    
+    document.getElementById('tarotStep1').style.display = 'none';
+    document.getElementById('tarotStep2').style.display = 'block';
+}
+
+// カテゴリ選択
+function selectTarotCategory(category) {
+    tarotState.category = category;
+    
+    document.querySelectorAll('.category-btn').forEach(el => el.classList.remove('selected'));
+    event.target.classList.add('selected');
+    
+    // Step3へ
+    document.getElementById('tarotStep2').style.display = 'none';
+    document.getElementById('tarotStep3').style.display = 'block';
+    
+    document.getElementById('cardCount').textContent = tarotState.spread;
+    document.getElementById('maxCards').textContent = tarotState.spread;
+    document.getElementById('selectedCount').textContent = '0';
+    
+    renderTarotCards();
+}
+
+// タロットカード表示
+function renderTarotCards() {
+    const container = document.getElementById('tarotCards');
+    tarotState.selectedCards = [];
+    
+    let html = '';
+    for (let i = 0; i < 12; i++) {
+        html += `<div class="tarot-card" onclick="toggleTarotCard(${i})" data-index="${i}">🃏</div>`;
+    }
+    container.innerHTML = html;
+    
+    document.getElementById('revealBtn').disabled = true;
+}
+
+// カード選択トグル
+function toggleTarotCard(index) {
+    const card = document.querySelector(`.tarot-card[data-index="${index}"]`);
+    
+    if (card.classList.contains('selected')) {
+        card.classList.remove('selected');
+        tarotState.selectedCards = tarotState.selectedCards.filter(i => i !== index);
+    } else {
+        if (tarotState.selectedCards.length >= tarotState.spread) {
+            return;
+        }
+        card.classList.add('selected');
+        tarotState.selectedCards.push(index);
+    }
+    
+    document.getElementById('selectedCount').textContent = tarotState.selectedCards.length;
+    document.getElementById('revealBtn').disabled = tarotState.selectedCards.length !== tarotState.spread;
+}
+
+// カードをめくる
+async function revealCards() {
+    document.getElementById('tarotStep3').style.display = 'none';
+    document.getElementById('tarotLoading').style.display = 'block';
+    
+    // ランダムにカードを選ぶ
+    const shuffled = [...tarotCardData].sort(() => Math.random() - 0.5);
+    const drawnCards = shuffled.slice(0, tarotState.spread);
+    
+    const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+    
+    try {
+        const response = await fetch('https://voifor-server.onrender.com/tarot-fortune', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                cards: drawnCards,
+                category: tarotState.category,
+                characterName: character.defaultName,
+                characterPersonality: character.speech
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('サーバーエラー');
+        }
+        
+        const data = await response.json();
+        
+        // チケット消費
+        if (tarotState.ticketCost === 1) {
+            if (userData.freeTickets > 0) {
+                userData.freeTickets--;
+            } else if (userData.earnedTickets > 0) {
+                userData.earnedTickets--;
+            } else {
+                userData.paidTickets--;
+            }
+        } else {
+            for (let i = 0; i < tarotState.ticketCost; i++) {
+                if (userData.freeTickets > 0) {
+                    userData.freeTickets--;
+                } else if (userData.earnedTickets > 0) {
+                    userData.earnedTickets--;
+                } else {
+                    userData.paidTickets--;
+                }
+            }
+        }
+        
+        userData.totalReadings++;
+        await saveUserData();
+        updateUI();
+        
+        // 履歴保存
+        const today = new Date().toISOString().split('T')[0];
+        const cardNames = drawnCards.map(c => c.name).join(', ');
+        saveFortuneHistory(today + '_tarot_' + Date.now(), data.fortune, `🃏 ${cardNames}`, 'tarot');
+        
+        showTarotResult(drawnCards, data.fortune);
+        
+    } catch (error) {
+        console.error('タロットエラー:', error);
+        document.getElementById('tarotLoading').style.display = 'none';
+        document.getElementById('tarotResult').style.display = 'block';
+        document.getElementById('tarotFortuneText').textContent = 'エラーが発生しました。もう一度お試しください。';
+    }
+}
+
+// タロット結果表示
+function showTarotResult(cards, fortune) {
+    document.getElementById('tarotLoading').style.display = 'none';
+    document.getElementById('tarotResult').style.display = 'block';
+    
+    // カード表示
+    let cardsHtml = '';
+    cards.forEach(card => {
+        cardsHtml += `
+            <div class="result-tarot-card">
+                <div class="card-name">${card.name}</div>
+                <div class="card-meaning">${card.meaning}</div>
+            </div>
+        `;
+    });
+    document.getElementById('resultCards').innerHTML = cardsHtml;
+    
+    document.getElementById('tarotFortuneText').textContent = fortune || 'カードがあなたの運命を示しています。';
+}
+
+// もう一度占う
+function retryTarot() {
+    resetTarot();
+}
+
+// 戻るボタン
+function backToTarotStep1() {
+    document.getElementById('tarotStep2').style.display = 'none';
+    document.getElementById('tarotStep1').style.display = 'block';
+}
+
+function backToTarotStep2() {
+    document.getElementById('tarotStep3').style.display = 'none';
+    document.getElementById('tarotStep2').style.display = 'block';
 }
 console.log('📱 app.js 読み込み完了');

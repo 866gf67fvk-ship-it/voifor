@@ -958,23 +958,259 @@ button, .ticket-info, .fortune-card {
    ======================================== */
 
 .app-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     position: relative;
-    padding-top: 10px;
 }
 
 .header-back-btn {
     position: absolute;
     left: 0;
-    top: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     background: rgba(255,255,255,0.15);
     border: none;
     color: white;
-    font-size: 1.5em;
-    padding: 8px 15px;
+    font-size: 1.2em;
+    padding: 8px 12px;
     border-radius: 10px;
     cursor: pointer;
 }
 
 .header-back-btn:hover {
     background: rgba(255,255,255,0.25);
+}
+/* ========================================
+   個別戻るボタン
+   ======================================== */
+
+.grid-with-back {
+    position: relative;
+}
+
+.grid-back-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.grid-back-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.form-back-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 1em;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    width: auto;
+    align-self: flex-start;
+}
+
+.form-back-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.purchase-options {
+    position: relative;
+
+/* ========================================
+   タロット占い
+   ======================================== */
+
+.step-title {
+    text-align: center;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+}
+
+.spread-selection {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.spread-option {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    max-width: 150px;
+}
+
+.spread-option:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-3px);
+}
+
+.spread-option.selected {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.3);
+}
+
+.spread-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.spread-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.spread-cost {
+    font-size: 0.85em;
+    color: #FFD700;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.category-btn {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 15px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.category-btn.selected {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.3);
+}
+
+.back-link {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95em;
+    cursor: pointer;
+    margin-top: 15px;
+    display: block;
+    text-align: center;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+.selected-info {
+    text-align: center;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.tarot-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tarot-card {
+    aspect-ratio: 2/3;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+}
+
+.tarot-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.tarot-card.selected {
+    border-color: #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.tarot-card.revealed {
+    background: white;
+    color: #333;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tarot-result-cards {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.result-tarot-card {
+    width: 80px;
+    height: 120px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: 0.8em;
+    text-align: center;
+    padding: 5px;
+}
+
+.result-tarot-card .card-name {
+    font-weight: bold;
+    margin-bottom: 5px;
 }
