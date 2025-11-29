@@ -368,23 +368,99 @@ function showDreamScreen() {
 // ========================================
 
 // 声占い開始
-function startVoiceFortune() {
+async function startVoiceFortune() {
     // チケット確認
     const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
     
     if (totalTickets <= 0) {
         alert('チケットがありません');
+        showPurchaseScreen();
         return;
     }
     
-    alert('声占い機能は準備中です');
-    // TODO: 声占い実装
+    // 占い画面表示
+    showScreen('fortuneScreen');
+    
+    // ローディング表示
+    document.getElementById('fortuneLoading').style.display = 'block';
+    document.getElementById('fortuneResult').style.display = 'none';
+    
+    // キャラ画像セット
+    const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+    document.getElementById('fortuneCharImage').style.backgroundImage = `url('${character.image}')`;
+    document.getElementById('loadingText').textContent = `${character.defaultName}が占い中...`;
+    
+    try {
+        // API呼び出し
+        const response = await fetch('https://voifor-server.onrender.com/analyze-voice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mood: 'ふつう',
+                moodLevel: 5,
+                characterName: character.defaultName,
+                characterPersonality: character.speech
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('サーバーエラー');
+        }
+        
+        const data = await response.json();
+        
+        // チケット消費
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        } else {
+            userData.paidTickets--;
+        }
+        
+        // 占い回数更新
+        userData.totalReadings++;
+        
+        // 今日の日付をチェック済みに
+        const today = new Date().toISOString().split('T')[0];
+        if (!userData.checkedDates.includes(today)) {
+            userData.checkedDates.push(today);
+            userData.streak++;
+        }
+        
+        // 保存
+        await saveUserData();
+        updateUI();
+        renderCalendar();
+        
+        // 結果表示
+        showFortuneResult(data.fortune, character);
+        
+    } catch (error) {
+        console.error('占いエラー:', error);
+        document.getElementById('fortuneLoading').style.display = 'none';
+        document.getElementById('fortuneResult').style.display = 'block';
+        document.getElementById('fortuneText').textContent = 'エラーが発生しました。もう一度お試しください。';
+    }
 }
 
-// 動画広告でチケット獲得
-function watchAdForTicket() {
-    alert('動画広告機能は準備中です');
-    // TODO: 広告実装
+// 占い結果表示
+function showFortuneResult(fortune, character) {
+    document.getElementById('fortuneLoading').style.display = 'none';
+    document.getElementById('fortuneResult').style.display = 'block';
+    
+    // 結果テキスト
+    document.getElementById('fortuneText').textContent = fortune || '今日のあなたは運気上昇中！';
+    
+    // ラッキーアイテム
+    const luckyItems = ['四つ葉のクローバー', 'キラキラペン', 'お気に入りの音楽', '温かい飲み物', 'ふわふわクッション'];
+    const luckyColors = ['ゴールド', 'スカイブルー', 'ピンク', 'グリーン', 'パープル'];
+    
+    document.getElementById('luckyItem').textContent = luckyItems[Math.floor(Math.random() * luckyItems.length)];
+    document.getElementById('luckyColor').textContent = luckyColors[Math.floor(Math.random() * luckyColors.length)];
+    document.getElementById('luckyNumber').textContent = Math.floor(Math.random() * 9) + 1;
 }
 
 console.log('📱 app.js 読み込み完了');
