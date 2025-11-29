@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -172,6 +172,39 @@
             <div id="modalHistoryArea" class="modal-history">
                 <p class="history-placeholder">日付をタップして履歴を見る</p>
             </div>
+        </div>
+     </div>
+
+    <!-- 購入画面 -->
+    <div id="purchaseScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>🎫 チケット購入</h1>
+                <p>現在: <span id="currentTickets">0</span>枚</p>
+            </header>
+            
+            <div class="purchase-options">
+                <div class="purchase-card" onclick="purchaseTickets(5, 100)">
+                    <div class="ticket-amount">🎫 5回分</div>
+                    <div class="ticket-price">¥100</div>
+                    <div class="ticket-unit">¥20/回</div>
+                </div>
+                
+                <div class="purchase-card popular" onclick="purchaseTickets(15, 250)">
+                    <div class="popular-badge">人気!</div>
+                    <div class="ticket-amount">🎫 15回分</div>
+                    <div class="ticket-price">¥250</div>
+                    <div class="ticket-unit">¥16.6/回</div>
+                </div>
+                
+                <div class="purchase-card" onclick="purchaseTickets(35, 500)">
+                    <div class="ticket-amount">🎫 35回分</div>
+                    <div class="ticket-price">¥500</div>
+                    <div class="ticket-unit">¥14.3/回</div>
+                </div>
+            </div>
+            
+            <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
         </div>
     </div>
 
