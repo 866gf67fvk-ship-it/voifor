@@ -36,9 +36,9 @@
                 <div class="character-area" onclick="showCharacterSelect()">
                     <div id="characterImage" class="character-image"></div>
                 </div>
-                <!-- 右：カレンダー（上）＋プロフ（下） -->
+<!-- 右：カレンダー（上）＋プロフ（下） -->
                 <div class="right-column">
-                    <div class="calendar-area">
+                    <div class="calendar-area" onclick="openCalendarModal()">
                         <div id="calendarDisplay" class="mini-calendar"></div>
                     </div>
                     <div class="user-stats">
@@ -158,6 +158,20 @@
             </div>
             
             <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+        </div>
+ </div>
+
+    <!-- カレンダーモーダル -->
+    <div id="calendarModal" class="modal" onclick="closeCalendarModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modalMonthTitle">2025年11月</h2>
+                <button class="modal-close" onclick="closeCalendarModal()">&times;</button>
+            </div>
+            <div id="modalCalendarGrid" class="modal-calendar-grid"></div>
+            <div id="modalHistoryArea" class="modal-history">
+                <p class="history-placeholder">日付をタップして履歴を見る</p>
+            </div>
         </div>
     </div>
 
