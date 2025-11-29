@@ -117,6 +117,28 @@ function updateUI() {
     
     // キャラ画像表示
     updateCharacterDisplay();
+    
+    // 今日の占い結果を吹き出しに表示
+    updateSpeechBubble();
+}
+
+// 吹き出し更新
+function updateSpeechBubble() {
+    const saved = localStorage.getItem('voifor_today_fortune');
+    const today = new Date().toISOString().split('T')[0];
+    const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+    
+    if (saved) {
+        const data = JSON.parse(saved);
+        if (data.date === today) {
+            // 今日の占い済み
+            document.getElementById('speechBubble').textContent = data.summary;
+            return;
+        }
+    }
+    
+    // 未占い
+    document.getElementById('speechBubble').textContent = character.speech;
 }
 
 // キャラ画像表示
@@ -583,12 +605,23 @@ function showFortuneResult(fortune) {
     const luckyItems = ['四つ葉のクローバー', 'キラキラペン', 'お気に入りの音楽', '温かい飲み物', 'ふわふわクッション'];
     const luckyColors = ['ゴールド', 'スカイブルー', 'ピンク', 'グリーン', 'パープル'];
     
-    document.getElementById('luckyItem').textContent = luckyItems[Math.floor(Math.random() * luckyItems.length)];
-    document.getElementById('luckyColor').textContent = luckyColors[Math.floor(Math.random() * luckyColors.length)];
-    document.getElementById('luckyNumber').textContent = Math.floor(Math.random() * 9) + 1;
+    const luckyItem = luckyItems[Math.floor(Math.random() * luckyItems.length)];
+    const luckyColor = luckyColors[Math.floor(Math.random() * luckyColors.length)];
+    const luckyNumber = Math.floor(Math.random() * 9) + 1;
+    
+    document.getElementById('luckyItem').textContent = luckyItem;
+    document.getElementById('luckyColor').textContent = luckyColor;
+    document.getElementById('luckyNumber').textContent = luckyNumber;
     
     const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
     document.getElementById('fortuneCharSpeech').textContent = character.speech;
+    
+    // メイン画面の吹き出しに要約を保存
+    const summary = `🍀${luckyItem} 🎨${luckyColor} 🔢${luckyNumber}`;
+    localStorage.setItem('voifor_today_fortune', JSON.stringify({
+        date: new Date().toISOString().split('T')[0],
+        summary: summary
+    }));
 }
 
 // もう一度占う

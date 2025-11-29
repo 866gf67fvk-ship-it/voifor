@@ -105,16 +105,31 @@
         ...省略...
     </div>
 
-    <!-- 占い画面 -->
+<!-- 占い画面 -->
     <div id="fortuneScreen" class="screen">
         <div class="container">
             <header class="app-header">
                 <h1>🔮 今日の占い</h1>
             </header>
             
-            <!-- 占い中表示 -->
-            <div id="fortuneLoading" class="fortune-loading">
+            <!-- キャラ画像 -->
+            <div class="fortune-char-area">
                 <div id="fortuneCharImage" class="fortune-char-image"></div>
+                <p id="fortuneCharSpeech" class="fortune-char-speech">3秒間、声を聞かせて！</p>
+            </div>
+            
+            <!-- 録音エリア -->
+            <div id="recordingArea">
+                <button id="recordBtn" class="record-btn" onclick="startRecording()">🎤 録音開始</button>
+                <div id="voiceMeter" class="voice-meter" style="display: none;">
+                    <div id="voiceLevel" class="voice-level"></div>
+                </div>
+                <p id="countdown" class="countdown"></p>
+            </div>
+            
+            <!-- 占い中表示 -->
+            <div id="fortuneLoading" class="fortune-loading" style="display: none;">
+                <div class="loading-spinner"></div>
                 <p id="loadingText">占い中...</p>
             </div>
             
@@ -128,6 +143,7 @@
                     <div class="lucky-item">🎨 <span id="luckyColor"></span></div>
                     <div class="lucky-item">🔢 <span id="luckyNumber"></span></div>
                 </div>
+                <button class="record-btn" onclick="retryFortune()">🔮 もう一度占う</button>
             </div>
             
             <button class="back-btn" onclick="showMainScreen()">← 戻る</button>

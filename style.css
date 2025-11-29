@@ -343,32 +343,107 @@ button, .ticket-info, .fortune-card {
    占い画面
    ======================================== */
 
-.fortune-loading {
+.fortune-char-area {
     text-align: center;
-    padding: 40px 20px;
+    margin-bottom: 20px;
 }
 
 .fortune-char-image {
     width: 150px;
     height: 150px;
-    margin: 0 auto 20px;
+    margin: 0 auto 15px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    animation: pulse 1.5s infinite;
 }
 
-@keyframes pulse {
+.fortune-char-speech {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+/* 録音ボタン */
+.record-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: white;
+    border: none;
+    padding: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.record-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+}
+
+.record-btn.recording {
+    background: linear-gradient(135deg, #ff4757, #ff3838);
+    animation: pulse-record 1s infinite;
+}
+
+@keyframes pulse-record {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    50% { transform: scale(1.02); }
+}
+
+/* 音量メーター */
+.voice-meter {
+    height: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.voice-level {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    border-radius: 10px;
+    transition: width 0.1s ease;
+}
+
+/* カウントダウン */
+.countdown {
+    font-size: 3em;
+    font-weight: bold;
+    text-align: center;
+    color: #ff6b6b;
+    min-height: 1.2em;
+}
+
+/* ローディング */
+.fortune-loading {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .fortune-loading p {
-    font-size: 1.3em;
-    font-weight: bold;
+    font-size: 1.2em;
 }
 
+/* 結果カード */
 .result-card {
     background: rgba(255,255,255,0.1);
     border-radius: 20px;
