@@ -107,7 +107,7 @@ body::before {
 .calendar-area {
     background: rgba(255,255,255,0.1);
     border-radius: 15px;
-    padding: 10px;
+    padding: 8px;
     flex: 2;
     overflow: hidden;
     min-width: 0;
@@ -276,9 +276,9 @@ button, .ticket-info, .fortune-card {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+    gap: 1px;
     text-align: center;
-    font-size: 0.7em;
+    font-size: 0.6em;
 }
 /* ========================================
    キャラ選択画面
@@ -469,4 +469,36 @@ button, .ticket-info, .fortune-card {
     padding: 15px;
     border-radius: 12px;
     font-size: 1em;
+}
+/* ========================================
+   カレンダー詳細スタイル
+   ======================================== */
+
+.calendar-grid .day {
+    padding: 2px;
+    border-radius: 3px;
+    font-size: 0.7em;
+}
+
+.calendar-grid .today {
+    background: rgba(102, 126, 234, 0.5);
+    font-weight: bold;
+}
+
+.calendar-grid .checked {
+    background: rgba(74, 222, 128, 0.5);
+    position: relative;
+}
+
+.calendar-grid .checked::after {
+    content: '✓';
+    font-size: 0.6em;
+    position: absolute;
+    bottom: 0;
+    right: 2px;
+}
+
+.calendar-grid .weekday {
+    font-size: 0.65em;
+    opacity: 0.7;
 }
