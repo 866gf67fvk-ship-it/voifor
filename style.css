@@ -953,3 +953,28 @@ button, .ticket-info, .fortune-card {
 .history-empty p {
     margin: 10px 0;
 }
+/* ========================================
+   ヘッダー戻るボタン
+   ======================================== */
+
+.app-header {
+    position: relative;
+    padding-top: 10px;
+}
+
+.header-back-btn {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.header-back-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
