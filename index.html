@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -271,6 +271,72 @@
             </div>
         </div>
     </div>   
+
+<!-- タロット占い画面 -->
+    <div id="tarotScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1 style="font-size: 1.8em;">🃏 タロット占い</h1>
+            </header>
+            
+            <button class="form-back-btn" onclick="goBack()">← 戻る</button>
+            
+            <!-- Step1: 枚数選択 -->
+            <div id="tarotStep1">
+                <h3 class="step-title">カードを何枚引きますか？</h3>
+                <div class="spread-selection">
+                    <div class="spread-option" onclick="selectSpread(1)">
+                        <div class="spread-icon">🃏</div>
+                        <div class="spread-name">1枚引き</div>
+                        <div class="spread-cost">🎫 1チケット</div>
+                    </div>
+                    <div class="spread-option" onclick="selectSpread(3)">
+                        <div class="spread-icon">🃏🃏🃏</div>
+                        <div class="spread-name">3枚引き</div>
+                        <div class="spread-cost">🎫 2チケット</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step2: 質問入力 -->
+            <div id="tarotStep2" style="display: none;">
+                <h3 class="step-title">質問を選んでください</h3>
+                <div class="category-grid">
+                    <button class="category-btn" onclick="selectTarotCategory('恋愛')">💕 恋愛</button>
+                    <button class="category-btn" onclick="selectTarotCategory('仕事')">💼 仕事</button>
+                    <button class="category-btn" onclick="selectTarotCategory('金運')">💰 金運</button>
+                    <button class="category-btn" onclick="selectTarotCategory('人間関係')">👥 人間関係</button>
+                    <button class="category-btn" onclick="selectTarotCategory('健康')">🏥 健康</button>
+                    <button class="category-btn" onclick="selectTarotCategory('全般')">✨ 全般</button>
+                </div>
+                <button class="back-link" onclick="backToTarotStep1()">← 枚数選択に戻る</button>
+            </div>
+            
+            <!-- Step3: カード選択 -->
+            <div id="tarotStep3" style="display: none;">
+                <h3 class="step-title">カードを<span id="cardCount">1</span>枚選んでください</h3>
+                <p class="selected-info">選んだ枚数: <span id="selectedCount">0</span> / <span id="maxCards">1</span></p>
+                <div class="tarot-cards" id="tarotCards"></div>
+                <button class="submit-btn" id="revealBtn" onclick="revealCards()" disabled>カードをめくる</button>
+                <button class="back-link" onclick="backToTarotStep2()">← 質問選択に戻る</button>
+            </div>
+            
+            <!-- ローディング -->
+            <div id="tarotLoading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p id="tarotLoadingText">カードが語りかけています...</p>
+            </div>
+            
+            <!-- 結果表示 -->
+            <div id="tarotResult" style="display: none;">
+                <div class="tarot-result-cards" id="resultCards"></div>
+                <div class="result-card">
+                    <div id="tarotFortuneText" class="fortune-text"></div>
+                </div>
+                <button class="submit-btn" onclick="retryTarot()">🃏 もう一度占う</button>
+            </div>
+        </div>
+    </div>
 
 <!-- 購入画面 -->
     <div id="purchaseScreen" class="screen">
