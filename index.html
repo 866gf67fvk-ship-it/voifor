@@ -175,6 +175,106 @@
         </div>
      </div>
 
+
+     <!-- 設定画面 -->
+    <div id="settingsScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>⚙️ 設定</h1>
+            </header>
+            
+            <div class="settings-menu">
+                <button class="settings-btn" onclick="showCharacterSelect()">
+                    <span class="settings-icon">🎭</span>
+                    <span class="settings-text">キャラクター変更</span>
+                    <span class="settings-arrow">→</span>
+                </button>
+                
+                <button class="settings-btn" onclick="showEditScreen()">
+                    <span class="settings-icon">✏️</span>
+                    <span class="settings-text">プロフィール編集</span>
+                    <span class="settings-arrow">→</span>
+                </button>
+                
+                <button class="settings-btn" onclick="showPurchaseScreen()">
+                    <span class="settings-icon">🎫</span>
+                    <span class="settings-text">チケット購入</span>
+                    <span class="settings-arrow">→</span>
+                </button>
+                
+                <button class="settings-btn danger" onclick="confirmReset()">
+                    <span class="settings-icon">🗑️</span>
+                    <span class="settings-text">データリセット</span>
+                    <span class="settings-arrow">→</span>
+                </button>
+            </div>
+            
+            <div class="app-info">
+                <p>VOIFOR -声占い- v1.0</p>
+                <p>© 2025 VOIFOR</p>
+            </div>
+            
+            <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+        </div>
+    </div>
+
+    <!-- プロフィール編集画面 -->
+    <div id="editScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>✏️ プロフィール編集</h1>
+            </header>
+            
+            <div class="edit-form">
+                <div class="form-group">
+                    <label>ニックネーム</label>
+                    <input type="text" id="editNickname" placeholder="ニックネームを入力">
+                </div>
+                
+                <div class="form-group">
+                    <label>生年月日</label>
+                    <input type="date" id="editBirthday">
+                </div>
+                
+                <div class="form-group">
+                    <label>性別</label>
+                    <select id="editGender">
+                        <option value="">選択してください</option>
+                        <option value="male">男性</option>
+                        <option value="female">女性</option>
+                        <option value="other">その他</option>
+                    </select>
+                </div>
+                
+                <button class="save-btn" onclick="saveProfile()">✅ 保存する</button>
+            </div>
+            
+            <button class="back-btn" onclick="showSettingsScreen()">← 戻る</button>
+        </div>
+    </div>
+  
+ <!-- 履歴画面 -->
+    <div id="historyScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>📜 占い履歴</h1>
+            </header>
+            
+            <div class="history-tabs">
+                <button class="history-tab active" onclick="filterHistory('all')" id="tabAll">📚 すべて</button>
+                <button class="history-tab" onclick="filterHistory('voice')" id="tabVoice">🎤 声占い</button>
+                <button class="history-tab" onclick="filterHistory('tarot')" id="tabTarot">🃏 タロット</button>
+                <button class="history-tab" onclick="filterHistory('compatibility')" id="tabCompat">💕 相性</button>
+            </div>
+            
+            <div id="historyList" class="history-list">
+                <!-- JSで生成 -->
+            </div>
+            
+            <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
+        </div>
+    </div>   
+
     <!-- 購入画面 -->
     <div id="purchaseScreen" class="screen">
         <div class="container">
@@ -210,11 +310,24 @@
                 </div>
             </div>
             
-            <h2 style="text-align: center; margin: 20px 0 15px;">👑 プレミアムプラン</h2>
+<h2 style="text-align: center; margin: 20px 0 15px;">👑 プレミアムプラン</h2>
             <div class="purchase-card premium" onclick="purchasePremium()">
                 <div class="ticket-amount">占い放題（1日20回）</div>
                 <div class="ticket-price">¥1,480/月</div>
                 <div class="ticket-unit">広告なし</div>
+            </div>
+            
+            <div class="free-ticket-section">
+                <h2>🎁 無料でチケット獲得</h2>
+                <button class="free-ticket-btn video" onclick="watchAdForTicket()">
+                    📺 動画を見て1チケット獲得
+                </button>
+                <button class="free-ticket-btn referral" onclick="showReferralScreen()">
+                    👥 友達紹介で1チケット獲得
+                </button>
+                <button class="free-ticket-btn sns" onclick="shareToSNS()">
+                    📱 SNS投稿で1チケット獲得
+                </button>
             </div>
             
             <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
@@ -222,7 +335,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-    <script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 
 </body>
 </html>
