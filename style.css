@@ -339,3 +339,59 @@ button, .ticket-info, .fortune-card {
 .back-btn:hover {
     background: rgba(255,255,255,0.2);
 }
+/* ========================================
+   占い画面
+   ======================================== */
+
+.fortune-loading {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.fortune-char-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.fortune-loading p {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.result-card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.fortune-text {
+    font-size: 1.1em;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.lucky-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.lucky-item {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+}

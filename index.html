@@ -102,14 +102,32 @@
 
 <!-- キャラ選択画面 -->
     <div id="characterSelectScreen" class="screen">
+        ...省略...
+    </div>
+
+    <!-- 占い画面 -->
+    <div id="fortuneScreen" class="screen">
         <div class="container">
             <header class="app-header">
-                <h1>キャラ選択</h1>
-                <p>占い師を選んでね</p>
+                <h1>🔮 今日の占い</h1>
             </header>
             
-            <div class="character-grid" id="characterGrid">
-                <!-- JSで生成 -->
+            <!-- 占い中表示 -->
+            <div id="fortuneLoading" class="fortune-loading">
+                <div id="fortuneCharImage" class="fortune-char-image"></div>
+                <p id="loadingText">占い中...</p>
+            </div>
+            
+            <!-- 占い結果 -->
+            <div id="fortuneResult" style="display: none;">
+                <div class="result-card">
+                    <div id="fortuneText" class="fortune-text"></div>
+                </div>
+                <div class="lucky-info">
+                    <div class="lucky-item">🍀 <span id="luckyItem"></span></div>
+                    <div class="lucky-item">🎨 <span id="luckyColor"></span></div>
+                    <div class="lucky-item">🔢 <span id="luckyNumber"></span></div>
+                </div>
             </div>
             
             <button class="back-btn" onclick="showMainScreen()">← 戻る</button>

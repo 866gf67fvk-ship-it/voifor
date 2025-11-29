@@ -2,6 +2,14 @@
 // VOIFOR -声占い- メインアプリ
 // ========================================
 
+// 録音用変数
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+let audioContext;
+let analyser;
+let recordingStream;
+
 // キャラクターデータ
 const characterTemplates = {
     devilMale: {
@@ -367,39 +375,157 @@ function showDreamScreen() {
 // 占い機能
 // ========================================
 
-// 声占い開始
-async function startVoiceFortune() {
+// 声占い開始（画面表示）
+function startVoiceFortune() {
     // チケット確認
     const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
     
     if (totalTickets <= 0) {
         alert('チケットがありません');
-        showPurchaseScreen();
         return;
     }
     
     // 占い画面表示
     showScreen('fortuneScreen');
     
-    // ローディング表示
-    document.getElementById('fortuneLoading').style.display = 'block';
+    // 画面リセット
+    document.getElementById('recordingArea').style.display = 'block';
+    document.getElementById('fortuneLoading').style.display = 'none';
     document.getElementById('fortuneResult').style.display = 'none';
+    document.getElementById('countdown').textContent = '';
     
     // キャラ画像セット
     const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
     document.getElementById('fortuneCharImage').style.backgroundImage = `url('${character.image}')`;
-    document.getElementById('loadingText').textContent = `${character.defaultName}が占い中...`;
+    document.getElementById('fortuneCharSpeech').textContent = '3秒間、声を聞かせて！';
+    
+    // 録音ボタンリセット
+    const btn = document.getElementById('recordBtn');
+    btn.textContent = '🎤 録音開始';
+    btn.classList.remove('recording');
+    btn.disabled = false;
+}
+
+// 録音開始
+async function startRecording() {
+    const btn = document.getElementById('recordBtn');
+    btn.disabled = true;
+    
+    console.log('🎤 録音開始');
     
     try {
-        // API呼び出し
+        recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(recordingStream);
+        microphone.connect(analyser);
+        analyser.fftSize = 256;
+        
+        mediaRecorder = new MediaRecorder(recordingStream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+        
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            await analyzeVoice(audioBlob);
+            recordingStream.getTracks().forEach(track => track.stop());
+        };
+        
+        mediaRecorder.start();
+        isRecording = true;
+        
+        btn.textContent = '🔴 録音中...';
+        btn.classList.add('recording');
+        
+        document.getElementById('voiceMeter').style.display = 'block';
+        visualizeVoice();
+        
+        // カウントダウン
+        let count = 3;
+        document.getElementById('countdown').textContent = count;
+        
+        const countInterval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                document.getElementById('countdown').textContent = count;
+            } else {
+                document.getElementById('countdown').textContent = '';
+                clearInterval(countInterval);
+                stopRecording();
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('❌ マイクアクセスエラー:', error);
+        btn.disabled = false;
+        alert('マイクへのアクセスが必要です');
+    }
+}
+
+// 録音停止
+function stopRecording() {
+    if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+        
+        document.getElementById('voiceMeter').style.display = 'none';
+        console.log('✅ 録音完了');
+    }
+}
+
+// 音量可視化
+function visualizeVoice() {
+    if (!isRecording || !analyser) return;
+    
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+    
+    let sum = 0;
+    for (let i = 0; i < bufferLength; i++) {
+        sum += dataArray[i];
+    }
+    const average = sum / bufferLength;
+    const percentage = Math.min(100, (average / 128) * 100);
+    
+    document.getElementById('voiceLevel').style.width = percentage + '%';
+    
+    if (isRecording) {
+        requestAnimationFrame(visualizeVoice);
+    }
+}
+
+// 音声解析・占い
+async function analyzeVoice(audioBlob) {
+    const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+    
+    // ローディング表示
+    document.getElementById('recordingArea').style.display = 'none';
+    document.getElementById('fortuneLoading').style.display = 'block';
+    document.getElementById('loadingText').textContent = `${character.defaultName}が占い中...`;
+    document.getElementById('fortuneCharSpeech').textContent = 'あなたの声から運勢を読み取っています...';
+    
+    try {
+        // 音声をBase64に変換
+        const reader = new FileReader();
+        const base64Audio = await new Promise((resolve) => {
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(audioBlob);
+        });
+        
+        console.log('🌐 APIリクエスト送信');
+        
         const response = await fetch('https://voifor-server.onrender.com/analyze-voice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                mood: 'ふつう',
-                moodLevel: 5,
+                audioBase64: base64Audio,
                 characterName: character.defaultName,
                 characterPersonality: character.speech
             })
@@ -410,6 +536,7 @@ async function startVoiceFortune() {
         }
         
         const data = await response.json();
+        console.log('✅ 占い結果取得');
         
         // チケット消費
         if (userData.freeTickets > 0) {
@@ -436,10 +563,10 @@ async function startVoiceFortune() {
         renderCalendar();
         
         // 結果表示
-        showFortuneResult(data.fortune, character);
+        showFortuneResult(data.fortune);
         
     } catch (error) {
-        console.error('占いエラー:', error);
+        console.error('❌ 占いエラー:', error);
         document.getElementById('fortuneLoading').style.display = 'none';
         document.getElementById('fortuneResult').style.display = 'block';
         document.getElementById('fortuneText').textContent = 'エラーが発生しました。もう一度お試しください。';
@@ -447,20 +574,26 @@ async function startVoiceFortune() {
 }
 
 // 占い結果表示
-function showFortuneResult(fortune, character) {
+function showFortuneResult(fortune) {
     document.getElementById('fortuneLoading').style.display = 'none';
     document.getElementById('fortuneResult').style.display = 'block';
     
-    // 結果テキスト
     document.getElementById('fortuneText').textContent = fortune || '今日のあなたは運気上昇中！';
     
-    // ラッキーアイテム
     const luckyItems = ['四つ葉のクローバー', 'キラキラペン', 'お気に入りの音楽', '温かい飲み物', 'ふわふわクッション'];
     const luckyColors = ['ゴールド', 'スカイブルー', 'ピンク', 'グリーン', 'パープル'];
     
     document.getElementById('luckyItem').textContent = luckyItems[Math.floor(Math.random() * luckyItems.length)];
     document.getElementById('luckyColor').textContent = luckyColors[Math.floor(Math.random() * luckyColors.length)];
     document.getElementById('luckyNumber').textContent = Math.floor(Math.random() * 9) + 1;
+    
+    const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+    document.getElementById('fortuneCharSpeech').textContent = character.speech;
+}
+
+// もう一度占う
+function retryFortune() {
+    startVoiceFortune();
 }
 
 console.log('📱 app.js 読み込み完了');
