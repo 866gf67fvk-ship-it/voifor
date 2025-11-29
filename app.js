@@ -365,8 +365,9 @@ function showHistoryScreen() {
 
 // 購入画面
 function showPurchaseScreen() {
-    alert('購入画面は準備中です');
-    // TODO: 購入画面実装
+    showScreen('purchaseScreen');
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    document.getElementById('currentTickets').textContent = totalTickets;
 }
 
 // 招待画面
@@ -752,5 +753,50 @@ function saveFortuneHistory(dateStr, fortune, summary) {
         timestamp: new Date().toISOString()
     };
     localStorage.setItem('voifor_fortune_history', JSON.stringify(history));
+}
+// ========================================
+// チケット購入（Stripe）
+// ========================================
+
+// Stripe公開キー
+const stripe = Stripe('pk_test_51SPaWsIpIpuVRpxZBE0LgYxH5Fn8nwzh7EYRQAK2GMvxiKYoZi1zT3RA36VNLZb9o7TMm5W3J7A3X5f7Cq0PEr0f00ThNZl8gn');
+
+// チケット購入
+async function purchaseTickets(amount, price) {
+    try {
+        const deviceId = getDeviceId();
+        
+        const response = await fetch('https://voifor-server.onrender.com/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                amount: amount,
+                price: price,
+                type: 'ticket',
+                userId: deviceId
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('決済エラー');
+        }
+        
+        const session = await response.json();
+        
+        // Stripeの決済ページにリダイレクト
+        const result = await stripe.redirectToCheckout({
+            sessionId: session.id
+        });
+        
+        if (result.error) {
+            alert(result.error.message);
+        }
+        
+    } catch (error) {
+        console.error('購入エラー:', error);
+        alert('購入処理中にエラーが発生しました');
+    }
 }
 console.log('📱 app.js 読み込み完了');
