@@ -353,14 +353,13 @@ async function selectCharacter(characterId) {
 
 // 設定画面
 function showSettingsScreen() {
-    alert('設定画面は準備中です');
-    // TODO: 設定画面実装
+    showScreen('settingsScreen');
 }
 
 // 履歴画面
 function showHistoryScreen() {
-    alert('履歴画面は準備中です');
-    // TODO: 履歴画面実装
+    showScreen('historyScreen');
+    renderHistoryList();
 }
 
 // 購入画面
@@ -797,6 +796,214 @@ async function purchaseTickets(amount, price) {
     } catch (error) {
         console.error('購入エラー:', error);
         alert('購入処理中にエラーが発生しました');
+    }
+}
+// ========================================
+// プレミアム・無料獲得
+// ========================================
+
+// プレミアム購入
+async function purchasePremium() {
+    try {
+        const deviceId = getDeviceId();
+        
+        const response = await fetch('https://voifor-server.onrender.com/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: 'premium',
+                userId: deviceId
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('決済エラー');
+        }
+        
+        const session = await response.json();
+        
+        const result = await stripe.redirectToCheckout({
+            sessionId: session.id
+        });
+        
+        if (result.error) {
+            alert(result.error.message);
+        }
+        
+    } catch (error) {
+        console.error('購入エラー:', error);
+        alert('購入処理中にエラーが発生しました');
+    }
+}
+
+// 動画広告でチケット獲得（仮実装）
+function watchAdForTicket() {
+    alert('動画広告機能は準備中です\n（Google AdMob連携後に有効になります）');
+    // TODO: AdMob実装後に有効化
+}
+
+// SNSシェア
+function shareToSNS() {
+    const text = '声で占う新感覚アプリ「VOIFOR」で今日の運勢を占ったよ！🔮✨';
+    const url = 'https://voifor.vercel.app';
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'VOIFOR -声占い-',
+            text: text,
+            url: url
+        }).then(() => {
+            // シェア成功したらチケット付与
+            userData.earnedTickets++;
+            saveUserData();
+            updateUI();
+            alert('シェアありがとう！🎫 1チケット獲得！');
+        }).catch((error) => {
+            console.log('シェアキャンセル');
+        });
+    } else {
+        // Web Share API非対応の場合
+        const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        window.open(shareUrl, '_blank');
+    }
+}
+// ========================================
+// プロフィール編集
+// ========================================
+
+// 編集画面表示
+function showEditScreen() {
+    showScreen('editScreen');
+    
+    // 現在の値をセット
+    document.getElementById('editNickname').value = userData.nickname || '';
+    document.getElementById('editBirthday').value = userData.birthday || '';
+    document.getElementById('editGender').value = userData.gender || '';
+}
+
+// プロフィール保存
+async function saveProfile() {
+    userData.nickname = document.getElementById('editNickname').value;
+    userData.birthday = document.getElementById('editBirthday').value;
+    userData.gender = document.getElementById('editGender').value;
+    
+    await saveUserData();
+    alert('保存しました！');
+    showSettingsScreen();
+}
+
+// データリセット確認
+function confirmReset() {
+    if (confirm('本当にすべてのデータをリセットしますか？\nこの操作は取り消せません。')) {
+        if (confirm('最終確認です。本当にリセットしますか？')) {
+            resetAllData();
+        }
+    }
+}
+
+// データリセット実行
+async function resetAllData() {
+    // ローカルストレージクリア
+    localStorage.removeItem('voifor_device_id');
+    localStorage.removeItem('voifor_today_fortune');
+    localStorage.removeItem('voifor_fortune_history');
+    
+    alert('データをリセットしました。アプリを再読み込みします。');
+    location.reload();
+}
+// ========================================
+// 履歴画面
+// ========================================
+
+let currentHistoryFilter = 'all';
+
+// 履歴リスト表示
+function renderHistoryList() {
+    const container = document.getElementById('historyList');
+    if (!container) return;
+    
+    const history = JSON.parse(localStorage.getItem('voifor_fortune_history') || '{}');
+    const entries = Object.entries(history);
+    
+    // 日付の新しい順にソート
+    entries.sort((a, b) => new Date(b[0]) - new Date(a[0]));
+    
+    // フィルタリング
+    const filtered = entries.filter(([date, data]) => {
+        if (currentHistoryFilter === 'all') return true;
+        return data.type === currentHistoryFilter;
+    });
+    
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div class="history-empty">
+                <p>📭</p>
+                <p>履歴がありません</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    filtered.forEach(([date, data]) => {
+        const typeIcon = getTypeIcon(data.type || 'voice');
+        const shortFortune = (data.fortune || '').substring(0, 50) + '...';
+        
+        html += `
+            <div class="history-item" onclick="showHistoryDetail('${date}')">
+                <div class="history-item-header">
+                    <span class="history-item-type">${typeIcon}</span>
+                    <span class="history-item-date">${formatDate(date)}</span>
+                </div>
+                <div class="history-item-summary">${data.summary || shortFortune}</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// タイプ別アイコン取得
+function getTypeIcon(type) {
+    const icons = {
+        'voice': '🎤',
+        'tarot': '🃏',
+        'compatibility': '💕',
+        'dream': '💭'
+    };
+    return icons[type] || '🔮';
+}
+
+// フィルター切り替え
+function filterHistory(type) {
+    currentHistoryFilter = type;
+    
+    // タブのアクティブ状態更新
+    document.querySelectorAll('.history-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const tabId = {
+        'all': 'tabAll',
+        'voice': 'tabVoice',
+        'tarot': 'tabTarot',
+        'compatibility': 'tabCompat'
+    };
+    
+    document.getElementById(tabId[type]).classList.add('active');
+    
+    renderHistoryList();
+}
+
+// 履歴詳細表示
+function showHistoryDetail(date) {
+    const history = JSON.parse(localStorage.getItem('voifor_fortune_history') || '{}');
+    const data = history[date];
+    
+    if (data) {
+        alert(`📅 ${formatDate(date)}\n\n${data.fortune || '詳細なし'}\n\n${data.summary || ''}`);
     }
 }
 console.log('📱 app.js 読み込み完了');
