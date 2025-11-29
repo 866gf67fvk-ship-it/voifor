@@ -616,12 +616,17 @@ function showFortuneResult(fortune) {
     const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
     document.getElementById('fortuneCharSpeech').textContent = character.speech;
     
-    // メイン画面の吹き出しに要約を保存
+// メイン画面の吹き出しに要約を保存
     const summary = `🍀${luckyItem} 🎨${luckyColor} 🔢${luckyNumber}`;
+    const today = new Date().toISOString().split('T')[0];
+    
     localStorage.setItem('voifor_today_fortune', JSON.stringify({
-        date: new Date().toISOString().split('T')[0],
+        date: today,
         summary: summary
     }));
+    
+    // 履歴に保存
+    saveFortuneHistory(today, fortune, summary);
 }
 
 // もう一度占う
