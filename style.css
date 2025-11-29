@@ -269,16 +269,16 @@ button, .ticket-info, .fortune-card {
 .calendar-header {
     text-align: center;
     font-weight: bold;
-    margin-bottom: 8px;
-    font-size: 0.85em;
+    margin-bottom: 4px;
+    font-size: 0.75em;
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
+    gap: 0px;
     text-align: center;
-    font-size: 0.6em;
+    font-size: 0.55em;
 }
 /* ========================================
    キャラ選択画面
