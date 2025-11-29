@@ -158,6 +158,9 @@ function updateCharacterDisplay() {
     }
 }
 
+// 画面履歴
+let screenHistory = ['mainScreen'];
+
 // 画面切り替え
 function showScreen(screenId) {
     // 全画面非表示
@@ -169,6 +172,32 @@ function showScreen(screenId) {
     const target = document.getElementById(screenId);
     if (target) {
         target.classList.add('active');
+    }
+    
+    // 履歴に追加（同じ画面でなければ）
+    if (screenHistory[screenHistory.length - 1] !== screenId) {
+        screenHistory.push(screenId);
+    }
+}
+
+// 前の画面に戻る
+function goBack() {
+    if (screenHistory.length > 1) {
+        screenHistory.pop(); // 現在の画面を削除
+        const prevScreen = screenHistory[screenHistory.length - 1];
+        
+        // 全画面非表示
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        
+        // 前の画面表示
+        const target = document.getElementById(prevScreen);
+        if (target) {
+            target.classList.add('active');
+        }
+    } else {
+        showMainScreen();
     }
 }
 

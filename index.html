@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -104,6 +104,7 @@
     <div id="characterSelectScreen" class="screen">
         <div class="container">
             <header class="app-header">
+                <button class="header-back-btn" onclick="goBack()">←</button>
                 <h1>キャラ選択</h1>
                 <p>占い師を選んでね</p>
             </header>
@@ -111,15 +112,13 @@
             <div class="character-grid" id="characterGrid">
                 <!-- JSで生成 -->
             </div>
-            
-<button class="back-btn" onclick="goBack()">← 戻る</button>
         </div>
     </div>
-
 <!-- 占い画面 -->
     <div id="fortuneScreen" class="screen">
         <div class="container">
             <header class="app-header">
+                <button class="header-back-btn" onclick="goBack()">←</button>
                 <h1>🔮 今日の占い</h1>
             </header>
             
@@ -156,8 +155,6 @@
                 </div>
                 <button class="record-btn" onclick="retryFortune()">🔮 もう一度占う</button>
             </div>
-            
-<button class="back-btn" onclick="goBack()">← 戻る</button>
         </div>
  </div>
 
@@ -176,10 +173,11 @@
      </div>
 
 
-     <!-- 設定画面 -->
+<!-- 設定画面 -->
     <div id="settingsScreen" class="screen">
         <div class="container">
             <header class="app-header">
+                <button class="header-back-btn" onclick="goBack()">←</button>
                 <h1>⚙️ 設定</h1>
             </header>
             
@@ -213,15 +211,14 @@
                 <p>VOIFOR -声占い- v1.0</p>
                 <p>© 2025 VOIFOR</p>
             </div>
-            
- <button class="back-btn" onclick="goBack()">← 戻る</button>
         </div>
     </div>
 
-    <!-- プロフィール編集画面 -->
+<!-- プロフィール編集画面 -->
     <div id="editScreen" class="screen">
         <div class="container">
             <header class="app-header">
+                <button class="header-back-btn" onclick="goBack()">←</button>
                 <h1>✏️ プロフィール編集</h1>
             </header>
             
@@ -248,15 +245,14 @@
                 
                 <button class="save-btn" onclick="saveProfile()">✅ 保存する</button>
             </div>
-            
- <button class="back-btn" onclick="goBack()">← 戻る</button>
         </div>
     </div>
   
- <!-- 履歴画面 -->
+<!-- 履歴画面 -->
     <div id="historyScreen" class="screen">
         <div class="container">
             <header class="app-header">
+                <button class="header-back-btn" onclick="goBack()">←</button>
                 <h1>📜 占い履歴</h1>
             </header>
             
@@ -270,15 +266,14 @@
             <div id="historyList" class="history-list">
                 <!-- JSで生成 -->
             </div>
-            
-<button class="back-btn" onclick="goBack()">← 戻る</button>
         </div>
     </div>   
 
-    <!-- 購入画面 -->
+<!-- 購入画面 -->
     <div id="purchaseScreen" class="screen">
         <div class="container">
             <header class="app-header">
+                <button class="header-back-btn" onclick="goBack()">←</button>
                 <h1>🎫 チケット購入</h1>
                 <p>現在: <span id="currentTickets">0</span>枚</p>
             </header>
@@ -329,13 +324,11 @@
                     📱 SNS投稿で1チケット獲得
                 </button>
             </div>
-            
-<button class="back-btn" onclick="goBack()">← 戻る</button>
         </div>
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 
 </body>
 </html>
