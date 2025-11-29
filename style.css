@@ -503,3 +503,131 @@ button, .ticket-info, .fortune-card {
     font-size: 0.65em;
     opacity: 0.7;
 }
+/* ========================================
+   カレンダーモーダル
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #2a2a4e, #1a1a3e);
+    border-radius: 20px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    font-size: 1.3em;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.modal-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.modal-calendar-grid .weekday {
+    text-align: center;
+    font-size: 0.8em;
+    opacity: 0.7;
+    padding: 5px;
+}
+
+.modal-calendar-grid .day {
+    text-align: center;
+    padding: 10px 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-calendar-grid .day:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-calendar-grid .day.today {
+    background: rgba(102, 126, 234, 0.5);
+    font-weight: bold;
+}
+
+.modal-calendar-grid .day.checked {
+    background: rgba(74, 222, 128, 0.5);
+}
+
+.modal-calendar-grid .day.selected {
+    border: 2px solid #667eea;
+}
+
+.modal-calendar-grid .day.empty {
+    cursor: default;
+}
+
+.modal-history {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    min-height: 100px;
+}
+
+.history-placeholder {
+    text-align: center;
+    opacity: 0.6;
+    margin: 0;
+}
+
+.history-content {
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+.history-content .history-date {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #667eea;
+}
+
+.history-content .history-fortune {
+    margin-bottom: 10px;
+}
+
+.history-content .history-lucky {
+    font-size: 0.9em;
+    opacity: 0.8;
+}

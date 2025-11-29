@@ -628,5 +628,124 @@ function showFortuneResult(fortune) {
 function retryFortune() {
     startVoiceFortune();
 }
+// ========================================
+// カレンダーモーダル
+// ========================================
 
+// モーダルを開く
+function openCalendarModal() {
+    document.getElementById('calendarModal').classList.add('active');
+    renderModalCalendar();
+}
+
+// モーダルを閉じる
+function closeCalendarModal(event) {
+    if (!event || event.target.id === 'calendarModal') {
+        document.getElementById('calendarModal').classList.remove('active');
+    }
+}
+
+// モーダル用カレンダー描画
+function renderModalCalendar() {
+    const container = document.getElementById('modalCalendarGrid');
+    if (!container) return;
+    
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const today = now.getDate();
+    
+    // タイトル更新
+    document.getElementById('modalMonthTitle').textContent = `${year}年${month + 1}月`;
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+    
+    let html = `
+        <span class="weekday">日</span>
+        <span class="weekday">月</span>
+        <span class="weekday">火</span>
+        <span class="weekday">水</span>
+        <span class="weekday">木</span>
+        <span class="weekday">金</span>
+        <span class="weekday">土</span>
+    `;
+    
+    // 空白
+    for (let i = 0; i < firstDay; i++) {
+        html += '<span class="day empty"></span>';
+    }
+    
+    // 日付
+    for (let d = 1; d <= lastDate; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const isToday = d === today;
+        const isChecked = userData.checkedDates.includes(dateStr);
+        
+        let classes = 'day';
+        if (isToday) classes += ' today';
+        if (isChecked) classes += ' checked';
+        
+        html += `<span class="${classes}" onclick="showDayHistory('${dateStr}')">${d}</span>`;
+    }
+    
+    container.innerHTML = html;
+    
+    // 履歴エリアリセット
+    document.getElementById('modalHistoryArea').innerHTML = '<p class="history-placeholder">日付をタップして履歴を見る</p>';
+}
+
+// 日付の履歴を表示
+function showDayHistory(dateStr) {
+    const historyArea = document.getElementById('modalHistoryArea');
+    
+    // 選択状態を更新
+    document.querySelectorAll('.modal-calendar-grid .day').forEach(el => {
+        el.classList.remove('selected');
+    });
+    event.target.classList.add('selected');
+    
+    // 履歴を取得
+    const history = getFortuneHistory(dateStr);
+    
+    if (history) {
+        historyArea.innerHTML = `
+            <div class="history-content">
+                <div class="history-date">📅 ${formatDate(dateStr)}</div>
+                <div class="history-fortune">${history.fortune || '占い結果なし'}</div>
+                <div class="history-lucky">${history.summary || ''}</div>
+            </div>
+        `;
+    } else {
+        historyArea.innerHTML = `
+            <div class="history-content">
+                <div class="history-date">📅 ${formatDate(dateStr)}</div>
+                <p style="opacity: 0.6;">この日の占い記録はありません</p>
+            </div>
+        `;
+    }
+}
+
+// 日付フォーマット
+function formatDate(dateStr) {
+    const [year, month, day] = dateStr.split('-');
+    return `${year}年${parseInt(month)}月${parseInt(day)}日`;
+}
+
+// 履歴を取得
+function getFortuneHistory(dateStr) {
+    const history = JSON.parse(localStorage.getItem('voifor_fortune_history') || '{}');
+    return history[dateStr];
+}
+
+// 履歴を保存
+function saveFortuneHistory(dateStr, fortune, summary) {
+    const history = JSON.parse(localStorage.getItem('voifor_fortune_history') || '{}');
+    history[dateStr] = {
+        fortune: fortune,
+        summary: summary,
+        timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('voifor_fortune_history', JSON.stringify(history));
+}
 console.log('📱 app.js 読み込み完了');
