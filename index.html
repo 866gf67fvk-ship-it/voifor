@@ -183,25 +183,38 @@
                 <p>現在: <span id="currentTickets">0</span>枚</p>
             </header>
             
-            <div class="purchase-options">
-                <div class="purchase-card" onclick="purchaseTickets(5, 100)">
-                    <div class="ticket-amount">🎫 5回分</div>
+<div class="purchase-options">
+                <div class="purchase-card" onclick="purchaseTickets(1, 100)">
+                    <div class="ticket-amount">🎫 1回分</div>
                     <div class="ticket-price">¥100</div>
+                    <div class="ticket-unit">お試し</div>
+                </div>
+                
+                <div class="purchase-card" onclick="purchaseTickets(10, 200)">
+                    <div class="ticket-amount">🎫 10回分</div>
+                    <div class="ticket-price">¥200</div>
                     <div class="ticket-unit">¥20/回</div>
                 </div>
                 
-                <div class="purchase-card popular" onclick="purchaseTickets(15, 250)">
-                    <div class="popular-badge">人気!</div>
-                    <div class="ticket-amount">🎫 15回分</div>
-                    <div class="ticket-price">¥250</div>
-                    <div class="ticket-unit">¥16.6/回</div>
+                <div class="purchase-card" onclick="purchaseTickets(25, 500)">
+                    <div class="ticket-amount">🎫 25回分</div>
+                    <div class="ticket-price">¥500</div>
+                    <div class="ticket-unit">¥20/回</div>
                 </div>
                 
-                <div class="purchase-card" onclick="purchaseTickets(35, 500)">
-                    <div class="ticket-amount">🎫 35回分</div>
+                <div class="purchase-card popular" onclick="purchaseTickets(30, 500)">
+                    <div class="popular-badge">人気!</div>
+                    <div class="ticket-amount">🎫 30回分</div>
                     <div class="ticket-price">¥500</div>
-                    <div class="ticket-unit">¥14.3/回</div>
+                    <div class="ticket-unit">¥16.7/回</div>
                 </div>
+            </div>
+            
+            <h2 style="text-align: center; margin: 20px 0 15px;">👑 プレミアムプラン</h2>
+            <div class="purchase-card premium" onclick="purchasePremium()">
+                <div class="ticket-amount">占い放題（1日20回）</div>
+                <div class="ticket-price">¥1,480/月</div>
+                <div class="ticket-unit">広告なし</div>
             </div>
             
             <button class="back-btn" onclick="showMainScreen()">← 戻る</button>
