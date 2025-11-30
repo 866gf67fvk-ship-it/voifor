@@ -339,7 +339,92 @@
             </div>
         </div>
     </div>
-
+<!-- 相性占い画面 -->
+    <div id="compatibilityScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1 style="font-size: 1.8em;">💕 相性占い</h1>
+                <p>2人の情報で相性を占います</p>
+                <p style="font-size: 0.9em; color: #FFD700;">🎫 1チケット</p>
+            </header>
+            
+            <button class="form-back-btn" onclick="confirmCompatBack()">← 戻る</button>
+            
+            <!-- Step1: 人物1の情報 -->
+            <div id="compatStep1">
+                <h3 class="step-title">👤 人物1の情報</h3>
+                <div class="compat-form">
+                    <div class="form-group">
+                        <label>名前 <span style="color: #ff6b6b;">*必須</span></label>
+                        <input type="text" id="compat1Name" placeholder="例：太郎">
+                    </div>
+                    <div class="form-group">
+                        <label>生年月日（任意）</label>
+                        <input type="date" id="compat1Birthday">
+                    </div>
+                    <div class="form-group">
+                        <label>血液型（任意）</label>
+                        <select id="compat1Blood">
+                            <option value="">選択してください</option>
+                            <option value="A">A型</option>
+                            <option value="B">B型</option>
+                            <option value="O">O型</option>
+                            <option value="AB">AB型</option>
+                        </select>
+                    </div>
+                    <button class="submit-btn" onclick="goToCompatStep2()">次へ →</button>
+                </div>
+            </div>
+            
+            <!-- Step2: 人物2の情報 -->
+            <div id="compatStep2" style="display: none;">
+                <h3 class="step-title">👤 人物2の情報</h3>
+                <div class="compat-form">
+                    <div class="form-group">
+                        <label>名前 <span style="color: #ff6b6b;">*必須</span></label>
+                        <input type="text" id="compat2Name" placeholder="例：花子">
+                    </div>
+                    <div class="form-group">
+                        <label>生年月日（任意）</label>
+                        <input type="date" id="compat2Birthday">
+                    </div>
+                    <div class="form-group">
+                        <label>血液型（任意）</label>
+                        <select id="compat2Blood">
+                            <option value="">選択してください</option>
+                            <option value="A">A型</option>
+                            <option value="B">B型</option>
+                            <option value="O">O型</option>
+                            <option value="AB">AB型</option>
+                        </select>
+                    </div>
+                    <button class="submit-btn" onclick="startCompatibilityFortune()">💕 相性を占う</button>
+                </div>
+            </div>
+            
+            <!-- ローディング -->
+            <div id="compatLoading" style="display: none;">
+                <div class="fortune-loading">
+                    <div class="loading-spinner"></div>
+                    <p>相性を占っています...</p>
+                </div>
+            </div>
+            
+            <!-- 結果 -->
+            <div id="compatResult" style="display: none;">
+                <div class="compat-score">
+                    <div class="score-circle" id="compatScoreCircle">
+                        <span id="compatScore">??</span>%
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div id="compatFortuneText" class="fortune-text"></div>
+                </div>
+                <button class="submit-btn" onclick="retryCompatibility()">💕 もう一度占う</button>
+            </div>
+        </div>
+    </div>
+    
 <!-- 購入画面 -->
     <div id="purchaseScreen" class="screen">
         <div class="container">
@@ -399,7 +484,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=101"></script>
+<script src="app.js?v=102"></script>
 
 </body>
 </html>
