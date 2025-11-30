@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=107">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -360,7 +360,7 @@
                         <input type="text" id="compat1Name" placeholder="例：太郎">
                     </div>
                     <div class="form-group">
-                        <label>生年月日（任意）</label>
+<label>生年月日（任意・星座も計算！）</label>
                         <input type="date" id="compat1Birthday">
                     </div>
 <div class="form-group">
@@ -413,7 +413,7 @@
                             <option value="AB">AB型</option>
                         </select>
                     </div>
-                    <div class="form-group">
+<div class="form-group">
                         <label>性別（任意）</label>
                         <select id="compat2Gender">
                             <option value="">選択してください</option>
@@ -423,13 +423,23 @@
                         </select>
                     </div>
                     <div class="form-group">
-                    <label>音声で占う（任意・なんでもOK！）</label>
+                        <label>二人の関係</label>
+                        <select id="compatRelation">
+                            <option value="">選択してください</option>
+                            <option value="crush">片思い中</option>
+                            <option value="dating">交際中</option>
+                            <option value="friend">友人</option>
+                            <option value="coworker">同僚・仕事仲間</option>
+                            <option value="ex">元恋人</option>
+                            <option value="family">家族</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>音声で占う（任意・なんでもOK！）</label>
                         <button class="voice-record-btn" id="compat2VoiceBtn" onclick="recordCompatVoice(2)">🎤 録音する</button>
                         <p id="compat2VoiceStatus" class="voice-status"></p>
                     </div>
-                    <div class="form-group">
-                        <label>二人の関係</label>
-                        <select id="compatRelation">
                             <option value="">選択してください</option>
                             <option value="crush">片思い中</option>
                             <option value="dating">交際中</option>
@@ -526,7 +536,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=107"></script>
+<script src="app.js?v=108"></script>
 
 </body>
 </html>
