@@ -314,7 +314,6 @@
                 <div class="voice-option">
                     <button class="voice-category-btn" onclick="startTarotVoiceQuestion()">🎤 声で質問する</button>
                 </div>
-                <button class="back-link" onclick="backToTarotStep1()">← 枚数選択に戻る</button>
             </div>           
             <!-- Step3: カード選択 -->
             <div id="tarotStep3" style="display: none;">
@@ -322,7 +321,6 @@
                 <p class="selected-info">選んだ枚数: <span id="selectedCount">0</span> / <span id="maxCards">1</span></p>
                 <div class="tarot-cards" id="tarotCards"></div>
                 <button class="submit-btn" id="revealBtn" onclick="revealCards()" disabled>カードをめくる</button>
-                <button class="back-link" onclick="backToTarotStep2()">← 質問選択に戻る</button>
             </div>
             
             <!-- ローディング -->
@@ -401,7 +399,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=100"></script>
+<script src="app.js?v=101"></script>
 
 </body>
 </html>
