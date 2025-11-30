@@ -1391,10 +1391,109 @@ async function startTarotVoiceQuestion() {
 let compatState = {
     ticketUsed: false
 };
+// 星座計算
+function getZodiacSign(birthday) {
+    if (!birthday) return '';
+    
+    const date = new Date(birthday);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    
+    if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return '牡羊座';
+    if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return '牡牛座';
+    if ((month === 5 && day >= 21) || (month === 6 && day <= 21)) return '双子座';
+    if ((month === 6 && day >= 22) || (month === 7 && day <= 22)) return '蟹座';
+    if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return '獅子座';
+    if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return '乙女座';
+    if ((month === 9 && day >= 23) || (month === 10 && day <= 23)) return '天秤座';
+    if ((month === 10 && day >= 24) || (month === 11 && day <= 22)) return '蠍座';
+    if ((month === 11 && day >= 23) || (month === 12 && day <= 21)) return '射手座';
+    if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return '山羊座';
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return '水瓶座';
+    if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return '魚座';
+    
+    return '';
+}
+// 相性占い用の録音データ
+let compatVoice1 = null;
+let compatVoice2 = null;
+
+// 相性占い用録音
+async function recordCompatVoice(personNum) {
+    const btn = document.getElementById(`compat${personNum}VoiceBtn`);
+    const status = document.getElementById(`compat${personNum}VoiceStatus`);
+    
+    btn.disabled = true;
+    btn.textContent = '🔴 録音中... 3秒';
+    status.textContent = '';
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        const recorder = new MediaRecorder(stream);
+        const chunks = [];
+        
+        recorder.ondataavailable = (e) => {
+            chunks.push(e.data);
+        };
+        
+        recorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop());
+            const blob = new Blob(chunks, { type: 'audio/webm' });
+            
+            if (personNum === 1) {
+                compatVoice1 = blob;
+            } else {
+                compatVoice2 = blob;
+            }
+            
+            btn.textContent = '✅ 録音完了';
+            btn.classList.add('recorded');
+            status.textContent = '録音しました！';
+            btn.disabled = false;
+        };
+        
+        recorder.start();
+        
+        // カウントダウン
+        let count = 3;
+        const countdown = setInterval(() => {
+            count--;
+            if (count > 0) {
+                btn.textContent = `🔴 録音中... ${count}秒`;
+            } else {
+                clearInterval(countdown);
+                recorder.stop();
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('マイクエラー:', error);
+        btn.disabled = false;
+        btn.textContent = '🎤 録音する';
+        alert('マイクへのアクセスが必要です');
+    }
+}
 
 // リセット
 function resetCompatibility() {
     compatState.ticketUsed = false;
+    compatVoice1 = null;
+    compatVoice2 = null;
+    
+    // 録音ボタンリセット
+    const btn1 = document.getElementById('compat1VoiceBtn');
+    const btn2 = document.getElementById('compat2VoiceBtn');
+    if (btn1) {
+        btn1.textContent = '🎤 録音する';
+        btn1.classList.remove('recorded');
+    }
+    if (btn2) {
+        btn2.textContent = '🎤 録音する';
+        btn2.classList.remove('recorded');
+    }
+    document.getElementById('compat1VoiceStatus').textContent = '';
+    document.getElementById('compat2VoiceStatus').textContent = '';
     
     document.getElementById('compatStep1').style.display = 'block';
     document.getElementById('compatStep2').style.display = 'none';
@@ -1435,9 +1534,18 @@ function confirmCompatBack() {
 // Step2へ
 function goToCompatStep2() {
     const name1 = document.getElementById('compat1Name').value.trim();
+    const birthday1 = document.getElementById('compat1Birthday').value;
+    const blood1 = document.getElementById('compat1Blood').value;
+    const gender1 = document.getElementById('compat1Gender').value;
     
     if (!name1) {
         alert('名前を入力してください');
+        return;
+    }
+    
+    // 名前以外に最低1つ必要
+    if (!birthday1 && !blood1 && !gender1 && !compatVoice1) {
+        alert('生年月日・血液型・性別・音声のうち最低1つ入力してください');
         return;
     }
     
@@ -1449,9 +1557,18 @@ function goToCompatStep2() {
 async function startCompatibilityFortune() {
     const name1 = document.getElementById('compat1Name').value.trim();
     const name2 = document.getElementById('compat2Name').value.trim();
+    const birthday2 = document.getElementById('compat2Birthday').value;
+    const blood2 = document.getElementById('compat2Blood').value;
+    const gender2 = document.getElementById('compat2Gender').value;
     
     if (!name2) {
         alert('名前を入力してください');
+        return;
+    }
+    
+    // 名前以外に最低1つ必要
+    if (!birthday2 && !blood2 && !gender2 && !compatVoice2) {
+        alert('生年月日・血液型・性別・音声のうち最低1つ入力してください');
         return;
     }
     
@@ -1482,10 +1599,14 @@ async function startCompatibilityFortune() {
     document.getElementById('compatStep2').style.display = 'none';
     document.getElementById('compatLoading').style.display = 'block';
     
-    const birthday1 = document.getElementById('compat1Birthday').value;
-    const birthday2 = document.getElementById('compat2Birthday').value;
+const birthday1 = document.getElementById('compat1Birthday').value;
     const blood1 = document.getElementById('compat1Blood').value;
-    const blood2 = document.getElementById('compat2Blood').value;
+    const gender1 = document.getElementById('compat1Gender').value;
+    const relation = document.getElementById('compatRelation').value;
+    
+    // 星座計算
+    const zodiac1 = getZodiacSign(birthday1);
+    const zodiac2 = getZodiacSign(birthday2);
     
     const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
     
@@ -1496,8 +1617,9 @@ async function startCompatibilityFortune() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                person1: { name: name1, birthday: birthday1, blood: blood1 },
-                person2: { name: name2, birthday: birthday2, blood: blood2 },
+                person1: { name: name1, birthday: birthday1, blood: blood1, gender: gender1, zodiac: zodiac1 },
+                person2: { name: name2, birthday: birthday2, blood: blood2, gender: gender2, zodiac: zodiac2 },
+                relation: relation,
                 characterName: character.defaultName,
                 characterPersonality: character.speech
             })

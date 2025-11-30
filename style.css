@@ -1321,3 +1321,37 @@ button, .ticket-info, .fortune-card {
 .score-circle span {
     font-size: 1.2em;
 }
+/* 相性占い 音声録音ボタン */
+.voice-record-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.voice-record-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.voice-record-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.voice-record-btn.recorded {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+}
+
+.voice-status {
+    text-align: center;
+    font-size: 0.9em;
+    margin-top: 8px;
+    min-height: 1.2em;
+}
