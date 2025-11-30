@@ -1026,7 +1026,8 @@ button, .ticket-info, .fortune-card {
 
 .purchase-options {
     position: relative;
-
+}
+  
 /* ========================================
    タロット占い
    ======================================== */
@@ -1213,4 +1214,76 @@ button, .ticket-info, .fortune-card {
 .result-tarot-card .card-name {
     font-weight: bold;
     margin-bottom: 5px;
+}/* ========================================
+   タロット改善スタイル
+   ======================================== */
+
+.spread-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.spread-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.spread-card:hover {
+    transform: translateY(-3px);
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.2));
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.spread-card-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+
+.spread-card-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.spread-card-desc {
+    font-size: 0.95em;
+    opacity: 0.8;
+    margin-bottom: 15px;
+}
+
+.spread-card-cost {
+    font-size: 1.1em;
+    color: #FFD700;
+    font-weight: bold;
+}
+
+.voice-option {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.voice-category-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.voice-category-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 107, 107, 0.5);
 }

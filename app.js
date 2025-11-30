@@ -1070,7 +1070,8 @@ let tarotState = {
     spread: 1,
     category: '',
     selectedCards: [],
-    ticketCost: 1
+    ticketCost: 1,
+    ticketUsed: false
 };
 
 // タロットリセット
@@ -1079,7 +1080,8 @@ function resetTarot() {
         spread: 1,
         category: '',
         selectedCards: [],
-        ticketCost: 1
+        ticketCost: 1,
+        ticketUsed: false
     };
     
     document.getElementById('tarotStep1').style.display = 'block';
@@ -1210,7 +1212,8 @@ async function revealCards() {
             }
         }
         
-        userData.totalReadings++;
+userData.totalReadings++;
+        tarotState.ticketUsed = true;
         await saveUserData();
         updateUI();
         
@@ -1221,11 +1224,13 @@ async function revealCards() {
         
         showTarotResult(drawnCards, data.fortune);
         
-    } catch (error) {
+} catch (error) {
         console.error('タロットエラー:', error);
         document.getElementById('tarotLoading').style.display = 'none';
         document.getElementById('tarotResult').style.display = 'block';
-        document.getElementById('tarotFortuneText').textContent = 'エラーが発生しました。もう一度お試しください。';
+        document.getElementById('tarotFortuneText').textContent = 'エラーが発生しました。チケットは消費されていません。';
+        // エラー時はチケット消費なし
+        tarotState.ticketUsed = false;
     }
 }
 
@@ -1265,3 +1270,69 @@ function backToTarotStep2() {
     document.getElementById('tarotStep2').style.display = 'block';
 }
 console.log('📱 app.js 読み込み完了');
+// 戻る確認
+function confirmTarotBack() {
+    if (tarotState.ticketUsed) {
+        if (confirm('チケットを消費しています。戻るとチケットは戻ってきません。本当に戻りますか？')) {
+            goBack();
+        }
+    } else {
+        goBack();
+    }
+}
+
+// 声で質問
+async function startTarotVoiceQuestion() {
+    const btn = document.querySelector('.voice-category-btn');
+    btn.disabled = true;
+    btn.textContent = '🔴 録音中...';
+    
+    try {
+        recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(recordingStream);
+        microphone.connect(analyser);
+        analyser.fftSize = 256;
+        
+        mediaRecorder = new MediaRecorder(recordingStream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+        
+        mediaRecorder.onstop = async () => {
+            recordingStream.getTracks().forEach(track => track.stop());
+            btn.disabled = false;
+            btn.textContent = '🎤 声で質問する';
+            
+            // 録音完了 → カード選択へ
+            tarotState.category = '声で質問';
+            document.getElementById('tarotStep2').style.display = 'none';
+            document.getElementById('tarotStep3').style.display = 'block';
+            document.getElementById('cardCount').textContent = tarotState.spread;
+            document.getElementById('maxCards').textContent = tarotState.spread;
+            document.getElementById('selectedCount').textContent = '0';
+            renderTarotCards();
+        };
+        
+        mediaRecorder.start();
+        isRecording = true;
+        
+        // 3秒後に停止
+        setTimeout(() => {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+            }
+        }, 3000);
+        
+    } catch (error) {
+        console.error('マイクエラー:', error);
+        btn.disabled = false;
+        btn.textContent = '🎤 声で質問する';
+        alert('マイクへのアクセスが必要です');
+    }
+}
