@@ -1414,6 +1414,23 @@ function getZodiacSign(birthday) {
     
     return '';
 }
+// 星座を表示
+function showZodiac(personNum) {
+    const birthday = document.getElementById(`compat${personNum}Birthday`).value;
+    const display = document.getElementById(`compat${personNum}Zodiac`);
+    
+    if (birthday) {
+        const zodiac = getZodiacSign(birthday);
+        const zodiacEmoji = {
+            '牡羊座': '♈', '牡牛座': '♉', '双子座': '♊', '蟹座': '♋',
+            '獅子座': '♌', '乙女座': '♍', '天秤座': '♎', '蠍座': '♏',
+            '射手座': '♐', '山羊座': '♑', '水瓶座': '♒', '魚座': '♓'
+        };
+        display.textContent = `${zodiacEmoji[zodiac] || '⭐'} ${zodiac}`;
+    } else {
+        display.textContent = '';
+    }
+}
 // 相性占い用の録音データ
 let compatVoice1 = null;
 let compatVoice2 = null;

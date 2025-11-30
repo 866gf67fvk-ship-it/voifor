@@ -1355,3 +1355,20 @@ button, .ticket-info, .fortune-card {
     margin-top: 8px;
     min-height: 1.2em;
 }
+/* 星座表示 */
+.birthday-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.birthday-row input {
+    flex: 1;
+}
+
+.zodiac-display {
+    font-size: 1em;
+    color: #FFD700;
+    white-space: nowrap;
+    min-width: 80px;
+}
