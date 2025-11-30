@@ -77,11 +77,8 @@ angelFemale: {
 // ユーザーデータ
 let userData = {
     oduu: null,
-    oduu: null,
     freeTickets: 3,
     earnedTickets: 0,
-    oduu: null,
-    oduu: null,
     paidTickets: 0,
     streak: 0,
     totalReadings: 0,
@@ -406,8 +403,8 @@ function showReferralScreen() {
 
 // 相性占い画面
 function showCompatibilityScreen() {
-    alert('相性占いは準備中です');
-    // TODO: 相性占い実装
+    showScreen('compatibilityScreen');
+    resetCompatibility();
 }
 
 // タロット画面
@@ -1275,7 +1272,7 @@ function backToTarotStep2() {
     document.getElementById('tarotStep3').style.display = 'none';
     document.getElementById('tarotStep2').style.display = 'block';
 }
-console.log('📱 app.js 読み込み完了');
+
 // 戻る確認
 function confirmTarotBack() {
     if (tarotState.ticketUsed) {
@@ -1387,3 +1384,159 @@ async function startTarotVoiceQuestion() {
         alert('マイクへのアクセスが必要です');
     }
 }
+// ========================================
+// 相性占い
+// ========================================
+
+let compatState = {
+    ticketUsed: false
+};
+
+// リセット
+function resetCompatibility() {
+    compatState.ticketUsed = false;
+    
+    document.getElementById('compatStep1').style.display = 'block';
+    document.getElementById('compatStep2').style.display = 'none';
+    document.getElementById('compatLoading').style.display = 'none';
+    document.getElementById('compatResult').style.display = 'none';
+    
+    // フォームクリア
+    document.getElementById('compat1Name').value = '';
+    document.getElementById('compat1Birthday').value = '';
+    document.getElementById('compat1Blood').value = '';
+    document.getElementById('compat2Name').value = '';
+    document.getElementById('compat2Birthday').value = '';
+    document.getElementById('compat2Blood').value = '';
+}
+
+// 戻る確認
+function confirmCompatBack() {
+    if (compatState.ticketUsed) {
+        if (confirm('チケットを消費しています。戻るとチケットは戻ってきません。本当に戻りますか？')) {
+            goBack();
+        }
+    } else {
+        const step1 = document.getElementById('compatStep1');
+        const step2 = document.getElementById('compatStep2');
+        const result = document.getElementById('compatResult');
+        
+        if (result.style.display !== 'none') {
+            goBack();
+        } else if (step2.style.display !== 'none') {
+            step2.style.display = 'none';
+            step1.style.display = 'block';
+        } else {
+            goBack();
+        }
+    }
+}
+
+// Step2へ
+function goToCompatStep2() {
+    const name1 = document.getElementById('compat1Name').value.trim();
+    
+    if (!name1) {
+        alert('名前を入力してください');
+        return;
+    }
+    
+    document.getElementById('compatStep1').style.display = 'none';
+    document.getElementById('compatStep2').style.display = 'block';
+}
+
+// 相性占い開始
+async function startCompatibilityFortune() {
+    const name1 = document.getElementById('compat1Name').value.trim();
+    const name2 = document.getElementById('compat2Name').value.trim();
+    
+    if (!name2) {
+        alert('名前を入力してください');
+        return;
+    }
+    
+    // チケット確認
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    if (totalTickets < 1) {
+        alert('チケットが足りません');
+        return;
+    }
+    
+    if (!confirm('🎫 1チケット使用します。よろしいですか？')) {
+        return;
+    }
+    
+    // チケット消費
+    if (userData.freeTickets > 0) {
+        userData.freeTickets--;
+    } else if (userData.earnedTickets > 0) {
+        userData.earnedTickets--;
+    } else {
+        userData.paidTickets--;
+    }
+    compatState.ticketUsed = true;
+    await saveUserData();
+    updateUI();
+    
+    // ローディング表示
+    document.getElementById('compatStep2').style.display = 'none';
+    document.getElementById('compatLoading').style.display = 'block';
+    
+    const birthday1 = document.getElementById('compat1Birthday').value;
+    const birthday2 = document.getElementById('compat2Birthday').value;
+    const blood1 = document.getElementById('compat1Blood').value;
+    const blood2 = document.getElementById('compat2Blood').value;
+    
+    const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+    
+    try {
+        const response = await fetch('https://voifor-server.onrender.com/compatibility-fortune', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                person1: { name: name1, birthday: birthday1, blood: blood1 },
+                person2: { name: name2, birthday: birthday2, blood: blood2 },
+                characterName: character.defaultName,
+                characterPersonality: character.speech
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('サーバーエラー');
+        }
+        
+        const data = await response.json();
+        
+        userData.totalReadings++;
+        await saveUserData();
+        updateUI();
+        
+        // 履歴保存
+        const today = new Date().toISOString().split('T')[0];
+        saveFortuneHistory(today + '_compat_' + Date.now(), data.fortune, `💕 ${name1} & ${name2}`, 'compatibility');
+        
+        showCompatResult(data.score || Math.floor(Math.random() * 40) + 60, data.fortune);
+        
+    } catch (error) {
+        console.error('相性占いエラー:', error);
+        const randomScore = Math.floor(Math.random() * 40) + 60;
+        showCompatResult(randomScore, `${name1}さんと${name2}さんの相性を占いました。\n\n二人の間には特別な縁があるようです。お互いを理解し合うことで、より良い関係を築けるでしょう。`);
+    }
+}
+
+// 結果表示
+function showCompatResult(score, fortune) {
+    document.getElementById('compatLoading').style.display = 'none';
+    document.getElementById('compatResult').style.display = 'block';
+    
+    document.getElementById('compatScore').textContent = score;
+    document.getElementById('compatFortuneText').textContent = fortune;
+}
+
+// もう一度占う
+function retryCompatibility() {
+    resetCompatibility();
+}
+console.log('📱 app.js 読み込み完了');
