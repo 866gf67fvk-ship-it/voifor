@@ -1679,3 +1679,306 @@ function retryCompatibility() {
     resetCompatibility();
 }
 console.log('📱 app.js 読み込み完了');
+// ========================================
+// 夢占い
+// ========================================
+
+let dreamState = {
+    type: 'simple', // simple or detailed
+    inputMethod: '',
+    content: '',
+    ticketCost: 1,
+    ticketUsed: false
+};
+
+let dreamVoiceBlob = null;
+
+// 占い方法選択
+function selectDreamType(type) {
+    dreamState.type = type;
+    dreamState.ticketCost = type === 'simple' ? 1 : 2;
+    
+    document.getElementById('dreamStep1').style.display = 'none';
+    document.getElementById('dreamStep2').style.display = 'block';
+}
+
+// 入力方法選択
+function selectDreamInput(method) {
+    dreamState.inputMethod = method;
+    
+    // ボタンの選択状態
+    document.querySelectorAll('#dreamStep2 .category-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    event.target.classList.add('selected');
+    
+    if (method === 'text') {
+        document.getElementById('dreamTextInput').style.display = 'block';
+        document.getElementById('dreamVoiceInput').style.display = 'none';
+    } else {
+        document.getElementById('dreamTextInput').style.display = 'none';
+        document.getElementById('dreamVoiceInput').style.display = 'block';
+    }
+}
+
+// 音声録音
+async function recordDreamVoice() {
+    const btn = document.getElementById('dreamVoiceBtn');
+    const status = document.getElementById('dreamVoiceStatus');
+    
+    btn.disabled = true;
+    btn.textContent = '🔴 録音中... 15秒';
+    status.textContent = '';
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const chunks = [];
+        
+        recorder.ondataavailable = (e) => chunks.push(e.data);
+        
+        recorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop());
+            dreamVoiceBlob = new Blob(chunks, { type: 'audio/webm' });
+            
+            btn.textContent = '✅ 録音完了';
+            btn.classList.add('recorded');
+            status.textContent = '録音しました！';
+            btn.disabled = false;
+            
+            document.getElementById('dreamVoiceNext').style.display = 'block';
+        };
+        
+        recorder.start();
+        
+        let count = 15;
+        const countdown = setInterval(() => {
+            count--;
+            if (count > 0) {
+                btn.textContent = `🔴 録音中... ${count}秒`;
+            } else {
+                clearInterval(countdown);
+                if (recorder.state === 'recording') {
+                    recorder.stop();
+                }
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('マイクエラー:', error);
+        btn.disabled = false;
+        btn.textContent = '🎤 録音する';
+        alert('マイクへのアクセスが必要です');
+    }
+}
+
+// 夢の内容を送信して次へ
+function submitDreamContent() {
+    if (dreamState.inputMethod === 'text') {
+        const text = document.getElementById('dreamText').value.trim();
+        if (!text) {
+            alert('夢の内容を入力してください');
+            return;
+        }
+        dreamState.content = text;
+    } else {
+        if (!dreamVoiceBlob) {
+            alert('夢の内容を録音してください');
+            return;
+        }
+        dreamState.content = '[音声入力]';
+    }
+    
+    if (dreamState.type === 'simple') {
+        // シンプルはそのまま占う
+        submitDreamFortune();
+    } else {
+        // 詳しくは詳細入力へ
+        document.getElementById('dreamStep2').style.display = 'none';
+        document.getElementById('dreamStep3').style.display = 'block';
+    }
+}
+
+// 夢占い実行
+async function submitDreamFortune() {
+    // チケット確認
+    if (!confirm(`🎫 ${dreamState.ticketCost}チケット使用します。よろしいですか？`)) {
+        return;
+    }
+    
+    // チケットチェック
+    if (userData.tickets < dreamState.ticketCost) {
+        alert('チケットが足りません');
+        return;
+    }
+    
+    // チケット消費
+    userData.tickets -= dreamState.ticketCost;
+    await saveUserData();
+    updateUI();
+    dreamState.ticketUsed = true;
+    
+    // ローディング表示
+    document.getElementById('dreamStep1').style.display = 'none';
+    document.getElementById('dreamStep2').style.display = 'none';
+    document.getElementById('dreamStep3').style.display = 'none';
+    document.getElementById('dreamLoading').style.display = 'block';
+    
+    try {
+        const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
+        
+        // 詳細情報を収集
+        let details = {};
+        if (dreamState.type === 'detailed') {
+            details = {
+                when: document.getElementById('dreamWhen').value,
+                emotion: document.getElementById('dreamEmotion').value,
+                impression: document.getElementById('dreamImpression').value,
+                color: document.getElementById('dreamColor').value,
+                wakeup: document.getElementById('dreamWakeup').value
+            };
+        }
+        
+        const response = await fetch('https://voifor-server.onrender.com/dream-fortune', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                dreamContent: dreamState.content,
+                type: dreamState.type,
+                details: details,
+                characterName: character.defaultName,
+                characterPersonality: character.speech
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('API Error');
+        }
+        
+        const data = await response.json();
+        showDreamResult(data.fortune);
+        
+    } catch (error) {
+        console.error('夢占いエラー:', error);
+        alert('占いに失敗しました。チケットは消費されていません。');
+        userData.tickets += dreamState.ticketCost;
+        await saveUserData();
+        updateUI();
+        dreamState.ticketUsed = false;
+        
+        document.getElementById('dreamLoading').style.display = 'none';
+        document.getElementById('dreamStep1').style.display = 'block';
+    }
+}
+
+// 結果表示
+function showDreamResult(fortune) {
+    document.getElementById('dreamLoading').style.display = 'none';
+    document.getElementById('dreamResult').style.display = 'block';
+    document.getElementById('dreamFortuneText').innerHTML = fortune.replace(/\n/g, '<br>');
+    
+    // 履歴に保存
+    saveFortuneHistory('dream', fortune);
+}
+
+// もう一度占う
+function retryDream() {
+    resetDream();
+}
+
+// リセット
+function resetDream() {
+    dreamState = {
+        type: 'simple',
+        inputMethod: '',
+        content: '',
+        ticketCost: 1,
+        ticketUsed: false
+    };
+    dreamVoiceBlob = null;
+    
+    // フォームリセット
+    const dreamText = document.getElementById('dreamText');
+    if (dreamText) dreamText.value = '';
+    
+    const dreamWhen = document.getElementById('dreamWhen');
+    if (dreamWhen) dreamWhen.value = '';
+    
+    const dreamEmotion = document.getElementById('dreamEmotion');
+    if (dreamEmotion) dreamEmotion.value = '';
+    
+    const dreamImpression = document.getElementById('dreamImpression');
+    if (dreamImpression) dreamImpression.value = '';
+    
+    const dreamColor = document.getElementById('dreamColor');
+    if (dreamColor) dreamColor.value = '';
+    
+    const dreamWakeup = document.getElementById('dreamWakeup');
+    if (dreamWakeup) dreamWakeup.value = '';
+    
+    // 録音ボタンリセット
+    const voiceBtn = document.getElementById('dreamVoiceBtn');
+    if (voiceBtn) {
+        voiceBtn.textContent = '🎤 録音する';
+        voiceBtn.classList.remove('recorded');
+        voiceBtn.disabled = false;
+    }
+    
+    const voiceStatus = document.getElementById('dreamVoiceStatus');
+    if (voiceStatus) voiceStatus.textContent = '';
+    
+    const voiceNext = document.getElementById('dreamVoiceNext');
+    if (voiceNext) voiceNext.style.display = 'none';
+    
+    // 画面リセット
+    document.getElementById('dreamStep1').style.display = 'block';
+    document.getElementById('dreamStep2').style.display = 'none';
+    document.getElementById('dreamStep3').style.display = 'none';
+    document.getElementById('dreamLoading').style.display = 'none';
+    document.getElementById('dreamResult').style.display = 'none';
+    document.getElementById('dreamTextInput').style.display = 'none';
+    document.getElementById('dreamVoiceInput').style.display = 'none';
+    
+    // カテゴリボタンリセット
+    document.querySelectorAll('#dreamStep2 .category-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+}
+
+// 戻る確認
+function confirmDreamBack() {
+    if (dreamState.ticketUsed) {
+        if (confirm('チケットを消費しています。戻りますか？')) {
+            resetDream();
+            goBack();
+        }
+    } else {
+        const step1 = document.getElementById('dreamStep1');
+        const step2 = document.getElementById('dreamStep2');
+        const step3 = document.getElementById('dreamStep3');
+        const result = document.getElementById('dreamResult');
+        
+        if (result.style.display !== 'none') {
+            resetDream();
+            goBack();
+        } else if (step3.style.display !== 'none') {
+            step3.style.display = 'none';
+            step2.style.display = 'block';
+        } else if (step2.style.display !== 'none') {
+            step2.style.display = 'none';
+            step1.style.display = 'block';
+            document.getElementById('dreamTextInput').style.display = 'none';
+            document.getElementById('dreamVoiceInput').style.display = 'none';
+        } else {
+            goBack();
+        }
+    }
+}
+
+// 夢占い画面表示
+function showDreamScreen() {
+    resetDream();
+    showScreen('dreamScreen');
+}

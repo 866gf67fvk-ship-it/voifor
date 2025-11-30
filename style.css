@@ -1372,3 +1372,35 @@ button, .ticket-info, .fortune-card {
     white-space: nowrap;
     min-width: 80px;
 }
+/* ========================================
+   夢占い
+   ======================================== */
+
+.dream-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 1em;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.dream-textarea::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.dream-details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.dream-symbol {
+    text-align: center;
+    font-size: 4em;
+    margin-bottom: 20px;
+}
