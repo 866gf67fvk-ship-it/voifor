@@ -1162,6 +1162,34 @@ function toggleTarotCard(index) {
 
 // カードをめくる
 async function revealCards() {
+    // 声で質問の場合は既にチケット消費済み
+    if (!tarotState.ticketUsed) {
+        // チケット確認
+        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+        if (totalTickets < tarotState.ticketCost) {
+            alert('チケットが足りません');
+            return;
+        }
+        
+        if (!confirm(`🎫 ${tarotState.ticketCost}チケット使用します。よろしいですか？`)) {
+            return;
+        }
+        
+        // チケット消費
+        for (let i = 0; i < tarotState.ticketCost; i++) {
+            if (userData.freeTickets > 0) {
+                userData.freeTickets--;
+            } else if (userData.earnedTickets > 0) {
+                userData.earnedTickets--;
+            } else {
+                userData.paidTickets--;
+            }
+        }
+        tarotState.ticketUsed = true;
+        await saveUserData();
+        updateUI();
+    }
+    
     document.getElementById('tarotStep3').style.display = 'none';
     document.getElementById('tarotLoading').style.display = 'block';
     
@@ -1191,29 +1219,7 @@ async function revealCards() {
         
         const data = await response.json();
         
-        // チケット消費
-        if (tarotState.ticketCost === 1) {
-            if (userData.freeTickets > 0) {
-                userData.freeTickets--;
-            } else if (userData.earnedTickets > 0) {
-                userData.earnedTickets--;
-            } else {
-                userData.paidTickets--;
-            }
-        } else {
-            for (let i = 0; i < tarotState.ticketCost; i++) {
-                if (userData.freeTickets > 0) {
-                    userData.freeTickets--;
-                } else if (userData.earnedTickets > 0) {
-                    userData.earnedTickets--;
-                } else {
-                    userData.paidTickets--;
-                }
-            }
-        }
-        
 userData.totalReadings++;
-        tarotState.ticketUsed = true;
         await saveUserData();
         updateUI();
         
@@ -1277,12 +1283,57 @@ function confirmTarotBack() {
             goBack();
         }
     } else {
-        goBack();
+        // 現在のステップに応じて戻る
+        const step1 = document.getElementById('tarotStep1');
+        const step2 = document.getElementById('tarotStep2');
+        const step3 = document.getElementById('tarotStep3');
+        const result = document.getElementById('tarotResult');
+        
+        if (result.style.display !== 'none') {
+            // 結果 → メイン
+            goBack();
+        } else if (step3.style.display !== 'none') {
+            // Step3 → Step2
+            step3.style.display = 'none';
+            step2.style.display = 'block';
+        } else if (step2.style.display !== 'none') {
+            // Step2 → Step1
+            step2.style.display = 'none';
+            step1.style.display = 'block';
+        } else {
+            // Step1 → メイン
+            goBack();
+        }
     }
 }
 
 // 声で質問
 async function startTarotVoiceQuestion() {
+    // チケット確認
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    if (totalTickets < tarotState.ticketCost) {
+        alert('チケットが足りません');
+        return;
+    }
+    
+    if (!confirm(`🎫 ${tarotState.ticketCost}チケット使用します。よろしいですか？`)) {
+        return;
+    }
+    
+    // チケット消費
+    for (let i = 0; i < tarotState.ticketCost; i++) {
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        } else {
+            userData.paidTickets--;
+        }
+    }
+    tarotState.ticketUsed = true;
+    await saveUserData();
+    updateUI();
+    
     const btn = document.querySelector('.voice-category-btn');
     btn.disabled = true;
     btn.textContent = '🔴 録音中...';
