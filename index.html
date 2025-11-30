@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=105">
+<link rel="stylesheet" href="style.css?v=106">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -379,20 +379,11 @@
                             <option value="">選択してください</option>
                             <option value="male">男性</option>
                             <option value="female">女性</option>
- <option value="AB">AB型</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>性別（任意）</label>
-                        <select id="compat1Gender">
-                            <option value="">選択してください</option>
-                            <option value="male">男性</option>
-                            <option value="female">女性</option>
                             <option value="other">その他</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>音声録音（任意・名前を3秒間呼んでください）</label>
+<label>音声で占う（任意・なんでもOK！）</label>
                         <button class="voice-record-btn" id="compat1VoiceBtn" onclick="recordCompatVoice(1)">🎤 録音する</button>
                         <p id="compat1VoiceStatus" class="voice-status"></p>
                     </div>
@@ -432,7 +423,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>音声録音（任意・名前を3秒間呼んでください）</label>
+                    <label>音声で占う（任意・なんでもOK！）</label>
                         <button class="voice-record-btn" id="compat2VoiceBtn" onclick="recordCompatVoice(2)">🎤 録音する</button>
                         <p id="compat2VoiceStatus" class="voice-status"></p>
                     </div>
@@ -535,7 +526,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=106"></script>
+<script src="app.js?v=107"></script>
 
 </body>
 </html>
