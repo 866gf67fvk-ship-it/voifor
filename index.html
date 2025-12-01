@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=113">
+<link rel="stylesheet" href="style.css?v=114">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -392,7 +392,8 @@
                         <button class="voice-record-btn" id="compat1VoiceBtn" onclick="recordCompatVoice(1)">🎤 録音する</button>
                         <p id="compat1VoiceStatus" class="voice-status"></p>
                     </div>
-                    <button class="submit-btn" onclick="goToCompatStep2()">次へ →</button>
+<button class="submit-btn" onclick="goToCompatStep2()">次へ →</button>
+                    <button class="compat-back-btn" onclick="confirmCompatStep1Back()">← 戻る</button>
                 </div>
             </div>
             
@@ -451,7 +452,8 @@
 <button class="voice-record-btn" id="compat2VoiceBtn" onclick="recordCompatVoice(2)">🎤 録音する</button>
                         <p id="compat2VoiceStatus" class="voice-status"></p>
                     </div>
-                    <button class="submit-btn" onclick="startCompatibilityFortune()">💕 相性を占う</button>
+<button class="submit-btn" onclick="startCompatibilityFortune()">💕 相性を占う</button>
+                    <button class="compat-back-btn" id="compatStep2BackBtn" onclick="confirmCompatStep2Back()">← 戻る</button>
                 </div>
             </div>
             
@@ -668,7 +670,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=114"></script>
+<script src="app.js?v=115"></script>
 
 </body>
 </html>
