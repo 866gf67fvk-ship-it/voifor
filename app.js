@@ -764,11 +764,12 @@ function getFortuneHistory(dateStr) {
 }
 
 // 履歴を保存
-function saveFortuneHistory(dateStr, fortune, summary) {
+function saveFortuneHistory(dateStr, fortune, summary, type = 'voice') {
     const history = JSON.parse(localStorage.getItem('voifor_fortune_history') || '{}');
     history[dateStr] = {
         fortune: fortune,
         summary: summary,
+        type: type,
         timestamp: new Date().toISOString()
     };
     localStorage.setItem('voifor_fortune_history', JSON.stringify(history));
@@ -1930,7 +1931,8 @@ function showDreamResult(fortune) {
     document.getElementById('dreamFortuneText').innerHTML = fortune.replace(/\n/g, '<br>');
     
     // 履歴に保存
-    saveFortuneHistory('dream', fortune);
+    const today = new Date().toISOString().split('T')[0];
+    saveFortuneHistory(today + '_dream_' + Date.now(), fortune, '🌙 夢占い', 'dream');
 }
 
 // もう一度占う
