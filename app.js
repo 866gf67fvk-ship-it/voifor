@@ -1431,6 +1431,13 @@ let compatVoice2 = null;
 
 // 相性占い用録音
 async function recordCompatVoice(personNum) {
+    // チケット消費警告（まだ録音していない場合のみ）
+    if ((personNum === 1 && !compatVoice1) || (personNum === 2 && !compatVoice2)) {
+        if (!confirm('🎫 録音するとチケットを消費します。よろしいですか？')) {
+            return;
+        }
+    }
+    
     const btn = document.getElementById(`compat${personNum}VoiceBtn`);
     const status = document.getElementById(`compat${personNum}VoiceStatus`);
     
@@ -1458,10 +1465,13 @@ async function recordCompatVoice(personNum) {
                 compatVoice2 = blob;
             }
             
-            btn.textContent = '✅ 録音完了';
+btn.textContent = '✅ 録音完了';
             btn.classList.add('recorded');
             status.textContent = '録音しました！';
             btn.disabled = false;
+            
+            // Step2の戻るボタン状態更新
+            updateCompatStep2BackBtn();
         };
         
         recorder.start();
@@ -1672,6 +1682,46 @@ function showCompatResult(score, fortune) {
 function retryCompatibility() {
     resetCompatibility();
 }
+
+// Step1の戻る
+function confirmCompatStep1Back() {
+    if (compatVoice1) {
+        if (confirm('録音済みです。戻るとチケットが消費されます。よろしいですか？')) {
+            if (userData.freeTickets > 0) {
+                userData.freeTickets--;
+            } else if (userData.earnedTickets > 0) {
+                userData.earnedTickets--;
+            } else {
+                userData.paidTickets--;
+            }
+            saveUserData();
+            updateUI();
+            compatVoice1 = null;
+            goBack();
+        }
+    } else {
+        goBack();
+    }
+}
+
+// Step2の戻る
+function confirmCompatStep2Back() {
+    document.getElementById('compatStep2').style.display = 'none';
+    document.getElementById('compatStep1').style.display = 'block';
+}
+
+// Step2の戻るボタン状態更新
+function updateCompatStep2BackBtn() {
+    const btn = document.getElementById('compatStep2BackBtn');
+    if (btn) {
+        if (compatVoice1 && compatVoice2) {
+            btn.disabled = true;
+        } else {
+            btn.disabled = false;
+        }
+    }
+}
+
 console.log('📱 app.js 読み込み完了');
 // ========================================
 // 夢占い

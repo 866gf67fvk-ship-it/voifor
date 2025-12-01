@@ -1404,3 +1404,59 @@ button, .ticket-info, .fortune-card {
     font-size: 4em;
     margin-bottom: 20px;
 }
+/* セクション戻るボタン */
+.section-back-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.section-back-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* 結果ボタン横並び */
+.result-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.result-buttons .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.result-buttons .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+/* 声占い画面の戻るボタン */
+.fortune-back-btn {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.fortune-char-area {
+    position: relative;
+}
