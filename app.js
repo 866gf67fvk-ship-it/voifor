@@ -1714,12 +1714,10 @@ function confirmCompatStep2Back() {
     document.getElementById('compatStep1').style.display = 'block';
 }
 
-// 戻るボタンを非表示
+// Step1の戻るボタンだけ非表示（録音したらStep1からは戻れない）
 function hideCompatBackBtns() {
     const btn1 = document.querySelector('#compatStep1 .compat-back-btn');
-    const btn2 = document.getElementById('compatStep2BackBtn');
     if (btn1) btn1.style.display = 'none';
-    if (btn2) btn2.style.display = 'none';
 }
 console.log('📱 app.js 読み込み完了');
 // ========================================
