@@ -1482,12 +1482,18 @@ async function recordCompatVoice(personNum) {
             stream.getTracks().forEach(track => track.stop());
             const blob = new Blob(chunks, { type: 'audio/webm' });
             
-            if (personNum === 1) {
-                compatVoice1 = blob;
-            } else {
-                compatVoice2 = blob;
-            }
-            
+// Step2の戻るボタン状態更新
+function updateCompatStep2BackBtn() {
+    const btn = document.getElementById('compatStep2BackBtn');
+    if (btn) {
+        if (compatVoice1 && compatVoice2) {
+            btn.style.display = 'none';  // 非表示にする
+        } else {
+            btn.style.display = 'block';
+        }
+    }
+}
+
 // 戻るボタンを非表示
 function hideCompatBackBtns() {
     const btn1 = document.querySelector('#compatStep1 .compat-back-btn');
@@ -1495,8 +1501,6 @@ function hideCompatBackBtns() {
     if (btn1) btn1.style.display = 'none';
     if (btn2) btn2.style.display = 'none';
 }
-        
-        recorder.start();
         
         // カウントダウン
         let count = 3;
