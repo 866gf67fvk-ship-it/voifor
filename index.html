@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=112">
+<link rel="stylesheet" href="style.css?v=113">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -108,19 +108,17 @@
                 <p>占い師を選んでね</p>
             </header>
             
-            <div class="grid-with-back">
-                <button class="grid-back-btn" onclick="goBack()">←</button>
-                <div class="character-grid" id="characterGrid">
-                    <!-- JSで生成 -->
-                </div>
+            <button class="section-back-btn" onclick="goBack()">← 戻る</button>
+            
+            <div class="character-grid" id="characterGrid">
+                <!-- JSで生成 -->
             </div>
         </div>
     </div>
 <!-- 占い画面 -->
     <div id="fortuneScreen" class="screen">
         <div class="container">
-            <header class="app-header">
-                <button class="header-back-btn" onclick="goBack()">←</button>
+<header class="app-header">
                 <h1>🔮 今日の占い</h1>
             </header>
             
@@ -155,7 +153,10 @@
                     <div class="lucky-item">🎨 <span id="luckyColor"></span></div>
                     <div class="lucky-item">🔢 <span id="luckyNumber"></span></div>
                 </div>
-                <button class="record-btn" onclick="retryFortune()">🔮 もう一度占う</button>
+<div class="result-buttons">
+                    <button class="record-btn" onclick="retryFortune()">🔮 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
             </div>
         </div>
  </div>
@@ -255,9 +256,10 @@
     <div id="historyScreen" class="screen">
         <div class="container">
             <header class="app-header">
-                <button class="header-back-btn" onclick="goBack()">←</button>
                 <h1>📜 占い履歴</h1>
             </header>
+            
+            <button class="section-back-btn" onclick="goBack()">← 戻る</button>
             
             <div class="history-tabs">
                 <button class="history-tab active" onclick="filterHistory('all')" id="tabAll">📚 すべて</button>
@@ -335,7 +337,10 @@
                 <div class="result-card">
                     <div id="tarotFortuneText" class="fortune-text"></div>
                 </div>
-                <button class="submit-btn" onclick="retryTarot()">🃏 もう一度占う</button>
+<div class="result-buttons">
+                    <button class="submit-btn" onclick="retryTarot()">🃏 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
             </div>
         </div>
     </div>
@@ -471,7 +476,10 @@
                 <div class="result-card">
                     <div id="compatFortuneText" class="fortune-text"></div>
                 </div>
-                <button class="submit-btn" onclick="retryCompatibility()">💕 もう一度占う</button>
+<div class="result-buttons">
+                    <button class="submit-btn" onclick="retryCompatibility()">💕 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
             </div>
         </div>
     </div>
@@ -598,7 +606,10 @@
                 <div class="result-card">
                     <div id="dreamFortuneText" class="fortune-text"></div>
                 </div>
-                <button class="submit-btn" onclick="retryDream()">🌙 もう一度占う</button>
+<div class="result-buttons">
+                    <button class="submit-btn" onclick="retryDream()">🌙 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
             </div>
         </div>
     </div>
@@ -662,7 +673,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=113"></script>
+<script src="app.js?v=114"></script>
 
 </body>
 </html>
