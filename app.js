@@ -1395,6 +1395,7 @@ async function startTarotVoiceQuestion() {
 let compatState = {
     ticketUsed: false
 };
+
 // 星座計算
 function getZodiacSign(birthday) {
     if (!birthday) return '';
@@ -1418,6 +1419,7 @@ function getZodiacSign(birthday) {
     
     return '';
 }
+
 // 星座を表示
 function showZodiac(personNum) {
     const birthday = document.getElementById(`compat${personNum}Birthday`).value;
@@ -1435,6 +1437,7 @@ function showZodiac(personNum) {
         display.textContent = '';
     }
 }
+
 // 相性占い用の録音データ
 let compatVoice1 = null;
 let compatVoice2 = null;
@@ -1482,25 +1485,22 @@ async function recordCompatVoice(personNum) {
             stream.getTracks().forEach(track => track.stop());
             const blob = new Blob(chunks, { type: 'audio/webm' });
             
-// Step2の戻るボタン状態更新
-function updateCompatStep2BackBtn() {
-    const btn = document.getElementById('compatStep2BackBtn');
-    if (btn) {
-        if (compatVoice1 && compatVoice2) {
-            btn.style.display = 'none';  // 非表示にする
-        } else {
-            btn.style.display = 'block';
-        }
-    }
-}
-
-// 戻るボタンを非表示
-function hideCompatBackBtns() {
-    const btn1 = document.querySelector('#compatStep1 .compat-back-btn');
-    const btn2 = document.getElementById('compatStep2BackBtn');
-    if (btn1) btn1.style.display = 'none';
-    if (btn2) btn2.style.display = 'none';
-}
+            if (personNum === 1) {
+                compatVoice1 = blob;
+            } else {
+                compatVoice2 = blob;
+            }
+            
+            btn.textContent = '✅ 録音完了';
+            btn.classList.add('recorded');
+            status.textContent = '録音しました！';
+            btn.disabled = true;
+            
+            // 録音したら戻るボタンを非表示
+            hideCompatBackBtns();
+        };
+        
+        recorder.start();
         
         // カウントダウン
         let count = 3;
@@ -1534,13 +1534,21 @@ function resetCompatibility() {
     if (btn1) {
         btn1.textContent = '🎤 録音する';
         btn1.classList.remove('recorded');
+        btn1.disabled = false;
     }
     if (btn2) {
         btn2.textContent = '🎤 録音する';
         btn2.classList.remove('recorded');
+        btn2.disabled = false;
     }
     document.getElementById('compat1VoiceStatus').textContent = '';
     document.getElementById('compat2VoiceStatus').textContent = '';
+    
+    // 戻るボタンも表示に戻す
+    const backBtn1 = document.querySelector('#compatStep1 .compat-back-btn');
+    const backBtn2 = document.getElementById('compatStep2BackBtn');
+    if (backBtn1) backBtn1.style.display = 'block';
+    if (backBtn2) backBtn2.style.display = 'block';
     
     document.getElementById('compatStep1').style.display = 'block';
     document.getElementById('compatStep2').style.display = 'none';
@@ -1554,28 +1562,6 @@ function resetCompatibility() {
     document.getElementById('compat2Name').value = '';
     document.getElementById('compat2Birthday').value = '';
     document.getElementById('compat2Blood').value = '';
-}
-
-// 戻る確認
-function confirmCompatBack() {
-    if (compatState.ticketUsed) {
-        if (confirm('チケットを消費しています。戻るとチケットは戻ってきません。本当に戻りますか？')) {
-            goBack();
-        }
-    } else {
-        const step1 = document.getElementById('compatStep1');
-        const step2 = document.getElementById('compatStep2');
-        const result = document.getElementById('compatResult');
-        
-        if (result.style.display !== 'none') {
-            goBack();
-        } else if (step2.style.display !== 'none') {
-            step2.style.display = 'none';
-            step1.style.display = 'block';
-        } else {
-            goBack();
-        }
-    }
 }
 
 // Step2へ
@@ -1619,7 +1605,7 @@ async function startCompatibilityFortune() {
         return;
     }
     
-// チケット確認（録音していない場合のみ）
+    // チケット確認（録音していない場合のみ）
     if (!compatVoice1 && !compatVoice2) {
         const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
         if (totalTickets < 1) {
@@ -1648,7 +1634,7 @@ async function startCompatibilityFortune() {
     document.getElementById('compatStep2').style.display = 'none';
     document.getElementById('compatLoading').style.display = 'block';
     
-const birthday1 = document.getElementById('compat1Birthday').value;
+    const birthday1 = document.getElementById('compat1Birthday').value;
     const blood1 = document.getElementById('compat1Blood').value;
     const gender1 = document.getElementById('compat1Gender').value;
     const relation = document.getElementById('compatRelation').value;
@@ -1713,8 +1699,7 @@ function retryCompatibility() {
 
 // Step1の戻る
 function confirmCompatStep1Back() {
-    if (compatState.ticketUsed) {
-        // チケット消費済み → 警告のみ（追加消費なし）
+    if (compatVoice1) {
         if (confirm('チケットを消費しています。戻りますか？')) {
             goBack();
         }
@@ -1729,18 +1714,13 @@ function confirmCompatStep2Back() {
     document.getElementById('compatStep1').style.display = 'block';
 }
 
-// Step2の戻るボタン状態更新
-function updateCompatStep2BackBtn() {
-    const btn = document.getElementById('compatStep2BackBtn');
-    if (btn) {
-        if (compatVoice1 && compatVoice2) {
-            btn.style.display = 'none';  // 非表示にする
-        } else {
-            btn.style.display = 'block';
-        }
-    }
+// 戻るボタンを非表示
+function hideCompatBackBtns() {
+    const btn1 = document.querySelector('#compatStep1 .compat-back-btn');
+    const btn2 = document.getElementById('compatStep2BackBtn');
+    if (btn1) btn1.style.display = 'none';
+    if (btn2) btn2.style.display = 'none';
 }
-
 console.log('📱 app.js 読み込み完了');
 // ========================================
 // 夢占い
