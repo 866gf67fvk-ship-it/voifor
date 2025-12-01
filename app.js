@@ -1441,12 +1441,25 @@ let compatVoice2 = null;
 
 // 相性占い用録音
 async function recordCompatVoice(personNum) {
-    // チケット消費警告（まだ録音していない場合のみ）
-    if ((personNum === 1 && !compatVoice1) || (personNum === 2 && !compatVoice2)) {
-        if (!confirm('🎫 録音するとチケットを消費します。よろしいですか？')) {
-            return;
-        }
+    // 毎回チケット確認＆消費
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    if (totalTickets < 1) {
+        alert('チケットが足りません');
+        return;
     }
+    if (!confirm('🎫 1チケット消費します。録音後は戻れません。よろしいですか？')) {
+        return;
+    }
+    // チケット消費
+    if (userData.freeTickets > 0) {
+        userData.freeTickets--;
+    } else if (userData.earnedTickets > 0) {
+        userData.earnedTickets--;
+    } else {
+        userData.paidTickets--;
+    }
+    await saveUserData();
+    updateUI();
     
     const btn = document.getElementById(`compat${personNum}VoiceBtn`);
     const status = document.getElementById(`compat${personNum}VoiceStatus`);
@@ -1475,14 +1488,13 @@ async function recordCompatVoice(personNum) {
                 compatVoice2 = blob;
             }
             
-btn.textContent = '✅ 録音完了';
-            btn.classList.add('recorded');
-            status.textContent = '録音しました！';
-            btn.disabled = true;  // 押せなくする
-            
-            // Step2の戻るボタン状態更新
-            updateCompatStep2BackBtn();
-        };
+// 戻るボタンを非表示
+function hideCompatBackBtns() {
+    const btn1 = document.querySelector('#compatStep1 .compat-back-btn');
+    const btn2 = document.getElementById('compatStep2BackBtn');
+    if (btn1) btn1.style.display = 'none';
+    if (btn2) btn2.style.display = 'none';
+}
         
         recorder.start();
         
@@ -1603,28 +1615,30 @@ async function startCompatibilityFortune() {
         return;
     }
     
-    // チケット確認
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
-    if (totalTickets < 1) {
-        alert('チケットが足りません');
-        return;
+// チケット確認（録音していない場合のみ）
+    if (!compatVoice1 && !compatVoice2) {
+        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+        if (totalTickets < 1) {
+            alert('チケットが足りません');
+            return;
+        }
+        
+        if (!confirm('🎫 1チケット使用します。よろしいですか？')) {
+            return;
+        }
+        
+        // チケット消費
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        } else {
+            userData.paidTickets--;
+        }
+        compatState.ticketUsed = true;
+        await saveUserData();
+        updateUI();
     }
-    
-    if (!confirm('🎫 1チケット使用します。よろしいですか？')) {
-        return;
-    }
-    
-    // チケット消費
-    if (userData.freeTickets > 0) {
-        userData.freeTickets--;
-    } else if (userData.earnedTickets > 0) {
-        userData.earnedTickets--;
-    } else {
-        userData.paidTickets--;
-    }
-    compatState.ticketUsed = true;
-    await saveUserData();
-    updateUI();
     
     // ローディング表示
     document.getElementById('compatStep2').style.display = 'none';
@@ -1695,18 +1709,9 @@ function retryCompatibility() {
 
 // Step1の戻る
 function confirmCompatStep1Back() {
-    if (compatVoice1) {
-        if (confirm('録音済みです。戻るとチケットが消費されます。よろしいですか？')) {
-            if (userData.freeTickets > 0) {
-                userData.freeTickets--;
-            } else if (userData.earnedTickets > 0) {
-                userData.earnedTickets--;
-            } else {
-                userData.paidTickets--;
-            }
-            saveUserData();
-            updateUI();
-            compatVoice1 = null;
+    if (compatState.ticketUsed) {
+        // チケット消費済み → 警告のみ（追加消費なし）
+        if (confirm('チケットを消費しています。戻りますか？')) {
             goBack();
         }
     } else {
