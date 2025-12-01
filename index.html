@@ -122,8 +122,9 @@
                 <h1>🔮 今日の占い</h1>
             </header>
             
-            <!-- キャラ画像 -->
+<!-- キャラ画像 -->
             <div class="fortune-char-area">
+                <button class="fortune-back-btn" onclick="goBack()">←</button>
                 <div id="fortuneCharImage" class="fortune-char-image"></div>
                 <p id="fortuneCharSpeech" class="fortune-char-speech">3秒間、声を聞かせて！</p>
             </div>
@@ -280,9 +281,7 @@
             <header class="app-header">
                 <h1 style="font-size: 1.8em;">🃏 タロット占い</h1>
             </header>
-            
-            <button class="form-back-btn" onclick="confirmTarotBack()">← 戻る</button>
-            
+                        
             <!-- Step1: 枚数選択 -->
             <div id="tarotStep1">
                 <h3 class="step-title">カードを何枚引きますか？</h3>
@@ -353,9 +352,7 @@
 <p style="font-size: 0.85em; opacity: 0.8;">※名前 + (生年月日・血液型・性別・音声)のうち最低1つ入力</p>
                 <p style="font-size: 0.9em; color: #FFD700;">🎫 1チケット</p>
             </header>
-            
-            <button class="form-back-btn" onclick="confirmCompatBack()">← 戻る</button>
-            
+                        
 <!-- Step1: 人物1の情報 -->
             <div id="compatStep1">
                 <h3 class="step-title">👤 人物1の情報</h3>
@@ -491,8 +488,6 @@
                 <h1 style="font-size: 1.8em;">🌙 夢占い</h1>
                 <p>見た夢の内容を教えてください</p>
             </header>
-            
-            <button class="form-back-btn" onclick="confirmDreamBack()">← 戻る</button>
             
             <!-- Step1: 占い方法選択 -->
             <div id="dreamStep1">
