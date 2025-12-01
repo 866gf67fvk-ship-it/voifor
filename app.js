@@ -413,12 +413,6 @@ function showTarotScreen() {
     resetTarot();
 }
 
-// 夢占い画面
-function showDreamScreen() {
-    alert('夢占いは準備中です');
-    // TODO: 夢占い実装
-}
-
 // ========================================
 // 占い機能
 // ========================================
@@ -1806,14 +1800,23 @@ async function submitDreamFortune() {
         return;
     }
     
-    // チケットチェック
-    if (userData.tickets < dreamState.ticketCost) {
+// チケットチェック
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    if (totalTickets < dreamState.ticketCost) {
         alert('チケットが足りません');
         return;
     }
     
-    // チケット消費
-    userData.tickets -= dreamState.ticketCost;
+// チケット消費
+    for (let i = 0; i < dreamState.ticketCost; i++) {
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        } else {
+            userData.paidTickets--;
+        }
+    }
     await saveUserData();
     updateUI();
     dreamState.ticketUsed = true;
@@ -1863,7 +1866,7 @@ async function submitDreamFortune() {
     } catch (error) {
         console.error('夢占いエラー:', error);
         alert('占いに失敗しました。チケットは消費されていません。');
-        userData.tickets += dreamState.ticketCost;
+    userData.earnedTickets += dreamState.ticketCost;
         await saveUserData();
         updateUI();
         dreamState.ticketUsed = false;
