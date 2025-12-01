@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=123">
+<link rel="stylesheet" href="style.css?v=124">
 </head>
 <body>
 
@@ -263,15 +263,17 @@
             
             <button class="section-back-btn" onclick="goBack()">← 戻る</button>
             
-            <div class="history-tabs">
-                <button class="history-tab active" onclick="filterHistory('all')" id="tabAll">📚 すべて</button>
-                <button class="history-tab" onclick="filterHistory('voice')" id="tabVoice">🎤 声占い</button>
-                <button class="history-tab" onclick="filterHistory('tarot')" id="tabTarot">🃏 タロット</button>
-                <button class="history-tab" onclick="filterHistory('compatibility')" id="tabCompat">💕 相性</button>
-            </div>
-            
-            <div id="historyList" class="history-list">
-                <!-- JSで生成 -->
+<div class="history-layout">
+                <div class="history-sidebar">
+                    <button class="history-tab active" id="tabAll" onclick="filterHistory('all')">すべて</button>
+                    <button class="history-tab" id="tabVoice" onclick="filterHistory('voice')">🎤 声占い</button>
+                    <button class="history-tab" id="tabTarot" onclick="filterHistory('tarot')">🃏 タロット</button>
+                    <button class="history-tab" id="tabCompat" onclick="filterHistory('compatibility')">💕 相性</button>
+                    <button class="history-tab" id="tabDream" onclick="filterHistory('dream')">🌙 夢占い</button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <!-- JSで生成 -->
+                </div>
             </div>
         </div>
     </div>   
@@ -353,7 +355,7 @@
                 <h1 style="font-size: 1.8em;">💕 相性占い</h1>
                 <p>2人の情報で相性を占います</p>
 <p style="font-size: 0.85em; opacity: 0.8;">※名前 + (生年月日・血液型・性別・音声)のうち最低1つ入力</p>
-                <p style="font-size: 0.9em; color: #FFD700;">🎫 1チケット</p>
+   <p class="screen-ticket">🎫 1チケット（声録音する場合は1人1枚）</p>
             </header>
                         
 <!-- Step1: 人物1の情報 -->
@@ -676,7 +678,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=123"></script>
+<script src="app.js?v=124"></script>
 
 </body>
 </html>
