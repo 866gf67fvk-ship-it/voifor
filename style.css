@@ -871,42 +871,45 @@ button, .ticket-info, .fortune-card {
    履歴画面
    ======================================== */
 
-.history-tabs {
+.history-layout {
     display: flex;
-    gap: 5px;
-    margin-bottom: 20px;
-    overflow-x: auto;
+    gap: 15px;
+    min-height: 60vh;
 }
 
-.history-tab {
-    flex: 1;
-    padding: 12px 8px;
-    background: rgba(255,255,255,0.1);
-    border: 2px solid rgba(255,255,255,0.2);
+.history-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.history-sidebar .history-tab {
+    width: 100%;
+    text-align: left;
+    padding: 12px 15px;
     border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
     color: white;
-    font-size: 0.85em;
-    font-weight: bold;
+    font-size: 0.9em;
     cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
 }
 
-.history-tab.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-color: #667eea;
+.history-sidebar .history-tab.active {
+    background: rgba(255, 255, 255, 0.25);
 }
 
-.history-tab:hover:not(.active) {
-    background: rgba(255,255,255,0.2);
+.history-sidebar .history-tab:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .history-list {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 20px;
-    max-height: 60vh;
+    max-height: 70vh;
     overflow-y: auto;
 }
 
@@ -1480,4 +1483,74 @@ button, .ticket-info, .fortune-card {
 .compat-back-btn:disabled {
     opacity: 0.3;
     cursor: not-allowed;
+}
+/* 履歴画面レイアウト */
+.history-layout {
+    display: flex;
+    gap: 15px;
+    min-height: 60vh;
+}
+
+.history-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.history-sidebar .history-tab {
+    width: 100%;
+    text-align: left;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.history-sidebar .history-tab.active {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.history-list {
+    flex: 1;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+/* 履歴画面レイアウト */
+.history-layout {
+    display: flex;
+    gap: 15px;
+    min-height: 60vh;
+}
+
+.history-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.history-sidebar .history-tab {
+    width: 100%;
+    text-align: left;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.history-sidebar .history-tab.active {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.history-list {
+    flex: 1;
+    max-height: 70vh;
+    overflow-y: auto;
 }

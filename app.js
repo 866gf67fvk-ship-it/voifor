@@ -1006,11 +1006,12 @@ function filterHistory(type) {
         tab.classList.remove('active');
     });
     
-    const tabId = {
+const tabId = {
         'all': 'tabAll',
         'voice': 'tabVoice',
         'tarot': 'tabTarot',
-        'compatibility': 'tabCompat'
+        'compatibility': 'tabCompat',
+        'dream': 'tabDream'
     };
     
     document.getElementById(tabId[type]).classList.add('active');
