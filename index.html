@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=114">
+<link rel="stylesheet" href="style.css?v=115">
 </head>
 <body>
     <!-- メイン画面 -->
@@ -292,13 +292,14 @@
                         <div class="spread-card-desc">シンプルに今の状況を占う</div>
                         <div class="spread-card-cost">🎫 1チケット</div>
                     </div>
-                    <div class="spread-card" onclick="selectSpread(3)">
+<div class="spread-card" onclick="selectSpread(3)">
                         <div class="spread-card-icon">🃏🃏🃏</div>
                         <div class="spread-card-title">3枚引き</div>
                         <div class="spread-card-desc">過去・現在・未来を占う</div>
                         <div class="spread-card-cost">🎫 2チケット</div>
                     </div>
                 </div>
+                <button class="compat-back-btn" onclick="goBack()">← 戻る</button>
             </div>
             
             <!-- Step2: 質問入力 -->
@@ -312,18 +313,19 @@
                     <button class="category-btn" onclick="selectTarotCategory('健康')">🏥 健康</button>
                     <button class="category-btn" onclick="selectTarotCategory('全般')">✨ 全般</button>
                 </div>
-                <div class="voice-option">
+<div class="voice-option">
                     <button class="voice-category-btn" onclick="startTarotVoiceQuestion()">🎤 声で質問する</button>
                 </div>
-            </div>           
+                <button class="compat-back-btn" onclick="backToTarotStep1()">← 戻る</button>
+            </div>          
             <!-- Step3: カード選択 -->
             <div id="tarotStep3" style="display: none;">
                 <h3 class="step-title">カードを<span id="cardCount">1</span>枚選んでください</h3>
                 <p class="selected-info">選んだ枚数: <span id="selectedCount">0</span> / <span id="maxCards">1</span></p>
                 <div class="tarot-cards" id="tarotCards"></div>
-                <button class="submit-btn" id="revealBtn" onclick="revealCards()" disabled>カードをめくる</button>
+<button class="submit-btn" id="revealBtn" onclick="revealCards()" disabled>カードをめくる</button>
+                <button class="compat-back-btn" id="tarotStep3BackBtn" onclick="confirmTarotStep3Back()">← 戻る</button>
             </div>
-            
             <!-- ローディング -->
             <div id="tarotLoading" style="display: none;">
                 <div class="loading-spinner"></div>
@@ -501,13 +503,14 @@
                         <div class="spread-card-desc">夢の内容のみで占います</div>
                         <div class="spread-card-cost">🎫 1チケット</div>
                     </div>
-                    <div class="spread-card" onclick="selectDreamType('detailed')">
+<div class="spread-card" onclick="selectDreamType('detailed')">
                         <div class="spread-card-icon">✨</div>
                         <div class="spread-card-title">詳しく占う</div>
                         <div class="spread-card-desc">詳細情報も含めて深く分析</div>
                         <div class="spread-card-cost">🎫 2チケット</div>
                     </div>
                 </div>
+                <button class="compat-back-btn" onclick="goBack()">← 戻る</button>
             </div>
             
             <!-- Step2: 入力方法選択 -->
@@ -519,20 +522,21 @@
                 </div>
                 
                 <!-- テキスト入力 -->
-                <div id="dreamTextInput" style="display: none;">
+<div id="dreamTextInput" style="display: none;">
                     <textarea id="dreamText" class="dream-textarea" placeholder="例：空を飛んでいて、友達と一緒に雲の上を歩いていました..."></textarea>
                     <button class="submit-btn" onclick="submitDreamContent()">次へ →</button>
+                    <button class="compat-back-btn" onclick="backToDreamStep1()">← 戻る</button>
                 </div>
                 
                 <!-- 音声入力 -->
-                <div id="dreamVoiceInput" style="display: none;">
+<div id="dreamVoiceInput" style="display: none;">
                     <p style="text-align: center; opacity: 0.8; margin: 15px 0;">夢の内容を話してください（最大15秒）</p>
                     <button class="voice-record-btn" id="dreamVoiceBtn" onclick="recordDreamVoice()">🎤 録音する</button>
                     <p id="dreamVoiceStatus" class="voice-status"></p>
                     <button class="submit-btn" id="dreamVoiceNext" onclick="submitDreamContent()" style="display: none;">次へ →</button>
+                    <button class="compat-back-btn" onclick="backToDreamStep1()">← 戻る</button>
                 </div>
             </div>
-            
             <!-- Step3: 詳細情報（詳しく占う の場合のみ） -->
             <div id="dreamStep3" style="display: none;">
                 <h3 class="step-title">詳細情報を入力してください</h3>
@@ -583,7 +587,8 @@
                             <option value="その他">🤷 その他</option>
                         </select>
                     </div>
-                    <button class="submit-btn" onclick="submitDreamFortune()">🌙 夢を占う</button>
+<button class="submit-btn" onclick="submitDreamFortune()">🌙 夢を占う</button>
+                    <button class="compat-back-btn" onclick="backToDreamStep2()">← 戻る</button>
                 </div>
             </div>
             
@@ -670,7 +675,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=115"></script>
+<script src="app.js?v=116"></script>
 
 </body>
 </html>

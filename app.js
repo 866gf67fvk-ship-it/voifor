@@ -1117,7 +1117,17 @@ function selectTarotCategory(category) {
     
     renderTarotCards();
 }
-
+// Step3の戻る
+function confirmTarotStep3Back() {
+    if (tarotState.ticketUsed) {
+        // 声で質問済み → 戻れない
+        alert('声で質問したため、戻れません');
+    } else {
+        // カテゴリ選択 → Step2へ戻れる
+        document.getElementById('tarotStep3').style.display = 'none';
+        document.getElementById('tarotStep2').style.display = 'block';
+    }
+}
 // タロットカード表示
 function renderTarotCards() {
     const container = document.getElementById('tarotCards');
@@ -1468,7 +1478,7 @@ async function recordCompatVoice(personNum) {
 btn.textContent = '✅ 録音完了';
             btn.classList.add('recorded');
             status.textContent = '録音しました！';
-            btn.disabled = false;
+            btn.disabled = true;  // 押せなくする
             
             // Step2の戻るボタン状態更新
             updateCompatStep2BackBtn();
@@ -1715,9 +1725,9 @@ function updateCompatStep2BackBtn() {
     const btn = document.getElementById('compatStep2BackBtn');
     if (btn) {
         if (compatVoice1 && compatVoice2) {
-            btn.disabled = true;
+            btn.style.display = 'none';  // 非表示にする
         } else {
-            btn.disabled = false;
+            btn.style.display = 'block';
         }
     }
 }
@@ -2034,4 +2044,17 @@ function confirmDreamBack() {
 function showDreamScreen() {
     resetDream();
     showScreen('dreamScreen');
+}
+// Step1へ戻る
+function backToDreamStep1() {
+    document.getElementById('dreamStep2').style.display = 'none';
+    document.getElementById('dreamStep1').style.display = 'block';
+    document.getElementById('dreamTextInput').style.display = 'none';
+    document.getElementById('dreamVoiceInput').style.display = 'none';
+}
+
+// Step2へ戻る
+function backToDreamStep2() {
+    document.getElementById('dreamStep3').style.display = 'none';
+    document.getElementById('dreamStep2').style.display = 'block';
 }
