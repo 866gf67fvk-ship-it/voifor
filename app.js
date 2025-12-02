@@ -73,7 +73,6 @@ angelFemale: {
         speech: '別に...占ってあげるにゃ🐱'
     }
 };
-
 // ユーザーデータ
 let userData = {
     oduu: null,
@@ -84,7 +83,15 @@ let userData = {
     checkedDates: [],
     selectedCharacter: 'devilMale',
     dailyFortuneCount: 0,
-    lastFortuneDate: null
+    lastFortuneDate: null,
+    referralCode: '',        // 自分の紹介コード
+    referredBy: '',          // 誰から紹介されたか
+    hasUsedOnce: false,      // 初回占い済みか（紹介検証用）
+    snsShareThisWeek: false, // 今週SNS投稿したか
+    name: '',                // ユーザー名
+    birth: '',               // 生年月日
+    bloodType: '',           // 血液型
+    isRegistered: false      // 登録済みか
 };
 
 // 初期化
@@ -94,11 +101,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ユーザーデータ読み込み
     await loadUserData();
     
-    // カレンダー表示
+ // カレンダー表示
     renderCalendar();
     
     // UI更新
     updateUI();
+    
+    // 初回判定
+    checkFirstTime();
     
     console.log('✅ VOIFOR 準備完了！');
 });
@@ -109,7 +119,7 @@ function updateUI() {
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     const ticketDisplay = `🎫+${userData.freeTickets}、⭐+${userData.earnedTickets}`;
     document.getElementById('ticketCount').textContent = ticketDisplay;    
-    
+
     // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
@@ -234,14 +244,22 @@ async function loadUserData() {
             // ユーザーが存在しない→新規作成
             console.log('🆕 新規ユーザー作成');
             await createNewUser(deviceId);
-        } else if (data) {
+} else if (data) {
             // 既存ユーザー
             userData.freeTickets = data.free_tickets;
             userData.earnedTickets = data.earned_tickets;
+            userData.paidTickets = data.paid_tickets;
             userData.streak = data.streak;
             userData.totalReadings = data.total_readings;
             userData.checkedDates = data.checked_dates ? JSON.parse(data.checked_dates) : [];
             userData.selectedCharacter = data.selected_character;
+            userData.referralCode = data.referral_code || '';
+            userData.referredBy = data.referred_by || '';
+            userData.hasUsedOnce = data.has_used_once || false;
+            userData.name = data.name || '';
+            userData.birth = data.birth || '';
+            userData.bloodType = data.blood_type || '';
+            userData.isRegistered = data.is_registered || false;
             userData.oduu = data.id;
             console.log('📁 ユーザーデータ読み込み完了');
         }
@@ -269,15 +287,23 @@ async function saveUserData() {
     const deviceId = getDeviceId();
     
     try {
-        const { error } = await supabase
+const { error } = await supabase
             .from('users')
             .update({
                 free_tickets: userData.freeTickets,
                 earned_tickets: userData.earnedTickets,
+                paid_tickets: userData.paidTickets,
                 streak: userData.streak,
                 total_readings: userData.totalReadings,
                 checked_dates: JSON.stringify(userData.checkedDates),
-                selected_character: userData.selectedCharacter
+                selected_character: userData.selectedCharacter,
+                referral_code: userData.referralCode,
+                referred_by: userData.referredBy,
+                has_used_once: userData.hasUsedOnce,
+                name: userData.name,
+                birth: userData.birth,
+                blood_type: userData.bloodType,
+                is_registered: userData.isRegistered
             })
             .eq('device_id', deviceId);
         
@@ -395,10 +421,257 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
     document.getElementById('currentTickets').textContent = totalTickets;
 }
 
-// 招待画面
+// ========================================
+// 招待機能
+// ========================================
+
+// 週を特定するキー（例: "2025-W01"）
+function getWeekKey() {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+    const weekNum = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+    return `${now.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+}
+
+// 紹介コード生成
+function generateReferralCode() {
+    if (!userData.referralCode) {
+        userData.referralCode = 'REF' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        saveUserData();
+    }
+    return userData.referralCode;
+}
+
+// 招待画面表示
 function showReferralScreen() {
-    alert('招待画面は準備中です');
-    // TODO: 招待画面実装
+    // 紹介コードがなければ生成
+    if (!userData.referralCode) {
+        userData.referralCode = generateReferralCode();
+        saveUserData();
+    }
+    
+    const code = userData.referralCode;
+    const currentWeek = getWeekKey();
+    
+    // 今週の紹介数を取得
+    const referralData = JSON.parse(localStorage.getItem('voifor_referral_data') || '{}');
+    let weeklyCount = 0;
+    
+    if (referralData[code] && referralData[code].week === currentWeek) {
+        weeklyCount = referralData[code].count || 0;
+    }
+    
+    const remaining = Math.max(0, 3 - weeklyCount);
+    
+    const modal = document.createElement('div');
+    modal.id = 'referralModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        padding: 20px;
+        overflow-y: auto;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.98), rgba(30, 30, 50, 0.98)); padding: 30px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 15px 50px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.2);">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.6em; color: white; text-align: center;">👥 友達を招待しよう！</h2>
+            
+            <div style="background: rgba(255,215,0,0.2); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid rgba(255,215,0,0.4);">
+                <div style="color: white; font-size: 0.95em; margin-bottom: 10px; text-align: center;">あなたの紹介コード</div>
+                <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; text-align: center; font-size: 1.8em; font-weight: bold; color: #FFD700; letter-spacing: 3px; font-family: monospace;">${code}</div>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.2); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <div style="color: white; font-size: 0.9em; line-height: 1.7;">
+                    ✨ <strong>紹介特典</strong><br>
+                    • SNSでシェア → <strong style="color: #4ade80;">⭐+1</strong><br>
+                    • 友達がコード使用 → <strong style="color: #4ade80;">⭐+1</strong><br>
+                    • 友達も → <strong style="color: #FFD700;">🎫+1</strong><br>
+                    <br>
+                    📊 <strong>今週の実績</strong>: <strong style="color: #FFD700;">${weeklyCount}人</strong> / 週3人まで<br>
+                    <strong style="color: #4ade80;">残り${remaining}人</strong>招待可能
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button onclick="shareToLine('${code}')" style="flex: 1; background: #06C755; border: none; color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
+                    📱 LINE
+                </button>
+                <button onclick="shareToTwitter('${code}')" style="flex: 1; background: #1DA1F2; border: none; color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
+                    🐦 Twitter
+                </button>
+            </div>
+            
+            <button onclick="copyReferralCode('${code}')" style="width: 100%; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer; margin-bottom: 15px;">
+                📋 コードをコピー
+            </button>
+            
+            <button onclick="closeReferralModal()" style="width: 100%; background: transparent; border: none; color: rgba(255,255,255,0.5); padding: 12px; font-size: 0.95em; cursor: pointer;">
+                閉じる
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeReferralModal();
+        }
+    });
+}
+
+// モーダルを閉じる
+function closeReferralModal() {
+    const modal = document.getElementById('referralModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// コードをコピー
+function copyReferralCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        alert(`✅ 紹介コード「${code}」をコピーしました！\n\n友達に送ってあげてください！`);
+    }).catch(() => {
+        alert('コピーに失敗しました');
+    });
+}
+
+// LINEでシェア
+async function shareToLine(code) {
+    const text = `🔮 VOIFOR（声占い）に招待します！\n\n声で今日の運勢を占える楽しいアプリです✨\n\n紹介コード: ${code}\n\n登録時に入力すると、お互いにボーナスチケットがもらえます！\n\nhttps://voifor.vercel.app`;
+    const url = `https://line.me/R/share?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+    
+    // SNSシェアボーナス
+    await giveShareBonus();
+}
+
+// Twitterでシェア
+async function shareToTwitter(code) {
+    const text = `🔮 VOIFOR（声占い）\n\n声で占える超当たる占いアプリ！\n\n紹介コード: ${code}\n\n#VOIFOR #声占い`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://voifor.vercel.app')}`;
+    window.open(url, '_blank');
+    
+    // SNSシェアボーナス
+    await giveShareBonus();
+}
+
+// SNSシェアボーナス付与
+async function giveShareBonus() {
+    const currentWeek = getWeekKey();
+    const shareData = JSON.parse(localStorage.getItem('voifor_share_data') || '{}');
+    
+    // 今週既にシェアボーナスをもらったか確認
+    if (shareData.week === currentWeek && shareData.shared) {
+        alert('📱 シェアありがとう！\n\n（今週のシェアボーナスは受け取り済みです）');
+        return;
+    }
+    
+    // ボーナス付与
+    userData.earnedTickets++;
+    await saveUserData();
+    updateUI();
+    
+    // 今週シェア済みとして記録
+    shareData.week = currentWeek;
+    shareData.shared = true;
+    localStorage.setItem('voifor_share_data', JSON.stringify(shareData));
+    
+    alert(`🎉 シェアありがとう！\n⭐+1チケットを獲得しました！\n\n現在の保有:\n🎫 ${userData.freeTickets}枚\n⭐ ${userData.earnedTickets}枚`);
+}
+
+// 紹介コード処理（新規ユーザーがコード入力時）
+async function processReferralCode(code) {
+    if (!code) return;
+    
+    code = code.trim().toUpperCase();
+    
+    // 自分の紹介コードは使えない
+    if (userData.referralCode && code === userData.referralCode) {
+        alert('⚠️ 自分の紹介コードは使用できません');
+        return;
+    }
+    
+    // 既に紹介済みか確認
+    if (userData.referredBy) {
+        alert('⚠️ 既に紹介コードを使用済みです');
+        return;
+    }
+    
+    // 紹介者の週間制限チェック
+    const currentWeek = getWeekKey();
+    const referralData = JSON.parse(localStorage.getItem('voifor_referral_data') || '{}');
+    
+    if (referralData[code] && referralData[code].week === currentWeek && referralData[code].count >= 3) {
+        alert('⚠️ この紹介コードは今週の上限に達しています');
+        return;
+    }
+    
+    // 紹介コードを保存
+    userData.referredBy = code;
+    
+    // 被紹介者に🎫+1
+    if (userData.freeTickets < 5) {
+        userData.freeTickets++;
+    }
+    
+    // 紹介者のカウントを増やす
+    if (!referralData[code]) {
+        referralData[code] = { week: currentWeek, count: 0 };
+    }
+    if (referralData[code].week !== currentWeek) {
+        referralData[code] = { week: currentWeek, count: 0 };
+    }
+    referralData[code].count++;
+    localStorage.setItem('voifor_referral_data', JSON.stringify(referralData));
+    
+    await saveUserData();
+    updateUI();
+    
+    alert(`🎉 紹介コード適用！\n🎫 無料チケット+1を獲得しました！\n\n初回占いを完了すると、紹介者にもボーナスが届きます！`);
+}
+
+// 初回占い完了時に紹介者にボーナス付与
+async function awardReferrerBonus() {
+    if (!userData.referredBy) return;
+    if (userData.hasUsedOnce) return;
+    
+    // 紹介者をSupabaseで検索
+    const { data: referrer, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('referral_code', userData.referredBy)
+        .single();
+    
+    if (error || !referrer) {
+        console.log('紹介者が見つかりません');
+        return;
+    }
+    
+    // 紹介者に⭐+1
+    const { error: updateError } = await supabase
+        .from('users')
+        .update({ earned_tickets: referrer.earned_tickets + 1 })
+        .eq('id', referrer.id);
+    
+    if (!updateError) {
+        console.log(`✅ 紹介者にボーナス付与完了`);
+    }
+    
+    // 自分を初回済みに
+    userData.hasUsedOnce = true;
+    await saveUserData();
 }
 
 // 相性占い画面
@@ -620,8 +893,11 @@ async function analyzeVoice(audioBlob) {
 const data = await response.json();
         console.log('✅ 占い結果取得');
         
-        // 占い回数更新
+// 占い回数更新
         userData.totalReadings++;
+        
+        // 初回占い完了で紹介者にボーナス
+        await awardReferrerBonus();
         
         // 今日の日付をチェック済みに
         const today = new Date().toISOString().split('T')[0];
@@ -890,10 +1166,113 @@ async function purchasePremium() {
     }
 }
 
-// 動画広告でチケット獲得（仮実装）
+// ========================================
+// 動画広告システム
+// ========================================
+
+const MAX_DAILY_ADS = 3;
+
+// 動画視聴可能かチェック
+function canWatchAd() {
+    const today = new Date().toDateString();
+    const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
+    const todayCount = adData[today] || 0;
+    return todayCount < MAX_DAILY_ADS;
+}
+
+// 視聴回数を増やす
+function incrementAdCount() {
+    const today = new Date().toDateString();
+    const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
+    adData[today] = (adData[today] || 0) + 1;
+    localStorage.setItem('voifor_ad_data', JSON.stringify(adData));
+}
+
+// 動画広告でチケット獲得
 function watchAdForTicket() {
-    alert('動画広告機能は準備中です\n（Google AdMob連携後に有効になります）');
-    // TODO: AdMob実装後に有効化
+    if (!canWatchAd()) {
+        alert('本日の動画視聴回数の上限に達しました（最大3回/日）');
+        return;
+    }
+    
+    const today = new Date().toDateString();
+    const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
+    const remaining = MAX_DAILY_ADS - (adData[today] || 0);
+    
+    if (!confirm(`🎬 30秒の動画を見ると\nチケット+1枚もらえます！\n\n残り視聴可能回数: ${remaining}回\n\n動画を見ますか？`)) {
+        return;
+    }
+    
+    showVideoAd();
+}
+
+// 動画広告モーダル表示
+function showVideoAd() {
+    const adModal = document.createElement('div');
+    adModal.id = 'videoAdModal';
+    adModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    adModal.innerHTML = `
+        <div style="text-align: center; color: white;">
+            <h2 style="font-size: 2em; margin-bottom: 20px;">📺 広告を再生中...</h2>
+            <div style="font-size: 4em; margin: 40px 0;" id="adCountdown">30</div>
+            <p style="font-size: 1.2em; opacity: 0.7;">広告終了後にチケットを獲得できます</p>
+        </div>
+    `;
+    
+    document.body.appendChild(adModal);
+    
+    // カウントダウン
+    let count = 30;
+    const countdownEl = document.getElementById('adCountdown');
+    
+    const interval = setInterval(() => {
+        count--;
+        countdownEl.textContent = count;
+        
+        if (count <= 0) {
+            clearInterval(interval);
+            completeAdWatch();
+        }
+    }, 1000);
+}
+
+// 広告視聴完了
+async function completeAdWatch() {
+    document.getElementById('videoAdModal')?.remove();
+    
+    // 🎫無料チケット付与（上限5枚）
+    let success = false;
+    if (userData.freeTickets < 5) {
+        userData.freeTickets++;
+        success = true;
+        await saveUserData();
+        updateUI();
+    }
+    
+    incrementAdCount();
+    
+    const today = new Date().toDateString();
+    const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
+    const remaining = MAX_DAILY_ADS - (adData[today] || 0);
+    
+    if (success) {
+        alert(`🎉 🎫無料チケット+1を獲得しました！\n\n現在の保有:\n🎫 無料: ${userData.freeTickets}枚\n⭐ 獲得: ${userData.earnedTickets}枚\n\n本日の残り視聴可能回数: ${remaining}回`);
+    } else {
+        alert(`⚠️ 🎫無料チケットは上限(5枚)に達しています\n\n現在の保有:\n🎫 無料: ${userData.freeTickets}枚（上限）\n⭐ 獲得: ${userData.earnedTickets}枚\n\n無料チケットを使ってからまた受け取れます！`);
+    }
 }
 
 // SNSシェア
@@ -2199,4 +2578,44 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
             modal.remove();
         }
     };
+}
+// 初回登録完了処理
+async function completeRegistration() {
+    const name = document.getElementById('userName').value.trim();
+    const birth = document.getElementById('userBirth').value;
+    const bloodType = document.getElementById('userBloodType').value;
+    const referralCode = document.getElementById('referralCodeInput').value.trim().toUpperCase();
+    
+    if (!name || !birth) {
+        alert('お名前と生年月日を入力してください');
+        return;
+    }
+    
+    // ユーザーデータに保存
+    userData.name = name;
+    userData.birth = birth;
+    userData.bloodType = bloodType || '未設定';
+    userData.isRegistered = true;
+    
+    // 紹介コード処理
+    if (referralCode) {
+        await processReferralCode(referralCode);
+    }
+    
+    await saveUserData();
+    
+    // 登録画面を隠してメイン画面へ
+    document.getElementById('registrationScreen').classList.remove('active');
+    document.getElementById('mainScreen').classList.add('active');
+    
+    updateUI();
+}
+
+// 初回判定（loadUserData内で呼ばれる）
+function checkFirstTime() {
+    if (!userData.isRegistered) {
+        // 初回ユーザー
+        document.getElementById('mainScreen').classList.remove('active');
+        document.getElementById('registrationScreen').classList.add('active');
+    }
 }
