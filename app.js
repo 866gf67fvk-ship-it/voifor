@@ -77,13 +77,14 @@ angelFemale: {
 // ユーザーデータ
 let userData = {
     oduu: null,
-    freeTickets: 3,
-    earnedTickets: 0,
-    paidTickets: 0,
+    freeTickets: 3,      // 無料配布チケット（上限5枚）
+    earnedTickets: 0,    // 獲得チケット（無制限）
     streak: 0,
     totalReadings: 0,
     checkedDates: [],
-    selectedCharacter: 'luna'
+    selectedCharacter: 'devilMale',
+    dailyFortuneCount: 0,
+    lastFortuneDate: null
 };
 
 // 初期化
@@ -104,10 +105,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // UI更新
 function updateUI() {
-    // チケット数
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
-    document.getElementById('ticketCount').textContent = totalTickets;
-    
+    // チケット数（🎫無料 + ⭐獲得）
+    const totalTickets = userData.freeTickets + userData.earnedTickets;
+    const ticketDisplay = `${totalTickets}(🎫${userData.freeTickets}+⭐${userData.earnedTickets})`;
+    document.getElementById('ticketCount').textContent = ticketDisplay;    
+ 
     // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
@@ -236,7 +238,6 @@ async function loadUserData() {
             // 既存ユーザー
             userData.freeTickets = data.free_tickets;
             userData.earnedTickets = data.earned_tickets;
-            userData.paidTickets = data.paid_tickets;
             userData.streak = data.streak;
             userData.totalReadings = data.total_readings;
             userData.checkedDates = data.checked_dates ? JSON.parse(data.checked_dates) : [];
@@ -273,7 +274,6 @@ async function saveUserData() {
             .update({
                 free_tickets: userData.freeTickets,
                 earned_tickets: userData.earnedTickets,
-                paid_tickets: userData.paidTickets,
                 streak: userData.streak,
                 total_readings: userData.totalReadings,
                 checked_dates: JSON.stringify(userData.checkedDates),
@@ -391,7 +391,7 @@ function showHistoryScreen() {
 // 購入画面
 function showPurchaseScreen() {
     showScreen('purchaseScreen');
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+const totalTickets = userData.freeTickets + userData.earnedTickets;
     document.getElementById('currentTickets').textContent = totalTickets;
 }
 
@@ -428,7 +428,7 @@ async function startVoiceFortune() {
         await saveUserData();
     }
     
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+ const totalTickets = userData.freeTickets + userData.earnedTickets;
     const isFirstToday = !userData.dailyFortuneCount || userData.dailyFortuneCount === 0;
     
     // パターン①: 1日1回無料がある場合
@@ -450,10 +450,8 @@ async function startVoiceFortune() {
         
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
-        } else if (userData.earnedTickets > 0) {
+} else if (userData.earnedTickets > 0) {
             userData.earnedTickets--;
-        } else {
-            userData.paidTickets--;
         }
         userData.dailyFortuneCount++;
         await saveUserData();
@@ -619,17 +617,8 @@ async function analyzeVoice(audioBlob) {
             throw new Error('サーバーエラー');
         }
         
-        const data = await response.json();
+const data = await response.json();
         console.log('✅ 占い結果取得');
-        
-        // チケット消費
-        if (userData.freeTickets > 0) {
-            userData.freeTickets--;
-        } else if (userData.earnedTickets > 0) {
-            userData.earnedTickets--;
-        } else {
-            userData.paidTickets--;
-        }
         
         // 占い回数更新
         userData.totalReadings++;
@@ -1136,7 +1125,7 @@ function selectSpread(num) {
     tarotState.ticketCost = num === 1 ? 1 : 2;
     
     // チケット確認
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
         alert('チケットが足りません');
         return;
@@ -1212,7 +1201,7 @@ async function revealCards() {
     // 声で質問の場合は既にチケット消費済み
     if (!tarotState.ticketUsed) {
         // チケット確認
-        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+const totalTickets = userData.freeTickets + userData.earnedTickets;
         if (totalTickets < tarotState.ticketCost) {
             alert('チケットが足りません');
             return;
@@ -1226,10 +1215,8 @@ async function revealCards() {
         for (let i = 0; i < tarotState.ticketCost; i++) {
             if (userData.freeTickets > 0) {
                 userData.freeTickets--;
-            } else if (userData.earnedTickets > 0) {
+} else if (userData.earnedTickets > 0) {
                 userData.earnedTickets--;
-            } else {
-                userData.paidTickets--;
             }
         }
         tarotState.ticketUsed = true;
@@ -1357,7 +1344,7 @@ function confirmTarotBack() {
 // 声で質問
 async function startTarotVoiceQuestion() {
     // チケット確認
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
         alert('チケットが足りません');
         return;
@@ -1371,10 +1358,8 @@ async function startTarotVoiceQuestion() {
     for (let i = 0; i < tarotState.ticketCost; i++) {
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
-        } else if (userData.earnedTickets > 0) {
+} else if (userData.earnedTickets > 0) {
             userData.earnedTickets--;
-        } else {
-            userData.paidTickets--;
         }
     }
     tarotState.ticketUsed = true;
@@ -1491,7 +1476,7 @@ let compatVoice2 = null;
 // 相性占い用録音
 async function recordCompatVoice(personNum) {
     // 毎回チケット確認＆消費
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < 1) {
         alert('チケットが足りません');
         return;
@@ -1502,10 +1487,8 @@ async function recordCompatVoice(personNum) {
     // チケット消費
     if (userData.freeTickets > 0) {
         userData.freeTickets--;
-    } else if (userData.earnedTickets > 0) {
+} else if (userData.earnedTickets > 0) {
         userData.earnedTickets--;
-    } else {
-        userData.paidTickets--;
     }
     await saveUserData();
     updateUI();
@@ -1655,7 +1638,7 @@ async function startCompatibilityFortune() {
     if (!compatVoice1 && !compatVoice2) {
         const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
         if (totalTickets < 1) {
-            alert('チケットが足りません');
+  const totalTickets = userData.freeTickets + userData.earnedTickets;          alert('チケットが足りません');
             return;
         }
         
@@ -1663,13 +1646,11 @@ async function startCompatibilityFortune() {
             return;
         }
         
-        // チケット消費
+        // チケット消費（🎫無料 → ⭐獲得 の順）
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
         } else if (userData.earnedTickets > 0) {
             userData.earnedTickets--;
-        } else {
-            userData.paidTickets--;
         }
         compatState.ticketUsed = true;
         await saveUserData();
@@ -1894,7 +1875,7 @@ async function submitDreamFortune() {
     }
     
 // チケットチェック
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < dreamState.ticketCost) {
         alert('チケットが足りません');
         return;
@@ -1906,9 +1887,7 @@ async function submitDreamFortune() {
             userData.freeTickets--;
         } else if (userData.earnedTickets > 0) {
             userData.earnedTickets--;
-        } else {
-            userData.paidTickets--;
-        }
+}
     }
     await saveUserData();
     updateUI();
@@ -2098,7 +2077,7 @@ function backToDreamStep2() {
 
 function showTicketConfirmModal(requiredTickets, fortuneType) {
     return new Promise((resolve) => {
-        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+     const totalTickets = userData.freeTickets + userData.earnedTickets;
         const ticketType = requiredTickets === 0 ? '🎁 無料' : (userData.freeTickets > 0 ? '🎫 無料チケット' : '⭐ 獲得チケット');
         
         const modal = document.createElement('div');
@@ -2169,7 +2148,7 @@ function showTicketConfirmModal(requiredTickets, fortuneType) {
 
 // チケット不足モーダル
 function showTicketShortageModal() {
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+const totalTickets = userData.freeTickets + userData.earnedTickets;
     
     const modal = document.createElement('div');
     modal.id = 'ticketShortageModal';
