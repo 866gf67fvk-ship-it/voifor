@@ -553,8 +553,12 @@ async function shareToLine(code) {
     const url = `https://line.me/R/share?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
     
-    // SNSシェアボーナス
-    await giveShareBonus();
+    // 戻ってきたら確認
+    setTimeout(async () => {
+        if (confirm('📱 LINEでシェアしましたか？\n\nシェアした場合、ボーナスを受け取れます！')) {
+            await giveShareBonus('line');
+        }
+    }, 1000);
 }
 
 // Twitterでシェア
@@ -563,18 +567,30 @@ async function shareToTwitter(code) {
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://voifor.vercel.app')}`;
     window.open(url, '_blank');
     
-    // SNSシェアボーナス
-    await giveShareBonus();
+    // 戻ってきたら確認
+    setTimeout(async () => {
+        if (confirm('🐦 Twitterでポストしましたか？\n\nポストした場合、ボーナスを受け取れます！')) {
+            await giveShareBonus('twitter');
+        }
+    }, 1000);
 }
 
-// SNSシェアボーナス付与
-async function giveShareBonus() {
+// SNSシェアボーナス付与（LINE/Twitter別々）
+async function giveShareBonus(platform) {
     const currentWeek = getWeekKey();
     const shareData = JSON.parse(localStorage.getItem('voifor_share_data') || '{}');
     
-    // 今週既にシェアボーナスをもらったか確認
-    if (shareData.week === currentWeek && shareData.shared) {
-        alert('📱 シェアありがとう！\n\n（今週のシェアボーナスは受け取り済みです）');
+    // 週が変わったらリセット
+    if (shareData.week !== currentWeek) {
+        shareData.week = currentWeek;
+        shareData.line = false;
+        shareData.twitter = false;
+    }
+    
+    // 今週既にこのプラットフォームでボーナスをもらったか確認
+    if (shareData[platform]) {
+        const platformName = platform === 'line' ? 'LINE' : 'Twitter';
+        alert(`📱 ${platformName}シェアありがとう！\n\n（今週の${platformName}ボーナスは受け取り済みです）`);
         return;
     }
     
@@ -583,12 +599,21 @@ async function giveShareBonus() {
     await saveUserData();
     updateUI();
     
-    // 今週シェア済みとして記録
-    shareData.week = currentWeek;
-    shareData.shared = true;
+    // このプラットフォームをシェア済みに
+    shareData[platform] = true;
     localStorage.setItem('voifor_share_data', JSON.stringify(shareData));
     
-    alert(`🎉 シェアありがとう！\n⭐+1チケットを獲得しました！\n\n現在の保有:\n🎫 ${userData.freeTickets}枚\n⭐ ${userData.earnedTickets}枚`);
+    const platformName = platform === 'line' ? 'LINE' : 'Twitter';
+    const otherPlatform = platform === 'line' ? 'Twitter' : 'LINE';
+    const otherDone = shareData[platform === 'line' ? 'twitter' : 'line'];
+    
+    let message = `🎉 ${platformName}シェアありがとう！\n⭐+1チケットを獲得しました！`;
+    if (!otherDone) {
+        message += `\n\n💡 ${otherPlatform}でもシェアすると更に⭐+1！`;
+    }
+    message += `\n\n現在の保有:\n🎫 ${userData.freeTickets}枚\n⭐ ${userData.earnedTickets}枚`;
+    
+    alert(message);
 }
 
 // 紹介コード処理（新規ユーザーがコード入力時）
