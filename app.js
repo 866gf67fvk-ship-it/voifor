@@ -419,12 +419,42 @@ function showTarotScreen() {
 
 // 声占い開始（画面表示）
 function startVoiceFortune() {
-    // チケット確認
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    const today = new Date().toDateString();
     
-    if (totalTickets <= 0) {
-        alert('チケットがありません');
-        return;
+    // 日付が変わったらリセット
+    if (userData.lastFortuneDate !== today) {
+        userData.dailyFortuneCount = 0;
+        userData.lastFortuneDate = today;
+    }
+    
+    // 1日1回目は無料！
+    if (!userData.dailyFortuneCount || userData.dailyFortuneCount === 0) {
+        console.log('🎁 1日1回無料！');
+        // そのまま占い画面へ
+    } else {
+        // 2回目以降はチケット必要
+        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+        
+        if (totalTickets <= 0) {
+            alert('チケットがありません\n\n💡 1日1回目は無料ですが、本日は使用済みです');
+            return;
+        }
+        
+        // チケット消費確認
+        if (!confirm('🎫 1チケット使用します。よろしいですか？')) {
+            return;
+        }
+        
+        // チケット消費
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        } else {
+            userData.paidTickets--;
+        }
+        saveUserData();
+        updateUI();
     }
     
     // 占い画面表示
