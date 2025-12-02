@@ -427,25 +427,37 @@ function startVoiceFortune() {
         userData.lastFortuneDate = today;
     }
     
-    // 1日1回目は無料！
-    if (!userData.dailyFortuneCount || userData.dailyFortuneCount === 0) {
-        console.log('🎁 1日1回無料！');
-        // そのまま占い画面へ
-    } else {
-        // 2回目以降はチケット必要
-        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+// 声占い開始（画面表示）
+async function startVoiceFortune() {
+    const today = new Date().toDateString();
+    
+    // 日付が変わったらリセット
+    if (userData.lastFortuneDate !== today) {
+        userData.dailyFortuneCount = 0;
+        userData.lastFortuneDate = today;
+        await saveUserData();
+    }
+    
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    const isFirstToday = !userData.dailyFortuneCount || userData.dailyFortuneCount === 0;
+    
+    // パターン①: 1日1回無料がある場合
+    if (isFirstToday) {
+        const confirmed = await showTicketConfirmModal(0, '今日の占い');
+        if (!confirmed) return;
         
-        if (totalTickets <= 0) {
-            alert('チケットがありません\n\n💡 1日1回目は無料ですが、本日は使用済みです');
-            return;
-        }
+        userData.dailyFortuneCount = 1;
+        await saveUserData();
         
-        // チケット消費確認
-        if (!confirm('🎫 1チケット使用します。よろしいですか？')) {
-            return;
-        }
+        proceedToFortuneScreen();
+        return;
+    }
+    
+    // パターン②: 無料なし、チケットあり
+    if (totalTickets > 0) {
+        const confirmed = await showTicketConfirmModal(1, '声占い');
+        if (!confirmed) return;
         
-        // チケット消費
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
         } else if (userData.earnedTickets > 0) {
@@ -453,10 +465,20 @@ function startVoiceFortune() {
         } else {
             userData.paidTickets--;
         }
-        saveUserData();
+        userData.dailyFortuneCount++;
+        await saveUserData();
         updateUI();
+        
+        proceedToFortuneScreen();
+        return;
     }
     
+    // パターン③: チケットなし
+    showTicketShortageModal();
+}
+
+// 占い画面へ進む
+function proceedToFortuneScreen() {
     // 占い画面表示
     showScreen('fortuneScreen');
     
@@ -2079,4 +2101,133 @@ function backToDreamStep1() {
 function backToDreamStep2() {
     document.getElementById('dreamStep3').style.display = 'none';
     document.getElementById('dreamStep2').style.display = 'block';
+}
+// ========================================
+// チケット確認モーダル
+// ========================================
+
+function showTicketConfirmModal(requiredTickets, fortuneType) {
+    return new Promise((resolve) => {
+        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+        const ticketType = requiredTickets === 0 ? '🎁 無料' : (userData.freeTickets > 0 ? '🎫 無料チケット' : '⭐ 獲得チケット');
+        
+        const modal = document.createElement('div');
+        modal.id = 'ticketConfirmModal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+        `;
+        
+        const message = requiredTickets === 0 
+            ? `<strong style="color: #4CAF50;">1日1回無料</strong>で<br><strong>${fortuneType}</strong>をしますか？`
+            : `<strong style="color: #FFD700;">${requiredTickets}${ticketType}</strong>を使用して<br><strong>${fortuneType}</strong>をしますか？`;
+        
+        modal.innerHTML = `
+            <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.95), rgba(30, 30, 50, 0.95)); padding: 35px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(102, 126, 234, 0.6); text-align: center; border: 2px solid rgba(255,255,255,0.3);">
+                <div style="font-size: 3em; margin-bottom: 15px;">🔮</div>
+                <h2 style="margin: 0 0 20px 0; font-size: 1.5em; color: white;">${fortuneType}</h2>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                    <div style="color: white; font-size: 1.1em; line-height: 1.6;">
+                        ${message}
+                    </div>
+                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9em; margin-top: 15px;">
+                        残り: <strong style="color: #FFD700;">${totalTickets}チケット</strong>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button id="modalCancel" style="flex: 1; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer;">
+                        キャンセル
+                    </button>
+                    <button id="modalConfirm" style="flex: 1; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);">
+                        占う！
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        document.getElementById('modalCancel').onclick = () => {
+            modal.remove();
+            resolve(false);
+        };
+        
+        document.getElementById('modalConfirm').onclick = () => {
+            modal.remove();
+            resolve(true);
+        };
+        
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.remove();
+                resolve(false);
+            }
+        };
+    });
+}
+
+// チケット不足モーダル
+function showTicketShortageModal() {
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    
+    const modal = document.createElement('div');
+    modal.id = 'ticketShortageModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        padding: 20px;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.98), rgba(30, 30, 50, 0.98)); padding: 35px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(20px); box-shadow: 0 20px 60px rgba(0,0,0,0.7); text-align: center;">
+            <div style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
+            <h2 style="margin: 0 0 20px 0; font-size: 1.5em; color: #ff6b6b;">チケットが足りません</h2>
+            
+            <div style="background: rgba(255,107,107,0.15); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid rgba(255,107,107,0.3);">
+                <p style="color: white; margin: 0;">
+                    1日1回の無料占いは使用済みです<br>
+                    現在のチケット: <strong style="color: #FFD700;">${totalTickets}枚</strong>
+                </p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button onclick="this.closest('#ticketShortageModal').remove(); showPurchaseScreen();" style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 18px; border-radius: 15px; font-size: 1.2em; font-weight: bold; cursor: pointer;">
+                    💰 チケットを購入
+                </button>
+                <button onclick="this.closest('#ticketShortageModal').remove(); watchAdForTicket();" style="width: 100%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25); color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
+                    📺 動画で1チケット獲得
+                </button>
+                <button onclick="this.closest('#ticketShortageModal').remove();" style="width: 100%; background: transparent; border: none; color: rgba(255,255,255,0.5); padding: 12px; font-size: 0.95em; cursor: pointer;">
+                    キャンセル
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    };
 }
