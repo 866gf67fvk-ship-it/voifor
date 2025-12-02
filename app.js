@@ -416,17 +416,7 @@ function showTarotScreen() {
 // ========================================
 // 占い機能
 // ========================================
-
-// 声占い開始（画面表示）
-function startVoiceFortune() {
-    const today = new Date().toDateString();
-    
-    // 日付が変わったらリセット
-    if (userData.lastFortuneDate !== today) {
-        userData.dailyFortuneCount = 0;
-        userData.lastFortuneDate = today;
-    }
-    
+  
 // 声占い開始（画面表示）
 async function startVoiceFortune() {
     const today = new Date().toDateString();
