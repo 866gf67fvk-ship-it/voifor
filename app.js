@@ -645,8 +645,8 @@ function showFortuneResult(fortune) {
         summary: summary
     }));
     
-    // 履歴に保存
-    saveFortuneHistory(today, fortune, summary);
+// 履歴に保存
+    saveFortuneHistory(today, fortune, summary, 'voice');
 }
 
 // もう一度占う
@@ -951,10 +951,12 @@ function renderHistoryList() {
     // 日付の新しい順にソート
     entries.sort((a, b) => new Date(b[0]) - new Date(a[0]));
     
-    // フィルタリング
+// フィルタリング
     const filtered = entries.filter(([date, data]) => {
         if (currentHistoryFilter === 'all') return true;
-        return data.type === currentHistoryFilter;
+        // typeがない古いデータは声占いとして扱う
+        const dataType = data.type || 'voice';
+        return dataType === currentHistoryFilter;
     });
     
     if (filtered.length === 0) {
