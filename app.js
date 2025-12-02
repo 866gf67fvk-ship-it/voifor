@@ -107,9 +107,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 function updateUI() {
     // チケット数（🎫無料 + ⭐獲得）
     const totalTickets = userData.freeTickets + userData.earnedTickets;
-    const ticketDisplay = `${totalTickets}(🎫${userData.freeTickets}+⭐${userData.earnedTickets})`;
+    const ticketDisplay = `（🎫${userData.freeTickets} + ⭐${userData.earnedTickets}）`;
     document.getElementById('ticketCount').textContent = ticketDisplay;    
- 
+    
     // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
