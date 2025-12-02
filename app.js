@@ -2014,10 +2014,10 @@ async function startCompatibilityFortune() {
     }
     
     // チケット確認（録音していない場合のみ）
-    if (!compatVoice1 && !compatVoice2) {
-        const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+if (!compatVoice1 && !compatVoice2) {
+        const totalTickets = userData.freeTickets + userData.earnedTickets;
         if (totalTickets < 1) {
-  const totalTickets = userData.freeTickets + userData.earnedTickets;          alert('チケットが足りません');
+            alert('チケットが足りません');
             return;
         }
         
