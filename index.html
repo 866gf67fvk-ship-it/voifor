@@ -17,9 +17,57 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=125">
+<link rel="stylesheet" href="style.css?v=126">
 </head>
 <body>
+<!-- 初回登録画面 -->
+    <div id="registrationScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>VOIFOR</h1>
+                <p>-声占い-</p>
+            </header>
+            
+            <div class="registration-form">
+                <p class="welcome-text">
+                    ✨ ようこそ！<br>
+                    あなたのことを教えてください
+                </p>
+                
+                <div class="input-group">
+                    <label>お名前</label>
+                    <input type="text" id="userName" placeholder="ニックネームでOK">
+                </div>
+                
+                <div class="input-group">
+                    <label>生年月日</label>
+                    <input type="date" id="userBirth" min="1900-01-01" max="2025-12-31">
+                </div>
+                
+                <div class="input-group">
+                    <label>血液型</label>
+                    <select id="userBloodType">
+                        <option value="">選択してください</option>
+                        <option value="A">A型</option>
+                        <option value="B">B型</option>
+                        <option value="O">O型</option>
+                        <option value="AB">AB型</option>
+                    </select>
+                </div>
+                
+                <!-- 紹介コード入力欄 -->
+                <div class="referral-input-box">
+                    <div class="referral-label">🎁 紹介コードをお持ちですか？</div>
+                    <input type="text" id="referralCodeInput" placeholder="紹介コード（任意）">
+                    <div class="referral-hint">✨ 入力すると、あなたと紹介者にボーナス！</div>
+                </div>
+                
+                <button class="register-btn" onclick="completeRegistration()">
+                    占いを始める ✨
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- メイン画面 -->
     <div id="mainScreen" class="screen active">
@@ -678,7 +726,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=125"></script>
+<script src="app.js?v=126"></script>
 
 </body>
 </html>
