@@ -118,28 +118,57 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // キラキラエフェクト生成
 function createSparkles() {
-    const sparkleCount = 25;
+    const sparkleCount = 40;
+    const colors = [
+        'rgba(255, 255, 255, 1)',
+        'rgba(255, 200, 255, 1)',
+        'rgba(200, 200, 255, 1)',
+        'rgba(255, 220, 180, 1)'
+    ];
     for (let i = 0; i < sparkleCount; i++) {
         const sparkle = document.createElement('div');
         sparkle.className = 'sparkle';
         sparkle.style.left = Math.random() * 100 + '%';
         sparkle.style.top = Math.random() * 100 + '%';
-        sparkle.style.animationDelay = Math.random() * 8 + 's';
-        sparkle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        sparkle.style.animationDelay = Math.random() * 6 + 's';
+        sparkle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+        // ランダムな色
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        sparkle.style.background = `radial-gradient(circle, ${color} 0%, transparent 70%)`;
+        // ランダムなサイズ
+        const size = Math.random() * 6 + 4;
+        sparkle.style.width = size + 'px';
+        sparkle.style.height = size + 'px';
         document.body.appendChild(sparkle);
     }
 }
 
 // UI更新
 function updateUI() {
-// チケット数（🎫無料 + ⭐獲得）
+    // チケット数
     const totalTickets = userData.freeTickets + userData.earnedTickets;
-    const ticketDisplay = `🎫+${userData.freeTickets}、⭐+${userData.earnedTickets}`;
-    document.getElementById('ticketCount').textContent = ticketDisplay;    
-
+    document.getElementById('ticketCount').textContent = totalTickets;
+    
     // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
+    
+    // プロフィール表示
+    document.getElementById('userName').textContent = userData.name || '名前未設定';
+    document.getElementById('userBlood').textContent = userData.bloodType ? `${userData.bloodType}型` : '';
+    
+    if (userData.birth) {
+        const birthDate = new Date(userData.birth);
+        const month = birthDate.getMonth() + 1;
+        const day = birthDate.getDate();
+        document.getElementById('userBirth').textContent = `${month}/${day}`;
+        document.getElementById('userZodiac').textContent = getZodiacSign(userData.birth);
+        document.getElementById('userEto').textContent = getEtoSign(userData.birth);
+    } else {
+        document.getElementById('userBirth').textContent = '';
+        document.getElementById('userZodiac').textContent = '';
+        document.getElementById('userEto').textContent = '';
+    }
     
     // キャラ画像表示
     updateCharacterDisplay();
@@ -147,7 +176,6 @@ function updateUI() {
     // 今日の占い結果を吹き出しに表示
     updateSpeechBubble();
 }
-
 // 吹き出し更新
 function updateSpeechBubble() {
     const saved = localStorage.getItem('voifor_today_fortune');
@@ -1863,23 +1891,48 @@ function getZodiacSign(birthday) {
     return '';
 }
 
-// 星座を表示
+// 干支計算
+function getEtoSign(birthday) {
+    if (!birthday) return '';
+    const year = new Date(birthday).getFullYear();
+    const eto = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+    const etoEmoji = ['🐭', '🐮', '🐯', '🐰', '🐲', '🐍', '🐴', '🐏', '🐵', '🐔', '🐶', '🐗'];
+    const index = (year - 4) % 12;
+    return etoEmoji[index] + eto[index];
+}
+
+// 星座を表示（旧互換）
 function showZodiac(personNum) {
+    showZodiacAndEto(personNum);
+}
+
+// 星座＆干支を表示
+function showZodiacAndEto(personNum) {
     const birthday = document.getElementById(`compat${personNum}Birthday`).value;
-    const display = document.getElementById(`compat${personNum}Zodiac`);
+    const zodiacDisplay = document.getElementById(`compat${personNum}Zodiac`);
+    const etoDisplay = document.getElementById(`compat${personNum}Eto`);
     
     if (birthday) {
+        // 星座
         const zodiac = getZodiacSign(birthday);
         const zodiacEmoji = {
             '牡羊座': '♈', '牡牛座': '♉', '双子座': '♊', '蟹座': '♋',
             '獅子座': '♌', '乙女座': '♍', '天秤座': '♎', '蠍座': '♏',
             '射手座': '♐', '山羊座': '♑', '水瓶座': '♒', '魚座': '♓'
         };
-        display.textContent = `${zodiacEmoji[zodiac] || '⭐'} ${zodiac}`;
+        zodiacDisplay.textContent = `${zodiacEmoji[zodiac] || '⭐'} ${zodiac}`;
+        
+        // 干支
+        if (etoDisplay) {
+            etoDisplay.textContent = getEtoSign(birthday);
+        }
     } else {
-        display.textContent = '';
+        zodiacDisplay.textContent = '';
+        if (etoDisplay) etoDisplay.textContent = '';
     }
 }
+
+
 
 // 相性占い用の録音データ
 let compatVoice1 = null;
@@ -2078,9 +2131,11 @@ if (!compatVoice1 && !compatVoice2) {
     const gender1 = document.getElementById('compat1Gender').value;
     const relation = document.getElementById('compatRelation').value;
     
-    // 星座計算
+ // 星座・干支計算
     const zodiac1 = getZodiacSign(birthday1);
     const zodiac2 = getZodiacSign(birthday2);
+    const eto1 = getEtoSign(birthday1);
+    const eto2 = getEtoSign(birthday2);
     
     const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
     
@@ -2091,8 +2146,8 @@ if (!compatVoice1 && !compatVoice2) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                person1: { name: name1, birthday: birthday1, blood: blood1, gender: gender1, zodiac: zodiac1 },
-                person2: { name: name2, birthday: birthday2, blood: blood2, gender: gender2, zodiac: zodiac2 },
+                person1: { name: name1, birthday: birthday1, blood: blood1, gender: gender1, zodiac: zodiac1, eto: eto1 },
+                person2: { name: name2, birthday: birthday2, blood: blood2, gender: gender2, zodiac: zodiac2, eto: eto2 },
                 relation: relation,
                 characterName: character.defaultName,
                 characterPersonality: character.speech
@@ -2614,9 +2669,9 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
 }
 // 初回登録完了処理
 async function completeRegistration() {
-    const name = document.getElementById('userName').value.trim();
-    const birth = document.getElementById('userBirth').value;
-    const bloodType = document.getElementById('userBloodType').value;
+    const name = document.getElementById('regName').value.trim();
+    const birth = document.getElementById('regBirth').value;
+    const bloodType = document.getElementById('regBloodType').value;
     const referralCode = document.getElementById('referralCodeInput').value.trim().toUpperCase();
     
     if (!name || !birth) {
