@@ -697,18 +697,18 @@ button, .ticket-info, .fortune-card {
 }
 
 .modal-content {
-    background: linear-gradient(135deg, rgba(40, 40, 70, 0.95), rgba(25, 25, 50, 0.95));
+    background: linear-gradient(135deg, #FFE4E1, #FFF0F5);
     border-radius: 25px;
     padding: 25px;
     width: 90%;
     max-width: 400px;
     max-height: 80vh;
     overflow-y: auto;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 3px solid #FFB6C1;
     box-shadow: 
-        0 15px 50px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(102, 126, 234, 0.3),
-        0 0 60px rgba(118, 75, 162, 0.2);
+        0 8px 32px rgba(0,0,0,0.3),
+        0 0 30px rgba(255, 105, 180, 0.5);
+    color: #333;
     animation: modalSlideIn 0.3s ease;
 }
 
@@ -733,16 +733,21 @@ button, .ticket-info, .fortune-card {
 .modal-header h2 {
     font-size: 1.3em;
     margin: 0;
+    color: #333;
 }
 
 .modal-close {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2em;
+    background: rgba(255,107,157,0.3);
+    border: 2px solid #ff6b9d;
+    color: #ff1493;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.5em;
     cursor: pointer;
-    padding: 0;
-    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-calendar-grid {
@@ -750,35 +755,84 @@ button, .ticket-info, .fortune-card {
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
     margin-bottom: 20px;
+    background: linear-gradient(135deg, rgba(255,182,193,0.2), rgba(255,240,245,0.1));
+    border: 2px solid rgba(255,107,157,0.4);
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 0 20px rgba(255,107,157,0.3);
 }
 
 .modal-calendar-grid .weekday {
     text-align: center;
-    font-size: 0.8em;
-    opacity: 0.7;
-    padding: 5px;
+    font-size: 0.85em;
+    font-weight: bold;
+    padding: 8px 5px;
+    color: #333;
+}
+
+.modal-calendar-grid .weekday:first-child {
+    color: #DC143C;
+}
+
+.modal-calendar-grid .weekday:last-child {
+    color: #4169E1;
 }
 
 .modal-calendar-grid .day {
-    text-align: center;
-    padding: 10px 5px;
-    border-radius: 8px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    background: #FFF0F5;
+    border: 2px solid #FFB6C1;
+    font-weight: 600;
+    color: #333;
 }
 
 .modal-calendar-grid .day:hover {
-    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    background: #FFE4E1;
+}
+
+.modal-calendar-grid .day.empty {
+    background: transparent;
+    border: none;
 }
 
 .modal-calendar-grid .day.today {
-    background: rgba(102, 126, 234, 0.5);
-    font-weight: bold;
+    border: 3px solid #ff1493;
+    background: linear-gradient(135deg, #ff6b9d, #ffa8d5);
+    color: white;
+    box-shadow: 0 0 15px rgba(255,107,157,0.6);
 }
 
 .modal-calendar-grid .day.checked {
-    background: rgba(74, 222, 128, 0.5);
+    background: linear-gradient(135deg, #ff6b9d 0%, #ffa8d5 50%, #ff6b9d 100%);
+    border: 3px solid #ff1493;
+    color: white;
+    font-weight: 900;
+    box-shadow: 
+        0 0 15px rgba(255,107,157,0.8),
+        0 0 30px rgba(255,107,157,0.5);
+    animation: checkGlow 1.5s ease-in-out infinite;
 }
+
+@keyframes checkGlow {
+    0%, 100% { 
+        box-shadow: 
+            0 0 15px rgba(255,107,157,0.8),
+            0 0 30px rgba(255,107,157,0.5);
+    }
+    50% { 
+        box-shadow: 
+            0 0 25px rgba(255,107,157,1),
+            0 0 50px rgba(255,107,157,0.8);
+    }
+}
+
 
 .modal-calendar-grid .day.selected {
     border: 2px solid #667eea;
@@ -787,7 +841,48 @@ button, .ticket-info, .fortune-card {
 .modal-calendar-grid .day.empty {
     cursor: default;
 }
+.modal-calendar-grid .day.sunday {
+    color: #DC143C;
+}
 
+.modal-calendar-grid .day.saturday {
+    color: #4169E1;
+}
+
+.modal-calendar-grid .day.sunday.today,
+.modal-calendar-grid .day.saturday.today {
+    color: white;
+}
+
+/* カレンダーナビゲーション */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.nav-btn {
+    background: linear-gradient(135deg, #ff6b9d, #ff8ec4);
+    border: 2px solid #ff1493;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    background: linear-gradient(135deg, rgba(255,107,157,0.5), rgba(255,107,157,0.3));
+    box-shadow: 0 0 15px rgba(255,107,157,0.6);
+    transform: scale(1.1);
+}
 .modal-history {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
