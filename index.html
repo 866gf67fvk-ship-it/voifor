@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=137">
+<link rel="stylesheet" href="style.css?v=138">
 </head>
 <body>
 <!-- 初回登録画面 -->
@@ -248,31 +248,27 @@
                 <h1>⚙️ 設定</h1>
             </header>
             
-            <div class="settings-menu">
-                <button class="settings-btn" onclick="showCharacterSelect()">
-                    <span class="settings-icon">🎭</span>
-                    <span class="settings-text">キャラクター変更</span>
-                    <span class="settings-arrow">→</span>
-                </button>
-                
-                <button class="settings-btn" onclick="showEditScreen()">
-                    <span class="settings-icon">✏️</span>
-                    <span class="settings-text">プロフィール編集</span>
-                    <span class="settings-arrow">→</span>
-                </button>
-                
-                <button class="settings-btn" onclick="showPurchaseScreen()">
-                    <span class="settings-icon">🎫</span>
-                    <span class="settings-text">チケット購入</span>
-                    <span class="settings-arrow">→</span>
-                </button>
-                
-                <button class="settings-btn danger" onclick="confirmReset()">
-                    <span class="settings-icon">🗑️</span>
-                    <span class="settings-text">データリセット</span>
-                    <span class="settings-arrow">→</span>
-                </button>
-            </div>
+<div class="settings-menu">
+    <button class="settings-btn" onclick="showCharacterSelect()" data-icon="🍀">
+        <span class="settings-text">キャラクター変更</span>
+        <span class="settings-arrow">→</span>
+    </button>
+    
+    <button class="settings-btn" onclick="showEditScreen()" data-icon="📖">
+        <span class="settings-text">プロフィール編集</span>
+        <span class="settings-arrow">→</span>
+    </button>
+    
+    <button class="settings-btn" onclick="showPurchaseScreen()" data-icon="🎫">
+        <span class="settings-text">チケット購入</span>
+        <span class="settings-arrow">→</span>
+    </button>
+    
+    <button class="settings-btn danger" onclick="confirmReset()" data-icon="🗑️">
+        <span class="settings-text">データリセット</span>
+        <span class="settings-arrow">→</span>
+    </button>
+</div>
             
             <div class="app-info">
                 <p>VOIFOR -声占い- v1.0</p>
@@ -742,7 +738,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=137"></script>
+<script src="app.js?v=138"></script>
 
 </body>
 </html>
