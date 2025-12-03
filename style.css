@@ -1059,17 +1059,35 @@ button, .ticket-info, .fortune-card {
 }
 
 .settings-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
-    width: 100%;
-    padding: 18px 15px;
-    background: rgba(255,255,255,0.1);
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 12px;
-    color: white;
-    font-size: 1em;
     cursor: pointer;
     transition: all 0.3s ease;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-btn::before {
+    content: attr(data-icon);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-10deg);
+    font-size: 3.5em;
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.settings-btn span {
+    position: relative;
+    z-index: 1;
 }
 
 .settings-btn:hover {
