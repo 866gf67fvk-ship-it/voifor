@@ -696,6 +696,22 @@ button, .ticket-info, .fortune-card {
     to { opacity: 1; }
 }
 
+.modal-content {
+    background: rgba(20, 20, 40, 0.9);
+    border-radius: 20px;
+    padding: 15px;
+    width: 90%;
+    max-width: 340px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 3px solid #FFB6C1;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.3),
+        0 0 30px rgba(255, 105, 180, 0.5);
+    color: white;
+    animation: modalSlideIn 0.3s ease;
+}
+
 .modal-header h2 {
     font-size: 1em;
     margin: 0;
@@ -725,13 +741,13 @@ button, .ticket-info, .fortune-card {
 .modal-header h2 {
     font-size: 1em;
     margin: 0;
-    color: #333;
+    color: white;
 }
 
 .modal-close {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: 5px;
+    right: 5px;
     background: #ff6b9d;
     border: 2px solid #ff1493;
     color: white;
@@ -762,7 +778,7 @@ button, .ticket-info, .fortune-card {
     font-size: 0.75em;
     font-weight: bold;
     padding: 5px 2px;
-    color: #333;
+    color: white;
 }
 
 .modal-calendar-grid .weekday:first-child {
@@ -781,11 +797,11 @@ button, .ticket-info, .fortune-card {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: #FFF0F5;
-    border: 1px solid #FFB6C1;
+    background: rgba(255, 240, 245, 0.15);
+    border: 1px solid rgba(255, 182, 193, 0.5);
     font-weight: 600;
     font-size: 0.85em;
-    color: #333;
+    color: white;
 }
 .modal-calendar-grid .day:hover {
     transform: scale(1.05);
@@ -890,7 +906,7 @@ button, .ticket-info, .fortune-card {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     padding: 15px;
-    min-height: 100px;
+    min-height: 120px;
 }
 
 .history-placeholder {
