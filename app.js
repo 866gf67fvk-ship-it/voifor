@@ -398,17 +398,20 @@ function renderCalendar() {
         html += '<span class="day empty"></span>';
     }
     
-    // 日付
+// 日付
     for (let d = 1; d <= lastDate; d++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const isToday = d === today;
+        const isToday = (d === now.getDate() && month === now.getMonth() && year === now.getFullYear());
         const isChecked = userData.checkedDates.includes(dateStr);
-        
+        const dayOfWeek = new Date(year, month, d).getDay();
+               
         let classes = 'day';
         if (isToday) classes += ' today';
         if (isChecked) classes += ' checked';
+        if (dayOfWeek === 0) classes += ' sunday';
+        if (dayOfWeek === 6) classes += ' saturday';
         
-        html += `<span class="${classes}">${d}</span>`;
+        html += `<span class="${classes}" onclick="showDayHistory('${dateStr}')">${d}</span>`;
     }
     
     html += '</div>';
