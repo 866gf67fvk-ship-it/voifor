@@ -727,6 +727,7 @@ button, .ticket-info, .fortune-card {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 15px;
     margin-bottom: 15px;
     position: relative;
 }
@@ -739,11 +740,11 @@ button, .ticket-info, .fortune-card {
 
 .modal-close {
     position: absolute;
-    top: 0;
-    right: 0;
-    background: rgba(255,107,157,0.3);
-    border: 2px solid #ff6b9d;
-    color: #ff1493;
+    top: -5px;
+    right: -5px;
+    background: #ff6b9d;
+    border: 2px solid #ff1493;
+    color: white;
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -846,11 +847,11 @@ button, .ticket-info, .fortune-card {
     cursor: default;
 }
 .modal-calendar-grid .day.sunday {
-    color: #DC143C;
+    color: #DC143C !important;
 }
 
 .modal-calendar-grid .day.saturday {
-    color: #4169E1;
+    color: #4169E1 !important;
 }
 
 .modal-calendar-grid .day.sunday.today,
