@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=132">
+<link rel="stylesheet" href="style.css?v=133">
 </head>
 <body>
 <!-- 初回登録画面 -->
@@ -226,10 +226,14 @@
     <!-- カレンダーモーダル -->
     <div id="calendarModal" class="modal" onclick="closeCalendarModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h2 id="modalMonthTitle">2025年11月</h2>
-                <button class="modal-close" onclick="closeCalendarModal()">&times;</button>
-            </div>
+<div class="modal-header">
+    <div class="calendar-nav">
+        <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+        <h2 id="modalMonthTitle">2025年11月</h2>
+        <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+    </div>
+    <button class="modal-close" onclick="closeCalendarModal()">&times;</button>
+</div>
             <div id="modalCalendarGrid" class="modal-calendar-grid"></div>
             <div id="modalHistoryArea" class="modal-history">
                 <p class="history-placeholder">日付をタップして履歴を見る</p>
@@ -740,7 +744,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=132"></script>
+<script src="app.js?v=133"></script>
 
 </body>
 </html>
