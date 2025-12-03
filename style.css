@@ -1079,7 +1079,7 @@ button, .ticket-info, .fortune-card {
     left: 5px;
     top: 50%;
     transform: translateY(-50%) rotate(-10deg);
-    font-size: 4.5em;
+    font-size: 6em;
     opacity: 0.35;
     z-index: 0;
     pointer-events: none;
