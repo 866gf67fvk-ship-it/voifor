@@ -725,9 +725,10 @@ button, .ticket-info, .fortune-card {
 
 .modal-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 15px;
+    position: relative;
 }
 
 .modal-header h2 {
@@ -737,13 +738,16 @@ button, .ticket-info, .fortune-card {
 }
 
 .modal-close {
+    position: absolute;
+    top: 0;
+    right: 0;
     background: rgba(255,107,157,0.3);
     border: 2px solid #ff6b9d;
     color: #ff1493;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    font-size: 1.5em;
+    font-size: 1.3em;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -859,18 +863,26 @@ button, .ticket-info, .fortune-card {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    flex: 1;
+    gap: 10px;
+}
+
+.calendar-nav h2 {
+    font-size: 1.1em;
+    margin: 0;
+    color: #333;
+    white-space: nowrap;
+    min-width: 100px;
+    text-align: center;
 }
 
 .nav-btn {
     background: linear-gradient(135deg, #ff6b9d, #ff8ec4);
     border: 2px solid #ff1493;
     color: white;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    font-size: 1em;
+    font-size: 0.9em;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
