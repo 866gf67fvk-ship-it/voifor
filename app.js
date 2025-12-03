@@ -446,13 +446,29 @@ function renderCharacterGrid() {
 }
 
 // キャラ選択
-async function selectCharacter(characterId) {
+let pendingCharacterId = null;
+
+function selectCharacter(characterId) {
     const character = characterTemplates[characterId];
+    pendingCharacterId = characterId;
     
-    if (confirm(`${character.emoji} ${character.defaultName}を選びますか？`)) {
-        userData.selectedCharacter = characterId;
+    document.getElementById('characterConfirmText').textContent = 
+        `${character.emoji} ${character.defaultName}を選びますか？`;
+    document.getElementById('characterConfirmModal').classList.add('active');
+}
+
+function closeCharacterConfirm(event) {
+    if (event && event.target !== event.currentTarget) return;
+    document.getElementById('characterConfirmModal').classList.remove('active');
+    pendingCharacterId = null;
+}
+
+async function confirmCharacterSelect() {
+    if (pendingCharacterId) {
+        userData.selectedCharacter = pendingCharacterId;
         await saveUserData();
         updateUI();
+        closeCharacterConfirm();
         showMainScreen();
     }
 }
