@@ -107,11 +107,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // UI更新
     updateUI();
     
-    // 初回判定
+// 初回判定
     checkFirstTime();
+    
+    // キラキラエフェクト生成
+    createSparkles();
     
     console.log('✅ VOIFOR 準備完了！');
 });
+
+// キラキラエフェクト生成
+function createSparkles() {
+    const sparkleCount = 25;
+    for (let i = 0; i < sparkleCount; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = Math.random() * 100 + '%';
+        sparkle.style.top = Math.random() * 100 + '%';
+        sparkle.style.animationDelay = Math.random() * 8 + 's';
+        sparkle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        document.body.appendChild(sparkle);
+    }
+}
 
 // UI更新
 function updateUI() {
@@ -246,9 +263,8 @@ async function loadUserData() {
             await createNewUser(deviceId);
 } else if (data) {
             // 既存ユーザー
-            userData.freeTickets = data.free_tickets;
+userData.freeTickets = data.free_tickets;
             userData.earnedTickets = data.earned_tickets;
-            userData.paidTickets = data.paid_tickets;
             userData.streak = data.streak;
             userData.totalReadings = data.total_readings;
             userData.checkedDates = data.checked_dates ? JSON.parse(data.checked_dates) : [];
@@ -289,10 +305,9 @@ async function saveUserData() {
     try {
 const { error } = await supabase
             .from('users')
-            .update({
+.update({
                 free_tickets: userData.freeTickets,
                 earned_tickets: userData.earnedTickets,
-                paid_tickets: userData.paidTickets,
                 streak: userData.streak,
                 total_readings: userData.totalReadings,
                 checked_dates: JSON.stringify(userData.checkedDates),
@@ -634,12 +649,15 @@ async function processReferralCode(code) {
         return;
     }
     
-    // 紹介者の週間制限チェック
-    const currentWeek = getWeekKey();
-    const referralData = JSON.parse(localStorage.getItem('voifor_referral_data') || '{}');
+    // 紹介者をSupabaseで検索
+    const { data: referrer, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('referral_code', code)
+        .single();
     
-    if (referralData[code] && referralData[code].week === currentWeek && referralData[code].count >= 3) {
-        alert('⚠️ この紹介コードは今週の上限に達しています');
+    if (error || !referrer) {
+        alert('⚠️ 紹介コードが見つかりません');
         return;
     }
     
@@ -650,16 +668,6 @@ async function processReferralCode(code) {
     if (userData.freeTickets < 5) {
         userData.freeTickets++;
     }
-    
-    // 紹介者のカウントを増やす
-    if (!referralData[code]) {
-        referralData[code] = { week: currentWeek, count: 0 };
-    }
-    if (referralData[code].week !== currentWeek) {
-        referralData[code] = { week: currentWeek, count: 0 };
-    }
-    referralData[code].count++;
-    localStorage.setItem('voifor_referral_data', JSON.stringify(referralData));
     
     await saveUserData();
     updateUI();
