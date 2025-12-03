@@ -77,7 +77,6 @@ angelFemale: {
 // カレンダー月移動用
 let currentCalendarMonth = new Date().getMonth();
 let currentCalendarYear = new Date().getFullYear();
-
 // ユーザーデータ
 let userData = {
     oduu: null,
@@ -96,7 +95,8 @@ let userData = {
     name: '',                // ユーザー名
     birth: '',               // 生年月日
     bloodType: '',           // 血液型
-    isRegistered: false      // 登録済みか
+    isRegistered: false,     // 登録済みか
+    characterName: ''        // キャラクター名
 };
 
 // 初期化
@@ -207,6 +207,12 @@ function updateCharacterDisplay() {
     const charImage = document.getElementById('characterImage');
     if (charImage) {
         charImage.style.backgroundImage = `url('${character.image}')`;
+    }
+    
+    // キャラ名表示
+    const charNameDisplay = document.getElementById('characterNameDisplay');
+    if (charNameDisplay) {
+        charNameDisplay.textContent = userData.characterName || character.defaultName;
     }
     
     // 吹き出し
@@ -438,7 +444,7 @@ function renderCharacterGrid() {
         html += `
             <div class="character-select-card ${isSelected ? 'selected' : ''}" onclick="selectCharacter('${id}')">
                 <img src="${char.image}" alt="${char.defaultName}">
-                <div class="name">${char.emoji} ${char.defaultName}</div>
+            <div class="name">${char.defaultName}</div>
             </div>
         `;
     }
@@ -453,7 +459,9 @@ function selectCharacter(characterId) {
     pendingCharacterId = characterId;
     
     document.getElementById('characterConfirmText').textContent = 
-        `${character.emoji} ${character.defaultName}を選びますか？`;
+        `${character.defaultName}を選びますか？`;
+    document.getElementById('characterNameInput').value = userData.characterName || character.defaultName;
+    document.getElementById('characterNameInput').placeholder = character.defaultName;
     document.getElementById('characterConfirmModal').classList.add('active');
 }
 
@@ -465,7 +473,11 @@ function closeCharacterConfirm(event) {
 
 async function confirmCharacterSelect() {
     if (pendingCharacterId) {
+        const character = characterTemplates[pendingCharacterId];
+        const inputName = document.getElementById('characterNameInput').value.trim();
+        
         userData.selectedCharacter = pendingCharacterId;
+        userData.characterName = inputName || character.defaultName;
         await saveUserData();
         updateUI();
         closeCharacterConfirm();
