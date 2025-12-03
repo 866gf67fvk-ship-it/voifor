@@ -447,10 +447,14 @@ function renderCharacterGrid() {
 
 // キャラ選択
 async function selectCharacter(characterId) {
-    userData.selectedCharacter = characterId;
-    await saveUserData();
-    updateUI();
-    showMainScreen();
+    const character = characterTemplates[characterId];
+    
+    if (confirm(`${character.emoji} ${character.defaultName}を選びますか？`)) {
+        userData.selectedCharacter = characterId;
+        await saveUserData();
+        updateUI();
+        showMainScreen();
+    }
 }
 
 // 設定画面

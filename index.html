@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=141">
+<link rel="stylesheet" href="style.css?v=142">
 </head>
 <body>
 <!-- 初回登録画面 -->
@@ -239,6 +239,22 @@
         </div>
      </div>
 
+<!-- キャラ確認モーダル -->
+<div id="characterConfirmModal" class="modal" onclick="closeCharacterConfirm(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2>キャラクター変更</h2>
+            <button class="modal-close" onclick="closeCharacterConfirm()">&times;</button>
+        </div>
+        <div class="character-confirm-body">
+            <p id="characterConfirmText">このキャラを選びますか？</p>
+        </div>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" onclick="closeCharacterConfirm()">キャンセル</button>
+            <button class="modal-btn confirm" onclick="confirmCharacterSelect()">選ぶ</button>
+        </div>
+    </div>
+</div>
 
 <!-- 設定画面 -->
     <div id="settingsScreen" class="screen">
@@ -738,7 +754,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=141"></script>
+<script src="app.js?v=142"></script>
 
 </body>
 </html>
