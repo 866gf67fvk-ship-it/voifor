@@ -73,6 +73,11 @@ angelFemale: {
         speech: '別に...占ってあげるにゃ🐱'
     }
 };
+
+// カレンダー月移動用
+let currentCalendarMonth = new Date().getMonth();
+let currentCalendarYear = new Date().getFullYear();
+
 // ユーザーデータ
 let userData = {
     oduu: null,
@@ -1026,6 +1031,8 @@ function retryFortune() {
 
 // モーダルを開く
 function openCalendarModal() {
+    currentCalendarMonth = new Date().getMonth();
+    currentCalendarYear = new Date().getFullYear();
     document.getElementById('calendarModal').classList.add('active');
     renderModalCalendar();
 }
@@ -1037,22 +1044,32 @@ function closeCalendarModal(event) {
     }
 }
 
+function changeMonth(delta) {
+    currentCalendarMonth += delta;
+    if (currentCalendarMonth > 11) {
+        currentCalendarMonth = 0;
+        currentCalendarYear++;
+    } else if (currentCalendarMonth < 0) {
+        currentCalendarMonth = 11;
+        currentCalendarYear--;
+    }
+    renderModalCalendar();
+}
+
 // モーダル用カレンダー描画
 function renderModalCalendar() {
     const container = document.getElementById('modalCalendarGrid');
     if (!container) return;
     
+    const year = currentCalendarYear;
+    const month = currentCalendarMonth;
     const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const today = now.getDate();
     
     // タイトル更新
     document.getElementById('modalMonthTitle').textContent = `${year}年${month + 1}月`;
     
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
-    
     let html = `
         <span class="weekday">日</span>
         <span class="weekday">月</span>
@@ -1068,12 +1085,12 @@ function renderModalCalendar() {
         html += '<span class="day empty"></span>';
     }
     
-    // 日付
+// 日付
     for (let d = 1; d <= lastDate; d++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const isToday = d === today;
+        const isToday = (d === now.getDate() && month === now.getMonth() && year === now.getFullYear());
         const isChecked = userData.checkedDates.includes(dateStr);
-        
+               
         let classes = 'day';
         if (isToday) classes += ' today';
         if (isChecked) classes += ' checked';
@@ -2704,4 +2721,50 @@ function checkFirstTime() {
         document.getElementById('mainScreen').classList.remove('active');
         document.getElementById('registrationScreen').classList.add('active');
     }
+}
+// カレンダー月移動用
+let currentCalendarMonth = new Date().getMonth();
+let currentCalendarYear = new Date().getFullYear();
+
+function changeMonth(delta) {
+    currentCalendarMonth += delta;
+    if (currentCalendarMonth > 11) {
+        currentCalendarMonth = 0;
+        currentCalendarYear++;
+    } else if (currentCalendarMonth < 0) {
+        currentCalendarMonth = 11;
+        currentCalendarYear--;
+    }
+    renderModalCalendar();
+}
+
+function renderModalCalendar() {
+    const year = currentCalendarYear;
+    const month = currentCalendarMonth;
+    
+    document.getElementById('modalMonthTitle').textContent = `${year}年${month + 1}月`;
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    
+    let html = '<div class="weekday">日</div><div class="weekday">月</div><div class="weekday">火</div><div class="weekday">水</div><div class="weekday">木</div><div class="weekday">金</div><div class="weekday">土</div>';
+    
+    for (let i = 0; i < firstDay; i++) {
+        html += '<div class="day empty"></div>';
+    }
+    
+    for (let d = 1; d <= lastDate; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const isToday = (year === today.getFullYear() && month === today.getMonth() && d === today.getDate());
+        const isChecked = userData.checkedDates && userData.checkedDates.includes(dateStr);
+        
+        let classes = 'day';
+        if (isToday) classes += ' today';
+        if (isChecked) classes += ' checked';
+        
+        html += `<div class="${classes}" onclick="showDayHistory('${dateStr}')">${d}</div>`;
+    }
+    
+    document.getElementById('modalCalendarGrid').innerHTML = html;
 }
