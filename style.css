@@ -136,6 +136,11 @@ body::after {
 
 .app-header h1 {
     font-size: 2.5em;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+}
+
+.app-header h1.main-title {
     font-weight: 900;
     letter-spacing: 8px;
     animation: titleGlow 3s ease-in-out infinite;
@@ -146,6 +151,11 @@ body::after {
         0 0 60px rgba(255, 105, 180, 0.6),
         0 0 80px rgba(255, 105, 180, 0.4),
         0 2px 5px rgba(0,0,0,0.5);
+}
+
+.app-header p {
+    font-size: 1em;
+    opacity: 0.8;
 }
 
 @keyframes titleGlow {
@@ -169,11 +179,6 @@ body::after {
     }
 }
 
-.app-header p {
-    font-size: 1em;
-    opacity: 0.9;
-    text-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
-}
 /* メインエリア（キャラ＆カレンダー） */
 .main-info-row {
     display: grid;
@@ -1928,4 +1933,15 @@ button, .ticket-info, .fortune-card {
     font-weight: 700;
     cursor: pointer;
     margin-top: 20px;
+}
+.modal-calendar-grid .day.today {
+    border: 3px solid #DC143C !important;
+    box-shadow: 0 0 10px rgba(220,20,60,0.5) !important;
+}
+
+.modal-calendar-grid .day.today.checked {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: 3px solid #DC143C !important;
+    color: white;
+    box-shadow: 0 0 10px rgba(220,20,60,0.5), 0 0 15px rgba(74, 222, 128, 0.6) !important;
 }
