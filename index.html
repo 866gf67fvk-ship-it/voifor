@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=143">
+<link rel="stylesheet" href="style.css?v=144">
 </head>
 <body>
 <!-- 初回登録画面 -->
@@ -248,6 +248,10 @@
         </div>
         <div class="character-confirm-body">
             <p id="characterConfirmText">このキャラを選びますか？</p>
+            <div class="character-name-input">
+                <label for="characterNameInput">名前をつける</label>
+                <input type="text" id="characterNameInput" placeholder="例：ルナちゃん" maxlength="10">
+            </div>
         </div>
         <div class="modal-buttons">
             <button class="modal-btn cancel" onclick="closeCharacterConfirm()">キャンセル</button>
@@ -754,7 +758,7 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=143"></script>
+<script src="app.js?v=144"></script>
 
 </body>
 </html>
