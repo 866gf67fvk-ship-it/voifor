@@ -145,11 +145,10 @@ function createSparkles() {
 
 // UI更新
 function updateUI() {
-    // チケット数
-    const totalTickets = userData.freeTickets + userData.earnedTickets;
-    document.getElementById('ticketCount').textContent = totalTickets;
-    
-    // 連続日数・合計
+// チケット数
+document.getElementById('ticketCount').textContent = `🎫+${userData.freeTickets}、⭐+${userData.earnedTickets}`;  
+  
+// 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
     
@@ -1895,10 +1894,9 @@ function getZodiacSign(birthday) {
 function getEtoSign(birthday) {
     if (!birthday) return '';
     const year = new Date(birthday).getFullYear();
-    const eto = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
     const etoEmoji = ['🐭', '🐮', '🐯', '🐰', '🐲', '🐍', '🐴', '🐏', '🐵', '🐔', '🐶', '🐗'];
     const index = (year - 4) % 12;
-    return etoEmoji[index] + eto[index];
+    return etoEmoji[index];
 }
 
 // 星座を表示（旧互換）
