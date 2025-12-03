@@ -1079,7 +1079,7 @@ button, .ticket-info, .fortune-card {
     left: 5px;
     top: 50%;
     transform: translateY(-50%) rotate(-10deg);
-    font-size: 6em;
+    font-size: 8em;
     opacity: 0.35;
     z-index: 0;
     pointer-events: none;
@@ -1110,10 +1110,9 @@ button, .ticket-info, .fortune-card {
 
 .settings-text {
     flex: 1;
-    text-align: left;
+    text-align: center;
     font-size: 1.5em;
     font-weight: bold;
-    margin-left: 60px;
 }
 
 .settings-arrow {
