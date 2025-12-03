@@ -1076,10 +1076,10 @@ button, .ticket-info, .fortune-card {
 .settings-btn::before {
     content: attr(data-icon);
     position: absolute;
-    left: 10px;
+    left: 5px;
     top: 50%;
     transform: translateY(-50%) rotate(-10deg);
-    font-size: 3.5em;
+    font-size: 4.5em;
     opacity: 0.35;
     z-index: 0;
     pointer-events: none;
@@ -1113,6 +1113,7 @@ button, .ticket-info, .fortune-card {
     text-align: left;
     font-size: 1.2em;
     font-weight: bold;
+    margin-left: 50px;
 }
 
 .settings-arrow {
