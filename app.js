@@ -146,28 +146,28 @@ function createSparkles() {
 // UI更新
 function updateUI() {
 // チケット数
-document.getElementById('ticketCount').textContent = `🎫+${userData.freeTickets}、⭐+${userData.earnedTickets}`;  
-  
+document.getElementById('freeTicketCount').textContent = userData.freeTickets;
+document.getElementById('earnedTicketCount').textContent = userData.earnedTickets; 
+
 // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
     
-    // プロフィール表示
-    document.getElementById('userName').textContent = userData.name || '名前未設定';
-    document.getElementById('userBlood').textContent = userData.bloodType ? `${userData.bloodType}型` : '';
-    
-    if (userData.birth) {
-        const birthDate = new Date(userData.birth);
-        const month = birthDate.getMonth() + 1;
-        const day = birthDate.getDate();
-        document.getElementById('userBirth').textContent = `${month}/${day}`;
-        document.getElementById('userZodiac').textContent = getZodiacSign(userData.birth);
-        document.getElementById('userEto').textContent = getEtoSign(userData.birth);
-    } else {
-        document.getElementById('userBirth').textContent = '';
-        document.getElementById('userZodiac').textContent = '';
-        document.getElementById('userEto').textContent = '';
-    }
+// プロフィール表示
+document.getElementById('userBlood').textContent = userData.bloodType ? `${userData.bloodType}型` : '';
+
+if (userData.birth) {
+    const birthDate = new Date(userData.birth);
+    const month = birthDate.getMonth() + 1;
+    const day = birthDate.getDate();
+    document.getElementById('userBirth').textContent = `${month}/${day}`;
+    document.getElementById('userZodiac').textContent = getZodiacSign(userData.birth);
+    document.getElementById('userEto').textContent = getEtoSign(userData.birth);
+} else {
+    document.getElementById('userBirth').textContent = '';
+    document.getElementById('userZodiac').textContent = '';
+    document.getElementById('userEto').textContent = '';
+}
     
     // キャラ画像表示
     updateCharacterDisplay();
