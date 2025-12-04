@@ -2049,26 +2049,21 @@ button, .ticket-info, .fortune-card {
 
 .character-name-display {
     position: absolute;
-    bottom: 10px;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    padding: 8px 25px;
-    font-size: 0.9em;
+    white-space: nowrap;
+    padding: 5px 15px;
+    font-size: 0.75em;
     font-weight: bold;
-    color: #4a3c2a;
-    background: linear-gradient(180deg, 
-        #f5e6a3 0%, 
-        #d4af37 30%, 
-        #c9a227 50%, 
-        #d4af37 70%, 
-        #f5e6a3 100%);
-    border: 2px solid #8b7355;
+    color: #d4af37;
+    background: rgba(20, 20, 40, 0.7);
+    border: 2px solid #d4af37;
+    border-radius: 3px;
     letter-spacing: 2px;
     box-shadow: 
-        0 3px 6px rgba(0,0,0,0.4),
-        inset 0 2px 4px rgba(255,255,255,0.3),
-        inset 0 -2px 4px rgba(0,0,0,0.2);
-    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-    clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%);
+        0 0 8px rgba(212, 175, 55, 0.4),
+        inset 0 0 10px rgba(0,0,0,0.3);
+    text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
 }
