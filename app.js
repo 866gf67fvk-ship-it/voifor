@@ -2758,17 +2758,19 @@ async function completeRegistration() {
     const name = document.getElementById('regName').value.trim();
     const birth = document.getElementById('regBirth').value;
     const bloodType = document.getElementById('regBloodType').value;
+    const gender = document.getElementById('regGender').value;
     const referralCode = document.getElementById('referralCodeInput').value.trim().toUpperCase();
     
-    if (!name || !birth) {
-        alert('お名前と生年月日を入力してください');
+    if (!name) {
+        alert('お名前を入力してください');
         return;
     }
     
-    // ユーザーデータに保存
+// ユーザーデータに保存
     userData.name = name;
-    userData.birth = birth;
-    userData.bloodType = bloodType || '未設定';
+    userData.birth = birth || '';
+    userData.bloodType = bloodType || '';
+    userData.gender = gender || '';
     userData.isRegistered = true;
     
     // 紹介コード処理
