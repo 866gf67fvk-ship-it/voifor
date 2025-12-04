@@ -1336,7 +1336,7 @@ function incrementAdCount() {
 // 動画広告でクローバー獲得
 function watchAdForTicket() {
     if (!canWatchAd()) {
-        alert('本日の動画視聴回数の上限に達しました（最大3回/日）');
+        showAdLimitModal();
         return;
     }
     
@@ -1344,14 +1344,90 @@ function watchAdForTicket() {
     const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
     const remaining = MAX_DAILY_ADS - (adData[today] || 0);
     
-    if (!confirm(`🎬 30秒の動画を見ると\nクローバー+1枚もらえます！\n\n残り視聴可能回数: ${remaining}回\n\n動画を見ますか？`)) {
-        return;
-    }
+    showAdConfirmModal(remaining);
+}
+
+// 上限到達モーダル
+function showAdLimitModal() {
+    const modal = document.createElement('div');
+    modal.id = 'adLimitModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    `;
     
-    showVideoAd();
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+            <div style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
+            <h2 style="font-size: 1.3em; margin-bottom: 15px; color: white;">本日の上限に達しました</h2>
+            <p style="font-size: 1em; opacity: 0.8; color: white; margin-bottom: 25px;">動画視聴は1日3回までです<br>明日また見てね！</p>
+            <button onclick="this.closest('#adLimitModal').remove()" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px 40px; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer;">
+                OK
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+}
+
+// 視聴確認モーダル
+function showAdConfirmModal(remaining) {
+    const modal = document.createElement('div');
+    modal.id = 'adConfirmModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+            <div style="font-size: 3em; margin-bottom: 15px;">📺</div>
+            <h2 style="font-size: 1.3em; margin-bottom: 15px; color: white;">動画を見てクローバーGET！</h2>
+            <p style="font-size: 1em; color: white; margin-bottom: 10px;">30秒の動画を見ると<br><span style="color: #4ade80; font-weight: bold;">🍀 +1クローバー</span>もらえます！</p>
+            <p style="font-size: 0.9em; opacity: 0.7; color: white; margin-bottom: 25px;">残り視聴可能回数: <span style="color: #FFD700; font-weight: bold;">${remaining}回</span></p>
+            <div style="display: flex; gap: 15px;">
+                <button onclick="this.closest('#adConfirmModal').remove()" style="flex: 1; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 25px; font-size: 1em; cursor: pointer;">
+                    やめる
+                </button>
+                <button onclick="this.closest('#adConfirmModal').remove(); showVideoAd();" style="flex: 1; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);">
+                    見る！
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
 }
 
 // 動画広告モーダル表示
+let adInterval = null;
+
 function showVideoAd() {
     const adModal = document.createElement('div');
     adModal.id = 'videoAdModal';
@@ -1361,19 +1437,22 @@ function showVideoAd() {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.95);
+        background: rgba(0,0,0,0.85);
         z-index: 10000;
         display: flex;
-        flex-direction: column;
-        align-items: center;
         justify-content: center;
+        align-items: center;
+        padding: 20px;
     `;
     
     adModal.innerHTML = `
-        <div style="text-align: center; color: white;">
-            <h2 style="font-size: 2em; margin-bottom: 20px;">📺 広告を再生中...</h2>
-            <div style="font-size: 4em; margin: 40px 0;" id="adCountdown">30</div>
-            <p style="font-size: 1.2em; opacity: 0.7;">広告終了後にクローバーを獲得できます</p>
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+            <h2 style="font-size: 1.5em; margin-bottom: 20px; color: white;">📺 広告を再生中...</h2>
+            <div style="font-size: 4em; margin: 30px 0; color: #FFD700; font-weight: bold;" id="adCountdown">30</div>
+            <p style="font-size: 1em; opacity: 0.7; color: white; margin-bottom: 25px;">広告終了後にクローバーを獲得できます</p>
+            <button onclick="cancelAdWatch()" style="background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 12px 30px; border-radius: 25px; font-size: 1em; cursor: pointer;">
+                キャンセル
+            </button>
         </div>
     `;
     
@@ -1383,22 +1462,49 @@ function showVideoAd() {
     let count = 30;
     const countdownEl = document.getElementById('adCountdown');
     
-    const interval = setInterval(() => {
+    adInterval = setInterval(() => {
         count--;
         countdownEl.textContent = count;
         
         if (count <= 0) {
-            clearInterval(interval);
-            completeAdWatch();
+            clearInterval(adInterval);
+            adInterval = null;
+            showAdCompleteScreen();
         }
     }, 1000);
 }
 
-// 広告視聴完了
-async function completeAdWatch() {
+// キャンセル
+function cancelAdWatch() {
+    if (adInterval) {
+        clearInterval(adInterval);
+        adInterval = null;
+    }
+    document.getElementById('videoAdModal')?.remove();
+}
+
+// 視聴完了画面
+function showAdCompleteScreen() {
+    const modal = document.getElementById('videoAdModal');
+    if (!modal) return;
+    
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+            <div style="font-size: 4em; margin-bottom: 20px;">🎉</div>
+            <h2 style="font-size: 1.5em; margin-bottom: 15px; color: white;">視聴完了！</h2>
+            <p style="font-size: 1.1em; color: #4ade80; margin-bottom: 25px;">🍀 +1 クローバーを獲得！</p>
+            <button onclick="claimAdReward()" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px 40px; border-radius: 25px; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);">
+                受け取る
+            </button>
+        </div>
+    `;
+}
+
+// 報酬受け取り
+async function claimAdReward() {
     document.getElementById('videoAdModal')?.remove();
     
-    // 🍀無料クローバー付与（上限5枚）
+    // 🍀クローバー付与（上限5枚）
     let success = false;
     if (userData.freeTickets < 5) {
         userData.freeTickets++;
@@ -1414,7 +1520,7 @@ async function completeAdWatch() {
     const remaining = MAX_DAILY_ADS - (adData[today] || 0);
     
     if (success) {
-        alert(`🎉 🍀無料クローバー+1を獲得しました！\n\n現在の保有:\n🍀 無料: ${userData.freeTickets}枚\n⭐ 獲得: ${userData.earnedTickets}枚\n\n本日の残り視聴可能回数: ${remaining}回`);
+        alert(`🎉 🍀+1を獲得しました！\n\n現在の保有:\n🍀 無料: ${userData.freeTickets}枚\n⭐ 獲得: ${userData.earnedTickets}枚\n\n本日の残り視聴可能回数: ${remaining}回`);
     } else {
         alert(`⚠️ 🍀無料クローバーは上限(5枚)に達しています\n\n現在の保有:\n🍀 無料: ${userData.freeTickets}枚（上限）\n⭐ 獲得: ${userData.earnedTickets}枚\n\n無料クローバーを使ってからまた受け取れます！`);
     }
