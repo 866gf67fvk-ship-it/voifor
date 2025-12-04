@@ -1743,6 +1743,10 @@ function resetTarot() {
         ticketUsed: false
     };
     
+    // テキスト入力をクリア
+    const questionInput = document.getElementById('tarotQuestionInput');
+    if (questionInput) questionInput.value = '';
+    
     document.getElementById('tarotStep1').style.display = 'block';
     document.getElementById('tarotStep2').style.display = 'none';
     document.getElementById('tarotStep3').style.display = 'none';
@@ -1788,14 +1792,61 @@ function selectTarotCategory(category) {
 // Step3の戻る
 function confirmTarotStep3Back() {
     if (tarotState.ticketUsed) {
-        // 声で質問済み → 戻れない
-        alert('声で質問したため、戻れません');
+        // クローバー消費済み → 戻れない
+        alert('クローバーを消費したため、戻れません');
     } else {
         // カテゴリ選択 → Step2へ戻れる
         document.getElementById('tarotStep3').style.display = 'none';
         document.getElementById('tarotStep2').style.display = 'block';
     }
 }
+
+// テキストで質問
+function submitTarotTextQuestion() {
+    const question = document.getElementById('tarotQuestionInput').value.trim();
+    
+    if (!question) {
+        alert('質問を入力してください');
+        return;
+    }
+    
+    // チケット確認
+    const totalTickets = userData.freeTickets + userData.earnedTickets;
+    if (totalTickets < tarotState.ticketCost) {
+        alert('クローバーが足りません');
+        return;
+    }
+    
+    if (!confirm(`🍀 ${tarotState.ticketCost}クローバー使用します。よろしいですか？`)) {
+        return;
+    }
+    
+    // クローバー消費
+    for (let i = 0; i < tarotState.ticketCost; i++) {
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        }
+    }
+    tarotState.ticketUsed = true;
+    saveUserData();
+    updateUI();
+    
+    // 質問をカテゴリとして保存
+    tarotState.category = question;
+    
+    // Step3へ
+    document.getElementById('tarotStep2').style.display = 'none';
+    document.getElementById('tarotStep3').style.display = 'block';
+    
+    document.getElementById('cardCount').textContent = tarotState.spread;
+    document.getElementById('maxCards').textContent = tarotState.spread;
+    document.getElementById('selectedCount').textContent = '0';
+    
+    renderTarotCards();
+}
+
 // タロットカード表示
 function renderTarotCards() {
     const container = document.getElementById('tarotCards');
