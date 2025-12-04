@@ -35,9 +35,9 @@
                 </p>
                 
 <div class="input-group">
-                    <label>お名前</label>
-                    <input type="text" id="regName" placeholder="ニックネームでOK">
-                </div>
+    <label>お名前（10文字まで）</label>
+    <input type="text" id="regName" placeholder="ニックネームでOK" maxlength="10">
+</div>
                 
                 <div class="input-group">
                     <label>生年月日</label>
@@ -247,7 +247,7 @@
             <p id="characterConfirmText">このキャラを選びますか？</p>
             <div class="character-name-input">
                 <label for="characterNameInput">名前をつける</label>
-                <input type="text" id="characterNameInput" placeholder="例：ルナちゃん" maxlength="10">
+            <input type="text" id="characterNameInput" placeholder="例：ぼいふぉちゃん" maxlength="7">
             </div>
         </div>
         <div class="modal-buttons">
@@ -303,11 +303,10 @@
             
             <button class="form-back-btn" onclick="goBack()">← 戻る</button>
             
-<div class="edit-form">
-    <div class="form-group">
-        <label>お名前</label>
-        <input type="text" id="editName" placeholder="ニックネームでOK">
-    </div>
+<div class="form-group">
+    <label>お名前（10文字まで）</label>
+    <input type="text" id="editName" placeholder="ニックネームでOK" maxlength="10">
+</div>
     
     <div class="form-group">
         <label>生年月日</label>

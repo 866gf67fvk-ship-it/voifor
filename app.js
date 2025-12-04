@@ -166,6 +166,12 @@ if (userData.name) {
     profileItems.push(userData.name);
 }
 
+// 性別（絵文字で表示）
+if (userData.gender) {
+    const genderEmoji = { male: '♂️', female: '♀️', other: '🌈' };
+    profileItems.push(genderEmoji[userData.gender] || '');
+}
+
 // 干支
 if (userData.birth) {
     const eto = getEtoSign(userData.birth);
@@ -1451,6 +1457,7 @@ function showEditScreen() {
     document.getElementById('editName').value = userData.name || '';
     document.getElementById('editBirth').value = userData.birth || '';
     document.getElementById('editBloodType').value = userData.bloodType || '';
+    document.getElementById('editGender').value = userData.gender || '';
 }
 
 // プロフィール保存
@@ -1458,6 +1465,7 @@ async function saveProfile() {
     userData.name = document.getElementById('editName').value;
     userData.birth = document.getElementById('editBirth').value;
     userData.bloodType = document.getElementById('editBloodType').value;
+    userData.gender = document.getElementById('editGender').value;
     
     await saveUserData();
     updateUI();
