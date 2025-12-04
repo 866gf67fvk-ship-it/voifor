@@ -2085,5 +2085,5 @@ button, .ticket-info, .fortune-card {
 }
 /* プロフィール編集画面の余白 */
 #editScreen .container {
-    padding-bottom: 80px;
+    padding-bottom: 100px !important;
 }
