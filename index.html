@@ -93,13 +93,9 @@
                     </div>
 <div class="user-stats" onclick="showSettingsScreen()">
     <div class="profile-line">
-        <span id="userEto"></span>
-        <span id="userBlood"></span>
-        <span class="profile-sep">|</span>
-        <span id="userBirth"></span>
-        <span id="userZodiac"></span>
+        <!-- JSで動的に生成 -->
     </div>
-    <div class="profile-line">
+    <div class="profile-line stats-line">
         <span>🔥<span id="streakCount">0</span></span>
         <span class="profile-sep">|</span>
         <span>📊<span id="totalCount">0</span></span>
@@ -307,29 +303,30 @@
             
             <button class="form-back-btn" onclick="goBack()">← 戻る</button>
             
-            <div class="edit-form">
-                <div class="form-group">
-                    <label>ニックネーム</label>
-                    <input type="text" id="editNickname" placeholder="ニックネームを入力">
-                </div>
-                
-                <div class="form-group">
-                    <label>生年月日</label>
-                    <input type="date" id="editBirthday">
-                </div>
-                
-                <div class="form-group">
-                    <label>性別</label>
-                    <select id="editGender">
-                        <option value="">選択してください</option>
-                        <option value="male">男性</option>
-                        <option value="female">女性</option>
-                        <option value="other">その他</option>
-                    </select>
-                </div>
-                
-                <button class="save-btn" onclick="saveProfile()">✅ 保存する</button>
-            </div>
+<div class="edit-form">
+    <div class="form-group">
+        <label>お名前</label>
+        <input type="text" id="editName" placeholder="ニックネームでOK">
+    </div>
+    
+    <div class="form-group">
+        <label>生年月日</label>
+        <input type="date" id="editBirth">
+    </div>
+    
+    <div class="form-group">
+        <label>血液型</label>
+        <select id="editBloodType">
+            <option value="">選択してください</option>
+            <option value="A">A型</option>
+            <option value="B">B型</option>
+            <option value="O">O型</option>
+            <option value="AB">AB型</option>
+        </select>
+    </div>
+    
+    <button class="save-btn" onclick="saveProfile()">✅ 保存する</button>
+</div>
         </div>
     </div>
   
