@@ -596,9 +596,9 @@ modal.style.cssText = `
         overflow-y: auto;
     `;
     
-    modal.innerHTML = `
-        <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.98), rgba(30, 30, 50, 0.98)); padding: 30px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 15px 50px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.2);">
-            <h2 style="margin: 0 0 20px 0; font-size: 1.6em; color: white; text-align: center;">🌸友達を招待しよう</h2>
+modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.98), rgba(30, 30, 50, 0.98)); padding: 30px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1;">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.6em; color: white; text-align: center;">🌸友達を招待🌸</h2>
             
             <div style="background: rgba(255,215,0,0.2); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid rgba(255,215,0,0.4);">
                 <div style="color: white; font-size: 0.95em; margin-bottom: 10px; text-align: center;">あなたの紹介コード</div>
