@@ -1966,11 +1966,46 @@ button, .ticket-info, .fortune-card {
     color: white;
     box-shadow: 0 0 10px rgba(220,20,60,0.5), 0 0 15px rgba(74, 222, 128, 0.6) !important;
 }
+
 .character-confirm-body {
     text-align: center;
-    padding: 25px 20px;
-    font-size: 1.3em;
+    padding: 20px 15px;
+    font-size: 1em;
     color: white;
+}
+
+.character-name-input {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.character-name-input label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.character-name-input input {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(255,182,193,0.5);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-size: 1.1em;
+    text-align: center;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.character-name-input input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.character-name-input input:focus {
+    border-color: #ff6b9d;
+    box-shadow: 0 0 15px rgba(255,105,180,0.4);
 }
 
 .modal-buttons {
@@ -2009,4 +2044,14 @@ button, .ticket-info, .fortune-card {
 .modal-btn.confirm:hover {
     transform: scale(1.05);
     box-shadow: 0 0 25px rgba(255,105,180,0.7);
+}
+
+.character-name-display {
+    text-align: center;
+    padding: 8px 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: white;
+    background: rgba(0,0,0,0.3);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
