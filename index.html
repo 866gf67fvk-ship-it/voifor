@@ -139,7 +139,7 @@
             <!-- 動画＆招待エリア -->
             <div class="action-row">
                 <button class="ad-btn" onclick="watchAdForTicket()">
-                    📺 動画みて+1
+                    🎥 動画みて+1
                 </button>
                 <button class="invite-btn" onclick="showReferralScreen()">
                     🌸 招待
@@ -402,22 +402,35 @@
                 <button class="compat-back-btn" onclick="goBack()">← 戻る</button>
             </div>
             
-            <!-- Step2: 質問入力 -->
-            <div id="tarotStep2" style="display: none;">
-                <h3 class="step-title">質問方法を選んでください</h3>
-                <div class="category-grid">
-                    <button class="category-btn" onclick="selectTarotCategory('恋愛')">💕 恋愛</button>
-                    <button class="category-btn" onclick="selectTarotCategory('仕事')">💼 仕事</button>
-                    <button class="category-btn" onclick="selectTarotCategory('金運')">💰 金運</button>
-                    <button class="category-btn" onclick="selectTarotCategory('人間関係')">👥 人間関係</button>
-                    <button class="category-btn" onclick="selectTarotCategory('健康')">🏥 健康</button>
-                    <button class="category-btn" onclick="selectTarotCategory('全般')">✨ 全般</button>
-                </div>
-<div class="voice-option">
-                    <button class="voice-category-btn" onclick="startTarotVoiceQuestion()">🎤 声で質問する</button>
-                </div>
-                <button class="compat-back-btn" onclick="backToTarotStep1()">← 戻る</button>
-            </div>          
+<!-- Step2: 質問入力 -->
+<div id="tarotStep2" style="display: none;">
+    <h3 class="step-title">質問方法を選んでください</h3>
+    
+    <p style="text-align: center; opacity: 0.8; margin-bottom: 15px;">カテゴリから選ぶ</p>
+    <div class="category-grid">
+        <button class="category-btn" onclick="selectTarotCategory('恋愛')">💕 恋愛</button>
+        <button class="category-btn" onclick="selectTarotCategory('仕事')">💼 仕事</button>
+        <button class="category-btn" onclick="selectTarotCategory('金運')">💰 金運</button>
+        <button class="category-btn" onclick="selectTarotCategory('人間関係')">👥 人間関係</button>
+        <button class="category-btn" onclick="selectTarotCategory('健康')">🏥 健康</button>
+        <button class="category-btn" onclick="selectTarotCategory('全般')">✨ 全般</button>
+    </div>
+    
+    <div style="text-align: center; margin: 20px 0; opacity: 0.5;">── または ──</div>
+    
+    <p style="text-align: center; opacity: 0.8; margin-bottom: 10px;">自分で質問を入力</p>
+    <div class="tarot-text-input">
+        <input type="text" id="tarotQuestionInput" placeholder="例：今の仕事を続けるべき？" maxlength="100">
+        <button class="submit-btn" onclick="submitTarotTextQuestion()" style="margin-top: 10px;">📝 この質問で占う</button>
+    </div>
+    
+    <div style="text-align: center; margin: 20px 0; opacity: 0.5;">── または ──</div>
+    
+    <div class="voice-option">
+        <button class="voice-category-btn" onclick="startTarotVoiceQuestion()">🎤 声で質問する</button>
+    </div>
+    <button class="compat-back-btn" onclick="backToTarotStep1()">← 戻る</button>
+</div>         
             <!-- Step3: カード選択 -->
             <div id="tarotStep3" style="display: none;">
                 <h3 class="step-title">カードを<span id="cardCount">1</span>枚選んでください</h3>
@@ -764,10 +777,10 @@
             <div class="free-ticket-section">
                 <h2>🎁 無料でクローバー獲得</h2>
                 <button class="free-ticket-btn video" onclick="watchAdForTicket()">
-                    📺 動画を見て🍀＋１獲得
+                    🎥 動画を見て🍀＋１獲得
                 </button>
                 <button class="free-ticket-btn referral" onclick="showReferralScreen()">
-                    👥 友達紹介で🍀＋１獲得
+                    🌸 友達紹介で🍀＋１獲得
                 </button>
                 <button class="free-ticket-btn sns" onclick="shareToSNS()">
                     📱 SNS投稿で🍀＋１獲得

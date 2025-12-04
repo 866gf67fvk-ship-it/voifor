@@ -1810,16 +1810,63 @@ function submitTarotTextQuestion() {
         return;
     }
     
-    // チケット確認
+    // クローバー確認
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
         alert('クローバーが足りません');
         return;
     }
     
-    if (!confirm(`🍀 ${tarotState.ticketCost}クローバー使用します。よろしいですか？`)) {
-        return;
-    }
+    // 確認モーダル表示
+    showTarotTextConfirmModal(question);
+}
+
+// タロットテキスト質問確認モーダル
+function showTarotTextConfirmModal(question) {
+    const modal = document.createElement('div');
+    modal.id = 'tarotTextConfirmModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+            <div style="font-size: 3em; margin-bottom: 15px;">🃏</div>
+            <h2 style="font-size: 1.3em; margin-bottom: 15px; color: white;">タロット占い</h2>
+            <p style="font-size: 1em; color: white; margin-bottom: 10px;">この質問で占いますか？</p>
+            <p style="font-size: 0.95em; color: #FFD700; margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px;">「${question}」</p>
+            <p style="font-size: 0.9em; opacity: 0.8; color: white; margin-bottom: 20px;">🍀 ${tarotState.ticketCost}クローバー使用します</p>
+            <div style="display: flex; gap: 15px;">
+                <button onclick="this.closest('#tarotTextConfirmModal').remove()" style="flex: 1; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 25px; font-size: 1em; cursor: pointer;">
+                    やめる
+                </button>
+                <button onclick="confirmTarotTextQuestion('${question.replace(/'/g, "\\'")}')" style="flex: 1; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);">
+                    占う！
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+}
+
+// タロットテキスト質問確定
+function confirmTarotTextQuestion(question) {
+    document.getElementById('tarotTextConfirmModal')?.remove();
     
     // クローバー消費
     for (let i = 0; i < tarotState.ticketCost; i++) {
