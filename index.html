@@ -172,7 +172,7 @@
     <div id="characterSelectScreen" class="screen">
         <div class="container">
             <header class="app-header">
-                <h1>キャラ選択</h1>
+                <h1>キャラクター選択</h1>
                 <p>占い師を選んでね</p>
             </header>
             
@@ -308,7 +308,7 @@
     <div id="editScreen" class="screen">
         <div class="container">
             <header class="app-header">
-                <h1 style="font-size: 1.8em;">✏️ プロフィール</h1>
+                <h1 style="font-size: 1.8em;">プロフィール編集</h1>
             </header>
             
             <button class="form-back-btn" onclick="goBack()">← 戻る</button>
@@ -722,33 +722,33 @@
     <div id="purchaseScreen" class="screen">
         <div class="container">
             <header class="app-header">
-                <h1 style="font-size: 1.6em;">🎫 チケット購入</h1>
+                <h1 style="font-size: 1.6em;">🍀クローバー購入</h1>
                 <p>現在: <span id="currentTickets">0</span>枚</p>
             </header>
             
 <button class="form-back-btn" onclick="goBack()">← 戻る</button>
             <div class="purchase-options">
                 <div class="purchase-card" onclick="purchaseTickets(1, 100)">
-                    <div class="ticket-amount">🎫 1回分</div>
+                    <div class="ticket-amount">🍀 1回分</div>
                     <div class="ticket-price">¥100</div>
                     <div class="ticket-unit">お試し</div>
                 </div>
                 
                 <div class="purchase-card" onclick="purchaseTickets(10, 200)">
-                    <div class="ticket-amount">🎫 10回分</div>
+                    <div class="ticket-amount">🍀 10回分</div>
                     <div class="ticket-price">¥200</div>
                     <div class="ticket-unit">¥20/回</div>
                 </div>
                 
                 <div class="purchase-card" onclick="purchaseTickets(25, 500)">
-                    <div class="ticket-amount">🎫 25回分</div>
+                    <div class="ticket-amount">🍀 25回分</div>
                     <div class="ticket-price">¥500</div>
                     <div class="ticket-unit">¥20/回</div>
                 </div>
                 
                 <div class="purchase-card popular" onclick="purchaseTickets(30, 500)">
                     <div class="popular-badge">人気!</div>
-                    <div class="ticket-amount">🎫 30回分</div>
+                    <div class="ticket-amount">🍀 30回分</div>
                     <div class="ticket-price">¥500</div>
                     <div class="ticket-unit">¥16.7/回</div>
                 </div>
@@ -762,15 +762,15 @@
             </div>
             
             <div class="free-ticket-section">
-                <h2>🎁 無料でチケット獲得</h2>
+                <h2>🎁 無料でクローバー獲得</h2>
                 <button class="free-ticket-btn video" onclick="watchAdForTicket()">
-                    📺 動画を見て1チケット獲得
+                    📺 動画を見てクローバー＋１獲得
                 </button>
                 <button class="free-ticket-btn referral" onclick="showReferralScreen()">
-                    👥 友達紹介で1チケット獲得
+                    👥 友達紹介でクローバー＋１獲得
                 </button>
                 <button class="free-ticket-btn sns" onclick="shareToSNS()">
-                    📱 SNS投稿で1チケット獲得
+                    📱 SNS投稿でクローバー＋１獲得
                 </button>
             </div>
         </div>
