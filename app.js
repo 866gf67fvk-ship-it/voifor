@@ -597,7 +597,7 @@ modal.style.cssText = `
     `;
     
 modal.innerHTML = `
-        <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.98), rgba(30, 30, 50, 0.98)); padding: 30px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1;">
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 420px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1;">
             <h2 style="margin: 0 0 20px 0; font-size: 1.6em; color: white; text-align: center;">🌸友達を招待🌸</h2>
             
             <div style="background: rgba(255,215,0,0.2); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid rgba(255,215,0,0.4);">
