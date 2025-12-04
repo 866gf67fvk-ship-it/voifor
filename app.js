@@ -158,20 +158,47 @@ document.getElementById('earnedTicketCount').textContent = userData.earnedTicket
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
     
-// プロフィール表示
-document.getElementById('userBlood').textContent = userData.bloodType ? `${userData.bloodType}型` : '';
+// プロフィール表示（入力があるものだけ表示）
+const profileItems = [];
 
+// 名前を一番最初に
+if (userData.name) {
+    profileItems.push(userData.name);
+}
+
+// 干支
+if (userData.birth) {
+    const eto = getEtoSign(userData.birth);
+    if (eto) profileItems.push(eto);
+}
+
+// 血液型
+if (userData.bloodType) {
+    profileItems.push(`${userData.bloodType}型`);
+}
+
+// 誕生日（月/日）
 if (userData.birth) {
     const birthDate = new Date(userData.birth);
     const month = birthDate.getMonth() + 1;
     const day = birthDate.getDate();
-    document.getElementById('userBirth').textContent = `${month}/${day}`;
-    document.getElementById('userZodiac').textContent = getZodiacSign(userData.birth);
-    document.getElementById('userEto').textContent = getEtoSign(userData.birth);
-} else {
-    document.getElementById('userBirth').textContent = '';
-    document.getElementById('userZodiac').textContent = '';
-    document.getElementById('userEto').textContent = '';
+    profileItems.push(`${month}/${day}`);
+}
+
+// 星座
+if (userData.birth) {
+    const zodiac = getZodiacSign(userData.birth);
+    if (zodiac) profileItems.push(zodiac);
+}
+
+// プロフィール行に表示
+const profileLine = document.querySelector('.user-stats .profile-line');
+if (profileLine) {
+    if (profileItems.length > 0) {
+        profileLine.innerHTML = profileItems.join(' <span class="profile-sep">|</span> ');
+    } else {
+        profileLine.innerHTML = '<span style="opacity: 0.5;">タップして設定</span>';
+    }
 }
     
     // キャラ画像表示
@@ -1421,20 +1448,21 @@ function showEditScreen() {
     showScreen('editScreen');
     
     // 現在の値をセット
-    document.getElementById('editNickname').value = userData.nickname || '';
-    document.getElementById('editBirthday').value = userData.birthday || '';
-    document.getElementById('editGender').value = userData.gender || '';
+    document.getElementById('editName').value = userData.name || '';
+    document.getElementById('editBirth').value = userData.birth || '';
+    document.getElementById('editBloodType').value = userData.bloodType || '';
 }
 
 // プロフィール保存
 async function saveProfile() {
-    userData.nickname = document.getElementById('editNickname').value;
-    userData.birthday = document.getElementById('editBirthday').value;
-    userData.gender = document.getElementById('editGender').value;
+    userData.name = document.getElementById('editName').value;
+    userData.birth = document.getElementById('editBirth').value;
+    userData.bloodType = document.getElementById('editBloodType').value;
     
     await saveUserData();
+    updateUI();
     alert('保存しました！');
-    showSettingsScreen();
+    goBack();
 }
 
 // データリセット確認
