@@ -80,8 +80,8 @@ let currentCalendarYear = new Date().getFullYear();
 // ユーザーデータ
 let userData = {
     oduu: null,
-    freeTickets: 3,      // 無料配布チケット（上限5枚）
-    earnedTickets: 0,    // 獲得チケット（無制限）
+    freeTickets: 3,      // 無料配布クローバー（上限5枚）
+    earnedTickets: 0,    // 獲得クローバー（無制限）
     streak: 0,
     totalReadings: 0,
     checkedDates: [],
@@ -150,7 +150,7 @@ function createSparkles() {
 
 // UI更新
 function updateUI() {
-// チケット数
+// クローバー数
 document.getElementById('freeTicketCount').textContent = userData.freeTickets;
 document.getElementById('earnedTicketCount').textContent = userData.earnedTickets; 
 
@@ -598,7 +598,7 @@ modal.style.cssText = `
     
     modal.innerHTML = `
         <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.98), rgba(30, 30, 50, 0.98)); padding: 30px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(15px); box-shadow: 0 15px 50px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.2);">
-            <h2 style="margin: 0 0 20px 0; font-size: 1.6em; color: white; text-align: center;">👥 友達を招待しよう！</h2>
+            <h2 style="margin: 0 0 20px 0; font-size: 1.6em; color: white; text-align: center;">🌸友達を招待しよう</h2>
             
             <div style="background: rgba(255,215,0,0.2); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid rgba(255,215,0,0.4);">
                 <div style="color: white; font-size: 0.95em; margin-bottom: 10px; text-align: center;">あなたの紹介コード</div>
@@ -610,7 +610,7 @@ modal.style.cssText = `
                     ✨ <strong>紹介特典</strong><br>
                     • SNSでシェア → <strong style="color: #4ade80;">⭐+1</strong><br>
                     • 友達がコード使用 → <strong style="color: #4ade80;">⭐+1</strong><br>
-                    • 友達も → <strong style="color: #FFD700;">🎫+1</strong><br>
+                    • 友達も → <strong style="color: #FFD700;">🍀+1</strong><br>
                     <br>
                     📊 <strong>今週の実績</strong>: <strong style="color: #FFD700;">${weeklyCount}人</strong> / 週3人まで<br>
                     <strong style="color: #4ade80;">残り${remaining}人</strong>招待可能
@@ -664,7 +664,7 @@ function copyReferralCode(code) {
 
 // LINEでシェア
 async function shareToLine(code) {
-    const text = `🔮 VOIFOR（声占い）に招待します！\n\n声で今日の運勢を占える楽しいアプリです✨\n\n紹介コード: ${code}\n\n登録時に入力すると、お互いにボーナスチケットがもらえます！\n\nhttps://voifor.vercel.app`;
+    const text = `🔮 VOIFOR（声占い）に招待します！\n\n声で今日の運勢を占える楽しいアプリです✨\n\n紹介コード: ${code}\n\n登録時に入力すると、お互いにボーナスクローバーがもらえます！\n\nhttps://voifor.vercel.app`;
     const url = `https://line.me/R/share?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
     
@@ -722,11 +722,11 @@ const platformName = platform === 'line' ? 'LINE' : '𝕏';
     const otherPlatform = platform === 'line' ? '𝕏' : 'LINE';
     const otherDone = shareData[platform === 'line' ? 'x' : 'line'];
        
-    let message = `🎉 ${platformName}シェアありがとう！\n⭐+1チケットを獲得しました！`;
+    let message = `🎉 ${platformName}シェアありがとう！\n⭐+1クローバーを獲得しました！`;
     if (!otherDone) {
         message += `\n\n💡 ${otherPlatform}でもシェアすると更に⭐+1！`;
     }
-    message += `\n\n現在の保有:\n🎫 ${userData.freeTickets}枚\n⭐ ${userData.earnedTickets}枚`;
+    message += `\n\n現在の保有:\n🍀 ${userData.freeTickets}枚\n⭐ ${userData.earnedTickets}枚`;
     
     alert(message);
 }
@@ -764,7 +764,7 @@ async function processReferralCode(code) {
     // 紹介コードを保存
     userData.referredBy = code;
     
-    // 被紹介者に🎫+1
+    // 被紹介者に🍀+1
     if (userData.freeTickets < 5) {
         userData.freeTickets++;
     }
@@ -772,7 +772,7 @@ async function processReferralCode(code) {
     await saveUserData();
     updateUI();
     
-    alert(`🎉 紹介コード適用！\n🎫 無料チケット+1を獲得しました！\n\n初回占いを完了すると、紹介者にもボーナスが届きます！`);
+    alert(`🎉 紹介コード適用！\n🍀 無料クローバー+1を獲得しました！\n\n初回占いを完了すると、紹介者にもボーナスが届きます！`);
 }
 
 // 初回占い完了時に紹介者にボーナス付与
@@ -849,7 +849,7 @@ async function startVoiceFortune() {
         return;
     }
     
-    // パターン②: 無料なし、チケットあり
+    // パターン②: 無料なし、クローバーあり
     if (totalTickets > 0) {
         const confirmed = await showTicketConfirmModal(1, '声占い');
         if (!confirmed) return;
@@ -867,7 +867,7 @@ async function startVoiceFortune() {
         return;
     }
     
-    // パターン③: チケットなし
+    // パターン③: クローバーなし
     showTicketShortageModal();
 }
 
@@ -1227,13 +1227,13 @@ function saveFortuneHistory(dateStr, fortune, summary, type = 'voice') {
     localStorage.setItem('voifor_fortune_history', JSON.stringify(history));
 }
 // ========================================
-// チケット購入（Stripe）
+// クローバー購入（Stripe）
 // ========================================
 
 // Stripe公開キー
 const stripe = Stripe('pk_test_51SPaWsIpIpuVRpxZBE0LgYxH5Fn8nwzh7EYRQAK2GMvxiKYoZi1zT3RA36VNLZb9o7TMm5W3J7A3X5f7Cq0PEr0f00ThNZl8gn');
 
-// チケット購入
+// クローバー購入
 async function purchaseTickets(amount, price) {
     try {
         const deviceId = getDeviceId();
@@ -1333,7 +1333,7 @@ function incrementAdCount() {
     localStorage.setItem('voifor_ad_data', JSON.stringify(adData));
 }
 
-// 動画広告でチケット獲得
+// 動画広告でクローバー獲得
 function watchAdForTicket() {
     if (!canWatchAd()) {
         alert('本日の動画視聴回数の上限に達しました（最大3回/日）');
@@ -1344,7 +1344,7 @@ function watchAdForTicket() {
     const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
     const remaining = MAX_DAILY_ADS - (adData[today] || 0);
     
-    if (!confirm(`🎬 30秒の動画を見ると\nチケット+1枚もらえます！\n\n残り視聴可能回数: ${remaining}回\n\n動画を見ますか？`)) {
+    if (!confirm(`🎬 30秒の動画を見ると\nクローバー+1枚もらえます！\n\n残り視聴可能回数: ${remaining}回\n\n動画を見ますか？`)) {
         return;
     }
     
@@ -1373,7 +1373,7 @@ function showVideoAd() {
         <div style="text-align: center; color: white;">
             <h2 style="font-size: 2em; margin-bottom: 20px;">📺 広告を再生中...</h2>
             <div style="font-size: 4em; margin: 40px 0;" id="adCountdown">30</div>
-            <p style="font-size: 1.2em; opacity: 0.7;">広告終了後にチケットを獲得できます</p>
+            <p style="font-size: 1.2em; opacity: 0.7;">広告終了後にクローバーを獲得できます</p>
         </div>
     `;
     
@@ -1398,7 +1398,7 @@ function showVideoAd() {
 async function completeAdWatch() {
     document.getElementById('videoAdModal')?.remove();
     
-    // 🎫無料チケット付与（上限5枚）
+    // 🍀無料クローバー付与（上限5枚）
     let success = false;
     if (userData.freeTickets < 5) {
         userData.freeTickets++;
@@ -1414,9 +1414,9 @@ async function completeAdWatch() {
     const remaining = MAX_DAILY_ADS - (adData[today] || 0);
     
     if (success) {
-        alert(`🎉 🎫無料チケット+1を獲得しました！\n\n現在の保有:\n🎫 無料: ${userData.freeTickets}枚\n⭐ 獲得: ${userData.earnedTickets}枚\n\n本日の残り視聴可能回数: ${remaining}回`);
+        alert(`🎉 🍀無料クローバー+1を獲得しました！\n\n現在の保有:\n🍀 無料: ${userData.freeTickets}枚\n⭐ 獲得: ${userData.earnedTickets}枚\n\n本日の残り視聴可能回数: ${remaining}回`);
     } else {
-        alert(`⚠️ 🎫無料チケットは上限(5枚)に達しています\n\n現在の保有:\n🎫 無料: ${userData.freeTickets}枚（上限）\n⭐ 獲得: ${userData.earnedTickets}枚\n\n無料チケットを使ってからまた受け取れます！`);
+        alert(`⚠️ 🍀無料クローバーは上限(5枚)に達しています\n\n現在の保有:\n🍀 無料: ${userData.freeTickets}枚（上限）\n⭐ 獲得: ${userData.earnedTickets}枚\n\n無料クローバーを使ってからまた受け取れます！`);
     }
 }
 
@@ -1431,11 +1431,11 @@ function shareToSNS() {
             text: text,
             url: url
         }).then(() => {
-            // シェア成功したらチケット付与
+            // シェア成功したらクローバー付与
             userData.earnedTickets++;
             saveUserData();
             updateUI();
-            alert('シェアありがとう！🎫 1チケット獲得！');
+            alert('シェアありがとう！🍀 1クローバー獲得！');
         }).catch((error) => {
             console.log('シェアキャンセル');
         });
@@ -1651,10 +1651,10 @@ function selectSpread(num) {
     tarotState.spread = num;
     tarotState.ticketCost = num === 1 ? 1 : 2;
     
-    // チケット確認
+    // クローバー確認
 const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
-        alert('チケットが足りません');
+        alert('クローバーが足りません');
         return;
     }
     
@@ -1725,20 +1725,20 @@ function toggleTarotCard(index) {
 
 // カードをめくる
 async function revealCards() {
-    // 声で質問の場合は既にチケット消費済み
+    // 声で質問の場合は既にクローバー消費済み
     if (!tarotState.ticketUsed) {
-        // チケット確認
+        // クローバー確認
 const totalTickets = userData.freeTickets + userData.earnedTickets;
         if (totalTickets < tarotState.ticketCost) {
-            alert('チケットが足りません');
+            alert('クローバーが足りません');
             return;
         }
         
-        if (!confirm(`🎫 ${tarotState.ticketCost}チケット使用します。よろしいですか？`)) {
+        if (!confirm(`🍀 ${tarotState.ticketCost}クローバー使用します。よろしいですか？`)) {
             return;
         }
         
-        // チケット消費
+        // クローバー消費
         for (let i = 0; i < tarotState.ticketCost; i++) {
             if (userData.freeTickets > 0) {
                 userData.freeTickets--;
@@ -1795,8 +1795,8 @@ userData.totalReadings++;
         console.error('タロットエラー:', error);
         document.getElementById('tarotLoading').style.display = 'none';
         document.getElementById('tarotResult').style.display = 'block';
-        document.getElementById('tarotFortuneText').textContent = 'エラーが発生しました。チケットは消費されていません。';
-        // エラー時はチケット消費なし
+        document.getElementById('tarotFortuneText').textContent = 'エラーが発生しました。クローバーは消費されていません。';
+        // エラー時はクローバー消費なし
         tarotState.ticketUsed = false;
     }
 }
@@ -1840,7 +1840,7 @@ function backToTarotStep2() {
 // 戻る確認
 function confirmTarotBack() {
     if (tarotState.ticketUsed) {
-        if (confirm('チケットを消費しています。戻るとチケットは戻ってきません。本当に戻りますか？')) {
+        if (confirm('クローバーを消費しています。戻るとクローバーは戻ってきません。本当に戻りますか？')) {
             goBack();
         }
     } else {
@@ -1870,18 +1870,18 @@ function confirmTarotBack() {
 
 // 声で質問
 async function startTarotVoiceQuestion() {
-    // チケット確認
+    // クローバー確認
 const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
-        alert('チケットが足りません');
+        alert('クローバーが足りません');
         return;
     }
     
-    if (!confirm(`🎫 ${tarotState.ticketCost}チケット使用します。よろしいですか？`)) {
+    if (!confirm(`🍀 ${tarotState.ticketCost}クローバー使用します。よろしいですか？`)) {
         return;
     }
     
-    // チケット消費
+    // クローバー消費
     for (let i = 0; i < tarotState.ticketCost; i++) {
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
@@ -2026,16 +2026,16 @@ let compatVoice2 = null;
 
 // 相性占い用録音
 async function recordCompatVoice(personNum) {
-    // 毎回チケット確認＆消費
+    // 毎回クローバー確認＆消費
 const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < 1) {
-        alert('チケットが足りません');
+        alert('クローバーが足りません');
         return;
     }
-    if (!confirm('🎫 1チケット消費します。録音後は戻れません。よろしいですか？')) {
+    if (!confirm('🍀 1クローバー消費します。録音後は戻れません。よろしいですか？')) {
         return;
     }
-    // チケット消費
+    // クローバー消費
     if (userData.freeTickets > 0) {
         userData.freeTickets--;
 } else if (userData.earnedTickets > 0) {
@@ -2185,19 +2185,19 @@ async function startCompatibilityFortune() {
         return;
     }
     
-    // チケット確認（録音していない場合のみ）
+    // クローバー確認（録音していない場合のみ）
 if (!compatVoice1 && !compatVoice2) {
         const totalTickets = userData.freeTickets + userData.earnedTickets;
         if (totalTickets < 1) {
-            alert('チケットが足りません');
+            alert('クローバーが足りません');
             return;
         }
         
-        if (!confirm('🎫 1チケット使用します。よろしいですか？')) {
+        if (!confirm('🍀 1クローバー使用します。よろしいですか？')) {
             return;
         }
         
-        // チケット消費（🎫無料 → ⭐獲得 の順）
+        // クローバー消費（🍀無料 → ⭐獲得 の順）
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
         } else if (userData.earnedTickets > 0) {
@@ -2280,7 +2280,7 @@ function retryCompatibility() {
 // Step1の戻る
 function confirmCompatStep1Back() {
     if (compatVoice1) {
-        if (confirm('チケットを消費しています。戻りますか？')) {
+        if (confirm('クローバーを消費しています。戻りますか？')) {
             goBack();
         }
     } else {
@@ -2422,19 +2422,19 @@ function submitDreamContent() {
 
 // 夢占い実行
 async function submitDreamFortune() {
-    // チケット確認
-    if (!confirm(`🎫 ${dreamState.ticketCost}チケット使用します。よろしいですか？`)) {
+    // クローバー確認
+    if (!confirm(`🍀 ${dreamState.ticketCost}クローバー使用します。よろしいですか？`)) {
         return;
     }
     
-// チケットチェック
+// クローバーチェック
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < dreamState.ticketCost) {
-        alert('チケットが足りません');
+        alert('クローバーが足りません');
         return;
     }
     
-// チケット消費
+// クローバー消費
     for (let i = 0; i < dreamState.ticketCost; i++) {
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
@@ -2490,7 +2490,7 @@ async function submitDreamFortune() {
         
     } catch (error) {
         console.error('夢占いエラー:', error);
-        alert('占いに失敗しました。チケットは消費されていません。');
+        alert('占いに失敗しました。クローバーは消費されていません。');
     userData.earnedTickets += dreamState.ticketCost;
         await saveUserData();
         updateUI();
@@ -2579,7 +2579,7 @@ function resetDream() {
 // 戻る確認
 function confirmDreamBack() {
     if (dreamState.ticketUsed) {
-        if (confirm('チケットを消費しています。戻りますか？')) {
+        if (confirm('クローバーを消費しています。戻りますか？')) {
             resetDream();
             goBack();
         }
@@ -2625,13 +2625,13 @@ function backToDreamStep2() {
     document.getElementById('dreamStep2').style.display = 'block';
 }
 // ========================================
-// チケット確認モーダル
+// クローバー確認モーダル
 // ========================================
 
 function showTicketConfirmModal(requiredTickets, fortuneType) {
     return new Promise((resolve) => {
      const totalTickets = userData.freeTickets + userData.earnedTickets;
-        const ticketType = requiredTickets === 0 ? '🎁 無料' : (userData.freeTickets > 0 ? '🎫 無料チケット' : '⭐ 獲得チケット');
+        const ticketType = requiredTickets === 0 ? '🎁 無料' : (userData.freeTickets > 0 ? '🍀 無料クローバー' : '⭐ 獲得クローバー');
         
         const modal = document.createElement('div');
         modal.id = 'ticketConfirmModal';
@@ -2663,7 +2663,7 @@ function showTicketConfirmModal(requiredTickets, fortuneType) {
                         ${message}
                     </div>
                     <div style="color: rgba(255,255,255,0.7); font-size: 0.9em; margin-top: 15px;">
-                        残り: <strong style="color: #FFD700;">${totalTickets}チケット</strong>
+                        残り: <strong style="color: #FFD700;">${totalTickets}クローバー</strong>
                     </div>
                 </div>
                 
@@ -2699,7 +2699,7 @@ function showTicketConfirmModal(requiredTickets, fortuneType) {
     });
 }
 
-// チケット不足モーダル
+// クローバー不足モーダル
 function showTicketShortageModal() {
 const totalTickets = userData.freeTickets + userData.earnedTickets;
     
@@ -2722,21 +2722,21 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
     modal.innerHTML = `
         <div style="background: linear-gradient(135deg, rgba(40, 40, 60, 0.98), rgba(30, 30, 50, 0.98)); padding: 35px; border-radius: 25px; max-width: 420px; width: 100%; backdrop-filter: blur(20px); box-shadow: 0 20px 60px rgba(0,0,0,0.7); text-align: center;">
             <div style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
-            <h2 style="margin: 0 0 20px 0; font-size: 1.5em; color: #ff6b6b;">チケットが足りません</h2>
+            <h2 style="margin: 0 0 20px 0; font-size: 1.5em; color: #ff6b6b;">クローバーが足りません</h2>
             
             <div style="background: rgba(255,107,107,0.15); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid rgba(255,107,107,0.3);">
                 <p style="color: white; margin: 0;">
                     1日1回の無料占いは使用済みです<br>
-                    現在のチケット: <strong style="color: #FFD700;">${totalTickets}枚</strong>
+                    現在のクローバー: <strong style="color: #FFD700;">${totalTickets}枚</strong>
                 </p>
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <button onclick="this.closest('#ticketShortageModal').remove(); showPurchaseScreen();" style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 18px; border-radius: 15px; font-size: 1.2em; font-weight: bold; cursor: pointer;">
-                    💰 チケットを購入
+                    💰 クローバーを購入
                 </button>
                 <button onclick="this.closest('#ticketShortageModal').remove(); watchAdForTicket();" style="width: 100%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25); color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
-                    📺 動画で1チケット獲得
+                    📺 動画で1クローバー獲得
                 </button>
                 <button onclick="this.closest('#ticketShortageModal').remove();" style="width: 100%; background: transparent; border: none; color: rgba(255,255,255,0.5); padding: 12px; font-size: 0.95em; cursor: pointer;">
                     キャンセル
