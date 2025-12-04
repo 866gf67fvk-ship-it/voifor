@@ -1141,6 +1141,7 @@ button, .ticket-info, .fortune-card {
     flex-direction: column;
     gap: 20px;
     margin-bottom: 20px;
+    padding-bottom: 40px;
 }
 
 .form-group {
@@ -1184,6 +1185,7 @@ button, .ticket-info, .fortune-card {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-bottom: 50px;
 }
 
 .save-btn:hover {
@@ -2073,4 +2075,15 @@ button, .ticket-info, .fortune-card {
 .character-name-display::after {
     content: ' ✧';
     color: #d4af37;
+}
+
+/* 必須マーク */
+.required {
+    color: #ff6b6b;
+    font-size: 0.85em;
+    margin-left: 8px;
+}
+/* プロフィール編集画面の余白 */
+#editScreen .container {
+    padding-bottom: 80px;
 }
