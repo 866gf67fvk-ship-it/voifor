@@ -581,7 +581,7 @@ function showReferralScreen() {
     
     const modal = document.createElement('div');
     modal.id = 'referralModal';
-    modal.style.cssText = `
+modal.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
@@ -590,9 +590,9 @@ function showReferralScreen() {
         background: rgba(0,0,0,0.85);
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         z-index: 10000;
-        padding: 20px;
+        padding: 30px 20px;
         overflow-y: auto;
     `;
     
@@ -617,12 +617,12 @@ function showReferralScreen() {
                 </div>
             </div>
             
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+<div style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <button onclick="shareToLine('${code}')" style="flex: 1; background: #06C755; border: none; color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
                     📱 LINE
                 </button>
-                <button onclick="shareToTwitter('${code}')" style="flex: 1; background: #1DA1F2; border: none; color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
-                    🐦 Twitter
+                <button onclick="shareToX('${code}')" style="flex: 1; background: #000000; border: none; color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
+                    𝕏 ポスト
                 </button>
             </div>
             
@@ -676,16 +676,16 @@ async function shareToLine(code) {
     }, 1000);
 }
 
-// Twitterでシェア
-async function shareToTwitter(code) {
+// Xでシェア
+async function shareToX(code) {
     const text = `🔮 VOIFOR（声占い）\n\n声で占える超当たる占いアプリ！\n\n紹介コード: ${code}\n\n#VOIFOR #声占い`;
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://voifor.vercel.app')}`;
+    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://voifor.vercel.app')}`;
     window.open(url, '_blank');
     
     // 戻ってきたら確認
     setTimeout(async () => {
-        if (confirm('🐦 Twitterでポストしましたか？\n\nポストした場合、ボーナスを受け取れます！')) {
-            await giveShareBonus('twitter');
+        if (confirm('𝕏 でポストしましたか？\n\nポストした場合、ボーナスを受け取れます！')) {
+            await giveShareBonus('x');
         }
     }, 1000);
 }
@@ -702,9 +702,9 @@ async function giveShareBonus(platform) {
         shareData.twitter = false;
     }
     
-    // 今週既にこのプラットフォームでボーナスをもらったか確認
+// 今週既にこのプラットフォームでボーナスをもらったか確認
     if (shareData[platform]) {
-        const platformName = platform === 'line' ? 'LINE' : 'Twitter';
+        const platformName = platform === 'line' ? 'LINE' : '𝕏';
         alert(`📱 ${platformName}シェアありがとう！\n\n（今週の${platformName}ボーナスは受け取り済みです）`);
         return;
     }
@@ -718,10 +718,10 @@ async function giveShareBonus(platform) {
     shareData[platform] = true;
     localStorage.setItem('voifor_share_data', JSON.stringify(shareData));
     
-    const platformName = platform === 'line' ? 'LINE' : 'Twitter';
-    const otherPlatform = platform === 'line' ? 'Twitter' : 'LINE';
-    const otherDone = shareData[platform === 'line' ? 'twitter' : 'line'];
-    
+const platformName = platform === 'line' ? 'LINE' : '𝕏';
+    const otherPlatform = platform === 'line' ? '𝕏' : 'LINE';
+    const otherDone = shareData[platform === 'line' ? 'x' : 'line'];
+       
     let message = `🎉 ${platformName}シェアありがとう！\n⭐+1チケットを獲得しました！`;
     if (!otherDone) {
         message += `\n\n💡 ${otherPlatform}でもシェアすると更に⭐+1！`;
