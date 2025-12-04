@@ -15,62 +15,62 @@ const characterTemplates = {
     devilMale: {
         defaultName: '鬼術師',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764268818/u4834658121_A_cute_chibi_demon_fortune_teller_character_small_b8d8bc81-26e3-4456-a478-b2a609fc70fe_3_s14cdn.png',
-        emoji: '👹',
-        speech: '占ってやるぜ！👹'
+        emoji: '⭐',
+        speech: '占ってやるぜ！'
     },
     devilFemale: {
         defaultName: '鬼巫女',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269013/u4834658121_A_cute_chibi_demon_fortune_teller_character_small_b8d8bc81-26e3-4456-a478-b2a609fc70fe_2_eileck.png',
-        emoji: '👹',
-        speech: '占ってあげるわよ👹'
+        emoji: '⭐',
+        speech: '占ってあげるわよ💕'
     },
     angelMale: {
         defaultName: 'エンジェル♂',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269049/u4834658121_A_cute_chibi_angel_fortune_teller_character_white_6469a933-2db5-40bf-af2f-7a4757fab116_3_nqhd7q.png',
-        emoji: '😇',
-        speech: '一緒に占いましょう😇'
+        emoji: '⭐',
+        speech: '一緒に占いましょう✨'
     },
-angelFemale: {
+    angelFemale: {
         defaultName: 'エンジェル♀',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269392/u4834658121_A_cute_chibi_angel_fortune_teller_character_white_dfe8d8c8-cff0-447d-8c3c-7d8b417105b4_1_e5ddvi.png',
-        emoji: '😇',
-        speech: '占わせてくださいね😇'
+        emoji: '⭐',
+        speech: '占わせてくださいね💕'
     },
     jesterMale: {
         defaultName: 'ピエロ♂',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269038/u4834658121_A_cute_chibi_jester_fortune_teller_character_colo_70f0ae95-dfef-4686-9415-3e3dca5130a2_0_o74bse.png',
-        emoji: '🃏',
-        speech: '占っちゃうよん！🃏'
+        emoji: '⭐',
+        speech: '占っちゃうよん！✨'
     },
     jesterFemale: {
         defaultName: 'ピエロ♀',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269038/u4834658121_A_cute_chibi_jester_fortune_teller_character_colo_70f0ae95-dfef-4686-9415-3e3dca5130a2_3_rhnwuu.png',
-        emoji: '🃏',
-        speech: '占うよ〜！🃏'
+        emoji: '⭐',
+        speech: '占うよ〜！💕'
     },
     elfMale: {
         defaultName: 'エルフ♂',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269024/u4834658121_____--v_7_dc3fac00-dc89-440c-b28e-9fe33ff8b3a8_0_1_uabcje.png',
-        emoji: '🧝',
-        speech: '未来を見せてあげよう🧝'
+        emoji: '⭐',
+        speech: '未来を見せてあげよう✨'
     },
     elfFemale: {
         defaultName: 'エルフ♀',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269094/u4834658121_____--v_7_1a2a511d-936c-447f-9525-f2358094ae5c_0_zinx1g.png',
-        emoji: '🧝',
-        speech: '占わせていただきますわ🧝'
+        emoji: '⭐',
+        speech: '占わせていただきますわ💕'
     },
     fairy: {
         defaultName: 'フェアリー',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269036/u4834658121_A_cute_chibi_fairy_fortune_teller_character_trans_a96b325e-fc10-43ed-aec5-dadff09ae0db_2_npiwaf.png',
-        emoji: '🧚',
-        speech: '占うの！楽しみだね！🧚'
+        emoji: '⭐',
+        speech: '占うの！楽しみだね！✨'
     },
     cat: {
         defaultName: 'クロネコ',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269055/u4834658121_A_cute_black_cat_fortune_teller_sitting_on_mystic_b1566c70-0a16-4513-aea5-6bc94f8b8f98_2_uvkr3s.png',
-        emoji: '🐱',
-        speech: '別に...占ってあげるにゃ🐱'
+        emoji: '⭐',
+        speech: '別に...占ってあげるにゃ✨'
     }
 };
 
@@ -1403,9 +1403,9 @@ function showAdConfirmModal(remaining) {
     
     modal.innerHTML = `
         <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
-            <div style="font-size: 3em; margin-bottom: 15px;">📺</div>
+            <div style="font-size: 3em; margin-bottom: 15px;">🎥</div>
             <h2 style="font-size: 1.3em; margin-bottom: 15px; color: white;">動画を見てクローバーGET！</h2>
-            <p style="font-size: 1em; color: white; margin-bottom: 10px;">30秒の動画を見ると<br><span style="color: #4ade80; font-weight: bold;">🍀 +1クローバー</span>もらえます！</p>
+            <p style="font-size: 1em; color: white; margin-bottom: 10px;">30秒の動画を見ると<br><span style="color: #4ade80; font-weight: bold;">🍀 +1クローバー</span>GET！</p>
             <p style="font-size: 0.9em; opacity: 0.7; color: white; margin-bottom: 25px;">残り視聴可能回数: <span style="color: #FFD700; font-weight: bold;">${remaining}回</span></p>
             <div style="display: flex; gap: 15px;">
                 <button onclick="this.closest('#adConfirmModal').remove()" style="flex: 1; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 25px; font-size: 1em; cursor: pointer;">
@@ -1447,7 +1447,7 @@ function showVideoAd() {
     
     adModal.innerHTML = `
         <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
-            <h2 style="font-size: 1.5em; margin-bottom: 20px; color: white;">📺 広告を再生中...</h2>
+            <h2 style="font-size: 1.5em; margin-bottom: 20px; color: white;🎥🎥 広告を再生中...</h2>
             <div style="font-size: 4em; margin: 30px 0; color: #FFD700; font-weight: bold;" id="adCountdown">30</div>
             <p style="font-size: 1em; opacity: 0.7; color: white; margin-bottom: 25px;">広告終了後にクローバーを獲得できます</p>
             <button onclick="cancelAdWatch()" style="background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 12px 30px; border-radius: 25px; font-size: 1em; cursor: pointer;">
@@ -1975,9 +1975,11 @@ function confirmTarotBack() {
 }
 
 // 声で質問
+let tarotVoiceInterval = null;
+
 async function startTarotVoiceQuestion() {
-    // クローバー確認
-const totalTickets = userData.freeTickets + userData.earnedTickets;
+    // チケット確認
+    const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
         alert('クローバーが足りません');
         return;
@@ -1987,11 +1989,11 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
         return;
     }
     
-    // クローバー消費
+    // チケット消費
     for (let i = 0; i < tarotState.ticketCost; i++) {
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
-} else if (userData.earnedTickets > 0) {
+        } else if (userData.earnedTickets > 0) {
             userData.earnedTickets--;
         }
     }
@@ -1999,10 +2001,49 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
     await saveUserData();
     updateUI();
     
-    const btn = document.querySelector('.voice-category-btn');
-    btn.disabled = true;
-    btn.textContent = '🔴 録音中...';
+    // 録音モーダル表示
+    showTarotVoiceRecordingModal();
+}
+
+// タロット声録音モーダル
+function showTarotVoiceRecordingModal() {
+    const modal = document.createElement('div');
+    modal.id = 'tarotVoiceModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    `;
     
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+            <h2 style="font-size: 1.3em; margin-bottom: 15px; color: white;">🎤 質問を話してください</h2>
+            <div style="font-size: 4em; margin: 20px 0; color: #ff6b6b; font-weight: bold;" id="tarotVoiceCountdown">10</div>
+            <div style="height: 20px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
+                <div id="tarotVoiceLevel" style="height: 100%; width: 0%; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 10px; transition: width 0.1s;"></div>
+            </div>
+            <button onclick="stopTarotVoiceRecording()" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px 40px; border-radius: 25px; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);">
+                ✅ 録音終了
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 録音開始
+    startTarotVoiceRecording();
+}
+
+// タロット声録音開始
+async function startTarotVoiceRecording() {
     try {
         recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
@@ -2021,8 +2062,7 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
         
         mediaRecorder.onstop = async () => {
             recordingStream.getTracks().forEach(track => track.stop());
-            btn.disabled = false;
-            btn.textContent = '🎤 声で質問する';
+            document.getElementById('tarotVoiceModal')?.remove();
             
             // 録音完了 → カード選択へ
             tarotState.category = '声で質問';
@@ -2037,19 +2077,62 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
         mediaRecorder.start();
         isRecording = true;
         
-        // 3秒後に停止
-        setTimeout(() => {
-            if (mediaRecorder && isRecording) {
-                mediaRecorder.stop();
-                isRecording = false;
+        // 音量可視化
+        visualizeTarotVoice();
+        
+        // カウントダウン
+        let count = 10;
+        const countdownEl = document.getElementById('tarotVoiceCountdown');
+        
+        tarotVoiceInterval = setInterval(() => {
+            count--;
+            if (countdownEl) countdownEl.textContent = count;
+            
+            if (count <= 0) {
+                stopTarotVoiceRecording();
             }
-        }, 3000);
+        }, 1000);
         
     } catch (error) {
         console.error('マイクエラー:', error);
-        btn.disabled = false;
-        btn.textContent = '🎤 声で質問する';
+        document.getElementById('tarotVoiceModal')?.remove();
         alert('マイクへのアクセスが必要です');
+    }
+}
+
+// タロット声録音の音量可視化
+function visualizeTarotVoice() {
+    if (!isRecording || !analyser) return;
+    
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+    
+    let sum = 0;
+    for (let i = 0; i < bufferLength; i++) {
+        sum += dataArray[i];
+    }
+    const average = sum / bufferLength;
+    const percentage = Math.min(100, (average / 128) * 100);
+    
+    const levelEl = document.getElementById('tarotVoiceLevel');
+    if (levelEl) levelEl.style.width = percentage + '%';
+    
+    if (isRecording) {
+        requestAnimationFrame(visualizeTarotVoice);
+    }
+}
+
+// タロット声録音停止
+function stopTarotVoiceRecording() {
+    if (tarotVoiceInterval) {
+        clearInterval(tarotVoiceInterval);
+        tarotVoiceInterval = null;
+    }
+    
+    if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
     }
 }
 // ========================================
@@ -2842,7 +2925,7 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
                     💰 クローバーを購入
                 </button>
                 <button onclick="this.closest('#ticketShortageModal').remove(); watchAdForTicket();" style="width: 100%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25); color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
-                    📺 動画で1クローバー獲得
+                    🎥 動画で1クローバー獲得
                 </button>
                 <button onclick="this.closest('#ticketShortageModal').remove();" style="width: 100%; background: transparent; border: none; color: rgba(255,255,255,0.5); padding: 12px; font-size: 0.95em; cursor: pointer;">
                     キャンセル
