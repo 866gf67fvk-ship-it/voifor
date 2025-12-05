@@ -125,7 +125,7 @@ function showGlobalLoading(messages) {
         window.globalMsgInterval = setInterval(() => {
             msgIndex = (msgIndex + 1) % messages.length;
             document.getElementById('globalLoadingText').textContent = messages[msgIndex];
-        }, 2000);
+        }, 4000);
     }
 }
 
@@ -2039,7 +2039,7 @@ document.getElementById('tarotStep3').style.display = 'none';
         msgIndex = (msgIndex + 1) % messages.length;
         const textEl = document.getElementById('tarotLoadingText');
         if (textEl) textEl.textContent = messages[msgIndex];
-    }, 2000);
+    }, 4000);
     
 window.tarotMsgInterval = msgInterval;
     
