@@ -74,6 +74,69 @@ const characterTemplates = {
     }
 };
 
+// Lottieアニメーション一覧
+const lottieAnimations = [
+    'https://lottie.host/8a9e206d-521d-4a4a-b719-db95db316d30/i6C7DWBTd4.lottie',
+    'https://lottie.host/bd0a93f7-d7f6-461f-a17f-cc2cc9264f2e/iTNx1sb5n5.lottie'
+];
+
+function showRandomLottie() {
+    const container = document.getElementById('lottieContainer');
+    if (!container) return;
+    
+    const randomUrl = lottieAnimations[Math.floor(Math.random() * lottieAnimations.length)];
+    
+    container.innerHTML = `
+        <dotlottie-player 
+            src="${randomUrl}"
+            background="transparent"
+            speed="1"
+            style="width: 250px; height: 250px;"
+            loop
+            autoplay>
+        </dotlottie-player>
+    `;
+}
+
+// 共通ローディング表示
+function showGlobalLoading(messages) {
+    const modal = document.getElementById('globalLoading');
+    modal.style.display = 'flex';
+    
+    // ランダムLottie
+    const container = document.getElementById('globalLottieContainer');
+    const randomUrl = lottieAnimations[Math.floor(Math.random() * lottieAnimations.length)];
+    container.innerHTML = `
+        <dotlottie-player 
+            src="${randomUrl}"
+            background="transparent"
+            speed="1"
+            style="width: 250px; height: 250px;"
+            loop
+            autoplay>
+        </dotlottie-player>
+    `;
+    
+    // メッセージ変化
+    if (messages && messages.length > 0) {
+        let msgIndex = 0;
+        document.getElementById('globalLoadingText').textContent = messages[0];
+        
+        window.globalMsgInterval = setInterval(() => {
+            msgIndex = (msgIndex + 1) % messages.length;
+            document.getElementById('globalLoadingText').textContent = messages[msgIndex];
+        }, 2000);
+    }
+}
+
+function hideGlobalLoading() {
+    document.getElementById('globalLoading').style.display = 'none';
+    if (window.globalMsgInterval) {
+        clearInterval(window.globalMsgInterval);
+        window.globalMsgInterval = null;
+    }
+}
+
 // カレンダー月移動用
 let currentCalendarMonth = new Date().getMonth();
 let currentCalendarYear = new Date().getFullYear();
@@ -991,12 +1054,15 @@ function visualizeVoice() {
 async function analyzeVoice(audioBlob) {
     const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
     
-    // ローディング表示
+ // ローディング表示
     document.getElementById('recordingArea').style.display = 'none';
-    document.getElementById('fortuneLoading').style.display = 'block';
-    document.getElementById('loadingText').textContent = `${character.defaultName}が占い中...`;
-    document.getElementById('fortuneCharSpeech').textContent = 'あなたの声から運勢を読み取っています...';
-    
+    showGlobalLoading([
+        '声を分析しています...',
+        'あなたの運命を読み取っています...',
+        '星々の導きを感じています...',
+        '答えが見えてきました...'
+    ]);
+
     try {
         // 音声をBase64に変換
         const reader = new FileReader();
@@ -1047,9 +1113,9 @@ const data = await response.json();
         // 結果表示
         showFortuneResult(data.fortune);
         
-    } catch (error) {
+ } catch (error) {
         console.error('❌ 占いエラー:', error);
-        document.getElementById('fortuneLoading').style.display = 'none';
+        hideGlobalLoading();
         document.getElementById('fortuneResult').style.display = 'block';
         document.getElementById('fortuneText').textContent = 'エラーが発生しました。もう一度お試しください。';
     }
@@ -1057,7 +1123,7 @@ const data = await response.json();
 
 // 占い結果表示
 function showFortuneResult(fortune) {
-    document.getElementById('fortuneLoading').style.display = 'none';
+    hideGlobalLoading();
     document.getElementById('fortuneResult').style.display = 'block';
     
     document.getElementById('fortuneText').textContent = fortune || '今日のあなたは運気上昇中！';
@@ -1955,8 +2021,30 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
         updateUI();
     }
     
-    document.getElementById('tarotStep3').style.display = 'none';
+document.getElementById('tarotStep3').style.display = 'none';
     document.getElementById('tarotLoading').style.display = 'block';
+    
+    // ランダムLottie表示
+    showRandomLottie();
+    
+    // メッセージを段階的に変化
+    const messages = [
+        'カードが語りかけています...',
+        'あなたの運命を読み取っています...',
+        '星々の導きを感じています...',
+        '答えが見えてきました...'
+    ];
+    let msgIndex = 0;
+    const msgInterval = setInterval(() => {
+        msgIndex = (msgIndex + 1) % messages.length;
+        const textEl = document.getElementById('tarotLoadingText');
+        if (textEl) textEl.textContent = messages[msgIndex];
+    }, 2000);
+    
+window.tarotMsgInterval = msgInterval;
+    
+    // ランダムLottie表示
+    showRandomLottie();
     
     // ランダムにカードを選ぶ
     const shuffled = [...tarotCardData].sort(() => Math.random() - 0.5);
@@ -1991,10 +2079,15 @@ userData.totalReadings++;
         // 履歴保存
         const today = new Date().toISOString().split('T')[0];
         const cardNames = drawnCards.map(c => c.name).join(', ');
-        saveFortuneHistory(today + '_tarot_' + Date.now(), data.fortune, `🃏 ${cardNames}`, 'tarot');
+saveFortuneHistory(today + '_tarot_' + Date.now(), data.fortune, `🃏 ${cardNames}`, 'tarot');
+        
+        // メッセージ変化を停止
+        if (window.tarotMsgInterval) {
+            clearInterval(window.tarotMsgInterval);
+        }
         
         showTarotResult(drawnCards, data.fortune);
-        
+
 } catch (error) {
         console.error('タロットエラー:', error);
         document.getElementById('tarotLoading').style.display = 'none';
@@ -2495,9 +2588,14 @@ if (!compatVoice1 && !compatVoice2) {
         updateUI();
     }
     
-    // ローディング表示
+// ローディング表示
     document.getElementById('compatStep2').style.display = 'none';
-    document.getElementById('compatLoading').style.display = 'block';
+    showGlobalLoading([
+        '相性を占っています...',
+        'お二人の運命を読み取っています...',
+        '星々の導きを感じています...',
+        '答えが見えてきました...'
+    ]);
     
     const birthday1 = document.getElementById('compat1Birthday').value;
     const blood1 = document.getElementById('compat1Blood').value;
@@ -2552,7 +2650,7 @@ if (!compatVoice1 && !compatVoice2) {
 
 // 結果表示
 function showCompatResult(score, fortune) {
-    document.getElementById('compatLoading').style.display = 'none';
+    hideGlobalLoading();
     document.getElementById('compatResult').style.display = 'block';
     
     document.getElementById('compatScore').textContent = score;
@@ -2737,7 +2835,12 @@ async function submitDreamFortune() {
     document.getElementById('dreamStep1').style.display = 'none';
     document.getElementById('dreamStep2').style.display = 'none';
     document.getElementById('dreamStep3').style.display = 'none';
-    document.getElementById('dreamLoading').style.display = 'block';
+showGlobalLoading([
+        '夢を解析しています...',
+        '深層心理を読み取っています...',
+        '星々の導きを感じています...',
+        '答えが見えてきました...'
+    ]);
     
     try {
         const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
@@ -2783,14 +2886,14 @@ async function submitDreamFortune() {
         updateUI();
         dreamState.ticketUsed = false;
         
-        document.getElementById('dreamLoading').style.display = 'none';
+hideGlobalLoading();
         document.getElementById('dreamStep1').style.display = 'block';
     }
 }
 
 // 結果表示
 function showDreamResult(fortune) {
-    document.getElementById('dreamLoading').style.display = 'none';
+    hideGlobalLoading();
     document.getElementById('dreamResult').style.display = 'block';
     document.getElementById('dreamFortuneText').innerHTML = fortune.replace(/\n/g, '<br>');
     
