@@ -1,6 +1,7 @@
 <!DOCTYPE html4
 <html lang="ja">
 <head>
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VOIFOR -声占い-</title>
@@ -17,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     
-<link rel="stylesheet" href="style.css?v=147">
+<link rel="stylesheet" href="style.css?v=148">
 </head>
 <body>
 <!-- 初回登録画面 -->
@@ -790,7 +791,15 @@
     </div>
 
     <script src="supabase-config.js"></script>
-<script src="app.js?v=147"></script>
+<script src="app.js?v=148"></script>
+
+<!-- 共通ローディングモーダル -->
+<div id="globalLoading" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 15, 35, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+    <div style="display: flex; flex-direction: column; align-items: center; padding: 40px 20px;">
+        <div id="globalLottieContainer" style="width: 250px; height: 250px;"></div>
+        <p id="globalLoadingText" style="margin-top: 20px; font-size: 1.1em; color: white; opacity: 0.9;">占っています...</p>
+    </div>
+</div>
 
 </body>
 </html>
