@@ -440,11 +440,13 @@
 <button class="submit-btn" id="revealBtn" onclick="revealCards()" disabled>カードをめくる</button>
                 <button class="compat-back-btn" id="tarotStep3BackBtn" onclick="confirmTarotStep3Back()">← 戻る</button>
             </div>
-            <!-- ローディング -->
-            <div id="tarotLoading" style="display: none;">
-                <div class="loading-spinner"></div>
-                <p id="tarotLoadingText">カードが語りかけています...</p>
-            </div>
+<!-- ローディング -->
+<div id="tarotLoading" style="display: none;">
+    <div style="display: flex; flex-direction: column; align-items: center; padding: 40px 20px;">
+        <div id="lottieContainer" style="width: 250px; height: 250px;"></div>
+        <p id="tarotLoadingText" style="margin-top: 20px; font-size: 1.1em; opacity: 0.9;">カードが語りかけています...</p>
+    </div>
+</div>
             
             <!-- 結果表示 -->
             <div id="tarotResult" style="display: none;">
