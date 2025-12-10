@@ -2608,7 +2608,7 @@ function resetCompatibility() {
 }
 
 // Step2へ
-function goToCompatStep2() {
+async function goToCompatStep2() {
     const name1 = document.getElementById('compat1Name').value.trim();
     const birthday1 = document.getElementById('compat1Birthday').value;
     const blood1 = document.getElementById('compat1Blood').value;
