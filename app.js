@@ -437,7 +437,9 @@ function goBack() {
         const target = document.getElementById(prevScreen);
         if (target) {
             target.classList.add('active');
+            target.scrollTop = 0;
         }
+        window.scrollTo(0, 0);
     } else {
         showMainScreen();
     }
