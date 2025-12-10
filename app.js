@@ -1679,12 +1679,12 @@ async function shareToSNS() {
             title: 'VOIFOR -声占い-',
             text: text,
             url: url
-        }).then(() => {
+}).then(async () => {
             // シェア成功したらクローバー付与
             userData.earnedTickets++;
             saveUserData();
             updateUI();
-          await showCustomAlert('シェアありがとう！\n🍀 1クローバー獲得！', '🎉');
+            await showCustomAlert('シェアありがとう！\n🍀 1クローバー獲得！', '🎉');
         }).catch((error) => {
             console.log('シェアキャンセル');
         });
@@ -1903,7 +1903,7 @@ function resetTarot() {
 }
 
 // スプレッド選択
-function selectSpread(num) {
+async function selectSpread(num) {
     tarotState.spread = num;
     tarotState.ticketCost = num === 1 ? 1 : 2;
     
@@ -1948,7 +1948,7 @@ async function confirmTarotStep3Back() {
 }
 
 // テキストで質問
-function submitTarotTextQuestion() {
+async function submitTarotTextQuestion() {
     const question = document.getElementById('tarotQuestionInput').value.trim();
     
     if (!question) {
