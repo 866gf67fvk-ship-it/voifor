@@ -3382,3 +3382,159 @@ function checkFirstTime() {
         document.getElementById('registrationScreen').classList.add('active');
     }
 }
+
+// ========================================
+// 法的情報
+// ========================================
+
+function showLegalScreen() {
+    showScreen('legalScreen');
+}
+
+function showLegalModal(type) {
+    let title = '';
+    let content = '';
+    
+    if (type === 'terms') {
+      title = '利用規約';
+        content = `
+<p>この利用規約（以下「本規約」）は、VOIFOR運営事務局（以下「当事務局」）が提供する「VOIFOR -声占い-」（以下「本アプリ」）の利用条件を定めるものです。</p>
+
+<h4>第1条（適用）</h4>
+<p>本規約は、ユーザーと当事務局との間の本アプリの利用に関わる一切の関係に適用されます。</p>
+
+<h4>第2条（占いサービスについて）</h4>
+<p>本アプリで提供する占いは娯楽を目的としたものであり、その結果について当事務局は一切の責任を負いません。人生の重要な判断は、ご自身の責任において行ってください。</p>
+
+<h4>第3条（クローバー）</h4>
+<p>1. クローバーは本アプリ内で占いを利用するためのポイントです。<br>
+2. 購入したクローバーの返金・換金はできません。<br>
+3. クローバーは他のユーザーへ譲渡できません。<br>
+4. サービス終了時、未使用クローバーの返金は行いません。</p>
+
+<h4>第4条（禁止事項）</h4>
+<p>ユーザーは以下の行為をしてはなりません。<br>
+・法令または公序良俗に違反する行為<br>
+・不正アクセス、システムへの攻撃<br>
+・他のユーザーへの迷惑行為<br>
+・本アプリの運営を妨害する行為<br>
+・その他、当事務局が不適切と判断する行為</p>
+
+<h4>第5条（サービスの変更・停止）</h4>
+<p>当事務局は、事前の通知なくサービス内容の変更、または提供の停止をすることができます。</p>
+
+<h4>第6条（免責事項）</h4>
+<p>1. 当事務局は、本アプリの内容の正確性・完全性を保証しません。<br>
+2. ユーザーが本アプリを利用したことによる損害について、当事務局は責任を負いません。<br>
+3. 占い結果に基づく判断・行動は、すべてユーザー自身の責任となります。</p>
+
+<h4>第7条（知的財産権）</h4>
+<p>本アプリに関する著作権その他の知的財産権は、当事務局または正当な権利者に帰属します。</p>
+
+<h4>第8条（規約の変更）</h4>
+<p>当事務局は、必要に応じて本規約を変更できます。変更後の規約は、本アプリ内に表示した時点で効力を生じます。</p>
+
+<h4>第9条（準拠法・管轄）</h4>
+<p>本規約の解釈は日本法に準拠し、紛争が生じた場合は当事務局所在地を管轄する裁判所を専属的合意管轄とします。</p>
+
+<p style="margin-top: 20px;"><strong>お問い合わせ:</strong> takeappstudio@gmail.com</p>
+<p><strong>制定日:</strong> 2024年12月11日</p>
+        `;
+    } else if (type === 'privacy') {
+        title = 'プライバシーポリシー';
+        content = `
+<p>VOIFOR運営事務局（以下「当事務局」）は、本アプリ「VOIFOR -声占い-」（以下「本アプリ」）における個人情報の取り扱いについて、以下のとおりプライバシーポリシーを定めます。</p>
+
+<h4>収集する情報</h4>
+<p>・ニックネーム、生年月日、血液型<br>
+・音声データ（占い実行時のみ使用）<br>
+・占い履歴<br>
+・決済情報（Stripe社を通じて処理）</p>
+
+<h4>利用目的</h4>
+<p>・占いサービスの提供<br>
+・サービスの改善・開発<br>
+・お問い合わせへの対応</p>
+
+<h4>音声データの取り扱い</h4>
+<p>音声データは占い結果の生成にのみ使用し、生成完了後はサーバーに保存しません。</p>
+
+<h4>第三者提供</h4>
+<p>以下の場合を除き、個人情報を第三者に提供しません。<br>
+・ご本人の同意がある場合<br>
+・法令に基づく場合<br>
+・決済処理に必要な場合（Stripe社）</p>
+
+<h4>外部サービス</h4>
+<p>本アプリは以下の外部サービスを利用しています。<br>
+・Supabase（データ保存）<br>
+・Stripe（決済処理）<br>
+・Anthropic Claude API（AI占い生成）</p>
+
+<h4>セキュリティ</h4>
+<p>個人情報の漏洩防止のため、適切なセキュリティ対策を実施しています。</p>
+
+<h4>改定</h4>
+<p>本ポリシーは予告なく変更する場合があります。</p>
+
+<p style="margin-top: 20px;"><strong>お問い合わせ:</strong> takeappstudio@gmail.com</p>
+<p><strong>制定日:</strong> 2024年12月11日</p>
+        `;
+    } else if (type === 'tokushoho') {
+        title = '特定商取引法に基づく表記';
+        content = `
+<h4>販売業者</h4>
+<p>VOIFOR運営事務局</p>
+
+<h4>運営責任者</h4>
+<p>請求があった場合、遅滞なく開示いたします</p>
+
+<h4>所在地</h4>
+<p>請求があった場合、遅滞なく開示いたします</p>
+
+<h4>連絡先</h4>
+<p>メール: takeappstudio@gmail.com<br>
+※お問い合わせはメールにてお願いいたします<br>
+電話番号: 請求があった場合、遅滞なく開示いたします</p>
+
+<h4>販売価格</h4>
+<p>アプリ内に表示された価格（税込）</p>
+
+<h4>支払方法</h4>
+<p>クレジットカード決済（Stripe）</p>
+
+<h4>商品引渡し時期</h4>
+<p>決済完了後、即時</p>
+
+<h4>返品・キャンセルについて</h4>
+<p>デジタルコンテンツの性質上、購入後の返金・キャンセルはお受けできません。<br>
+ただし、システム障害等によりサービスが正常に提供されなかった場合は、個別に対応いたしますのでメールにてご連絡ください。</p>
+
+<h4>動作環境</h4>
+<p>iOS/Android対応のモダンブラウザ</p>
+        `;
+    }
+    
+    const modal = document.createElement('div');
+    modal.id = 'legalModal';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto;';
+    
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #1a1a2e, #2d1b69); padding: 30px; border-radius: 20px; max-width: 500px; width: 100%; margin: 20px 0; border: 2px solid rgba(255,255,255,0.2);">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.4em; color: white; text-align: center;">${title}</h2>
+            <div style="color: rgba(255,255,255,0.9); font-size: 0.9em; line-height: 1.8;">
+                ${content}
+            </div>
+            <button onclick="closeLegalModal()" style="width: 100%; margin-top: 25px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer;">
+                閉じる
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeLegalModal() {
+    const modal = document.getElementById('legalModal');
+    if (modal) modal.remove();
+}
