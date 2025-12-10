@@ -409,7 +409,12 @@ function showScreen(screenId) {
     const target = document.getElementById(screenId);
     if (target) {
         target.classList.add('active');
+        // スクロールを一番上に
+        target.scrollTop = 0;
     }
+    
+    // ページ全体も一番上に
+    window.scrollTo(0, 0);
     
     // 履歴に追加（同じ画面でなければ）
     if (screenHistory[screenHistory.length - 1] !== screenId) {
@@ -2258,7 +2263,7 @@ if (totalTickets < tarotState.ticketCost) {
         return;
     }
     
-const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}枚使用しますか？`, '🎤', '録音する！', 'やめる');
+const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}枚使用しますか？`, '🎤', '録音', 'やめる');
     if (!confirmed) {
         return;
     }
@@ -2495,7 +2500,7 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
         showTicketShortageModal();
         return;
     }
-const confirmed = await showCustomConfirm('🍀 1枚消費します\n（録音後は戻れません）', '🎤', '録音する！', 'やめる');
+const confirmed = await showCustomConfirm('🍀 1枚消費します\n（録音後は戻れません）', '🎤', '録音', 'やめる');
     if (!confirmed) {
         return;
     }
@@ -2846,7 +2851,7 @@ async function recordDreamVoice() {
         return;
     }
     
-    const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🎤', '録音する！', 'やめる');
+    const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🎤', '録音', 'やめる');
     if (!confirmed) {
         return;
     }
@@ -3316,7 +3321,7 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
                     💰 クローバーを購入
                 </button>
                 <button onclick="this.closest('#ticketShortageModal').remove(); watchAdForTicket();" style="width: 100%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25); color: white; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer;">
-                    🎥 動画で1クローバー獲得
+                    🎥 動画でクローバー獲得
                 </button>
                 <button onclick="this.closest('#ticketShortageModal').remove();" style="width: 100%; background: transparent; border: none; color: rgba(255,255,255,0.5); padding: 12px; font-size: 0.95em; cursor: pointer;">
                     キャンセル
