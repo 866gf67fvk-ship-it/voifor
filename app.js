@@ -795,10 +795,10 @@ function closeReferralModal() {
 
 // コードをコピー
 function copyReferralCode(code) {
-    navigator.clipboard.writeText(code).then(() => {
-        alert(`✅ 紹介コード「${code}」をコピーしました！\n\n友達に送ってあげてください！`);
-    }).catch(() => {
-        alert('コピーに失敗しました');
+navigator.clipboard.writeText(code).then(async () => {
+        await showCustomAlert(`紹介コード「${code}」をコピーしました！\n\n友達に送ってあげてください！`, '✅');
+    }).catch(async () => {
+        await showCustomAlert('コピーに失敗しました', '❌');
     });
 }
 
@@ -1670,7 +1670,7 @@ async function claimAdReward() {
 }
 
 // SNSシェア
-function shareToSNS() {
+async function shareToSNS() {
     const text = '声で占う新感覚アプリ「VOIFOR」で今日の運勢を占ったよ！🔮✨';
     const url = 'https://voifor.vercel.app';
     
@@ -1832,7 +1832,7 @@ const tabId = {
 }
 
 // 履歴詳細表示
-function showHistoryDetail(date) {
+async function showHistoryDetail(date) {
     const history = JSON.parse(localStorage.getItem('voifor_fortune_history') || '{}');
     const data = history[date];
     
@@ -2864,7 +2864,7 @@ await showCustomAlert('マイクへのアクセスが必要です', '🎤');
 }
 
 // 夢の内容を送信して次へ
-function submitDreamContent() {
+async function submitDreamContent() {
     if (dreamState.inputMethod === 'text') {
         const text = document.getElementById('dreamText').value.trim();
         if (!text) {
@@ -3238,8 +3238,8 @@ async function completeRegistration() {
     const gender = document.getElementById('regGender').value;
     const referralCode = document.getElementById('referralCodeInput').value.trim().toUpperCase();
     
-    if (!name) {
-        alert('お名前を入力してください');
+if (!name) {
+        await showCustomAlert('お名前を入力してください', '✏️');
         return;
     }
     
