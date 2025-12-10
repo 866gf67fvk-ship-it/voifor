@@ -1909,8 +1909,8 @@ async function selectSpread(num) {
     
     // クローバー確認
 const totalTickets = userData.freeTickets + userData.earnedTickets;
-    if (totalTickets < tarotState.ticketCost) {
-await showCustomAlert('クローバーが足りません', '😢');
+if (totalTickets < tarotState.ticketCost) {
+        showTicketShortageModal();
         return;
     }
     
@@ -1951,15 +1951,15 @@ async function confirmTarotStep3Back() {
 async function submitTarotTextQuestion() {
     const question = document.getElementById('tarotQuestionInput').value.trim();
     
-    if (!question) {
-        alert('質問を入力してください');
+if (!question) {
+        await showCustomAlert('質問を入力してください', '✏️');
         return;
     }
     
     // クローバー確認
     const totalTickets = userData.freeTickets + userData.earnedTickets;
-    if (totalTickets < tarotState.ticketCost) {
-await showCustomAlert('クローバーが足りません', '😢');
+ if (totalTickets < tarotState.ticketCost) {
+        showTicketShortageModal();
         return;
     }
     
@@ -2079,12 +2079,12 @@ async function revealCards() {
     if (!tarotState.ticketUsed) {
         // クローバー確認
 const totalTickets = userData.freeTickets + userData.earnedTickets;
-        if (totalTickets < tarotState.ticketCost) {
-            alert('クローバーが足りません');
+if (totalTickets < tarotState.ticketCost) {
+            showTicketShortageModal();
             return;
         }
         
-const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}クローバー使用します。\nよろしいですか？`, '🃏', '占う！', 'やめる');
+const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}枚使用しますか？`, '🔮', '占う！', 'やめる');
         if (!confirmed) {
             return;
         }
@@ -2218,7 +2218,7 @@ function backToTarotStep2() {
 // 戻る確認
 async function confirmTarotBack() {
     if (tarotState.ticketUsed) {
-        const confirmed = await showCustomConfirm('クローバーを消費しています。\n戻るとクローバーは戻ってきません。\n\n本当に戻りますか？', '⚠️', '戻る', 'やめる');
+    const confirmed = await showCustomConfirm('戻るとクローバーは\n戻りません。よろしいですか？', '⚠️', '戻る', 'やめる');
         if (confirmed) {
             goBack();
         }
@@ -2253,11 +2253,12 @@ let tarotVoiceInterval = null;
 async function startTarotVoiceQuestion() {
     // チケット確認
     const totalTickets = userData.freeTickets + userData.earnedTickets;
-    if (totalTickets < tarotState.ticketCost) {
-await showCustomAlert('クローバーが足りません', '😢');
-        return;    }
+if (totalTickets < tarotState.ticketCost) {
+        showTicketShortageModal();
+        return;
+    }
     
-const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}クローバー使用します。\nよろしいですか？`, '🎤', '録音する！', 'やめる');
+const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}枚使用しますか？`, '🎤', '録音する！', 'やめる');
     if (!confirmed) {
         return;
     }
@@ -2491,10 +2492,10 @@ async function recordCompatVoice(personNum) {
     // 毎回クローバー確認＆消費
 const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < 1) {
-await showCustomAlert('クローバーが足りません', '😢');
+        showTicketShortageModal();
         return;
     }
-const confirmed = await showCustomConfirm('🍀 1クローバー消費します。\n録音後は戻れません。\n\nよろしいですか？', '🎤', '録音する！', 'やめる');
+const confirmed = await showCustomConfirm('🍀 1枚消費します\n（録音後は戻れません）', '🎤', '録音する！', 'やめる');
     if (!confirmed) {
         return;
     }
@@ -2652,11 +2653,11 @@ await showCustomAlert('生年月日・血液型・性別・音声のうち\n最�
 if (!compatVoice1 && !compatVoice2) {
         const totalTickets = userData.freeTickets + userData.earnedTickets;
         if (totalTickets < 1) {
-await showCustomAlert('クローバーが足りません', '😢');
+            showTicketShortageModal();
             return;
         }
         
-const confirmed = await showCustomConfirm('🍀 1クローバー使用します。\nよろしいですか？', '💕', '占う！', 'やめる');
+const confirmed = await showCustomConfirm('🍀 1枚使用しますか？', '💕', '占う！', 'やめる');
         if (!confirmed) {
             return;
         }
@@ -2749,7 +2750,7 @@ function retryCompatibility() {
 // Step1の戻る
 async function confirmCompatStep1Back() {
     if (compatVoice1) {
-        const confirmed = await showCustomConfirm('クローバーを消費しています。\n戻りますか？', '⚠️', '戻る', 'やめる');
+     const confirmed = await showCustomConfirm('戻りますか？\n（クローバーは戻りません）', '⚠️', '戻る', 'やめる');
         if (confirmed) {
             goBack();
         }
@@ -2893,15 +2894,14 @@ await showCustomAlert('夢の内容を録音してください', '🎤');
 // 夢占い実行
 async function submitDreamFortune() {
     // クローバー確認
-const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}クローバー使用します。\nよろしいですか？`, '🌙', '占う！', 'やめる');
-    if (!confirmed) {
+const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🌙', '占う！', 'やめる');    if (!confirmed) {
         return;
     }
     
 // クローバーチェック
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < dreamState.ticketCost) {
-await showCustomAlert('クローバーが足りません', '😢');
+        showTicketShortageModal();
         return;
     }
     
@@ -3055,7 +3055,7 @@ function resetDream() {
 // 戻る確認
 async function confirmDreamBack() {
     if (dreamState.ticketUsed) {
-        const confirmed = await showCustomConfirm('クローバーを消費しています。\n戻りますか？', '⚠️', '戻る', 'やめる');
+     const confirmed = await showCustomConfirm('戻りますか？\n（クローバーは戻りません）', '⚠️', '戻る', 'やめる');
         if (confirmed) {
             resetDream();
             goBack();
