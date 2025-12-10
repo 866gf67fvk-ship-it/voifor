@@ -2771,6 +2771,7 @@ function hideCompatBackBtns() {
     if (btn1) btn1.style.display = 'none';
 }
 console.log('📱 app.js 読み込み完了');
+
 // ========================================
 // 夢占い
 // ========================================
@@ -2813,54 +2814,145 @@ function selectDreamInput(method) {
     }
 }
 
+// 夢占い録音用
+let dreamRecorder = null;
+let dreamCountdown = null;
+let dreamRecordDone = false;
+
 // 音声録音
 async function recordDreamVoice() {
-    const btn = document.getElementById('dreamVoiceBtn');
-    const status = document.getElementById('dreamVoiceStatus');
+    // 録音完了後にボタン押した場合 → 再録音確認
+    if (dreamVoiceBlob && !dreamRecordDone) {
+        const retry = await showCustomConfirm('1度だけ再録音できます。\nしますか？', '🎤', 'はい', 'いいえ');
+        if (retry) {
+            const start = await showCustomConfirm('再録音します', '🎤', '再録音', '戻る');
+            if (start) {
+                dreamRecordDone = true;
+                startDreamRecording();
+            }
+        }
+        return;
+    }
     
-    btn.disabled = true;
-    btn.textContent = '🔴 録音中... 15秒';
+    // 再録音済みなら何もしない
+    if (dreamRecordDone && dreamVoiceBlob) {
+        return;
+    }
+    
+    // 初回：クローバー確認
+    const totalTickets = userData.freeTickets + userData.earnedTickets;
+    if (totalTickets < dreamState.ticketCost) {
+        showTicketShortageModal();
+        return;
+    }
+    
+    const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🎤', '録音する！', 'やめる');
+    if (!confirmed) {
+        return;
+    }
+    
+    // クローバー消費
+    for (let i = 0; i < dreamState.ticketCost; i++) {
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        }
+    }
+    dreamState.ticketUsed = true;
+    await saveUserData();
+    updateUI();
+    
+    startDreamRecording();
+}
+
+// 実際の録音処理
+async function startDreamRecording() {
+    const btn = document.getElementById('dreamVoiceBtn');
+    const stopBtn = document.getElementById('dreamVoiceStopBtn');
+    const status = document.getElementById('dreamVoiceStatus');
+    const backBtn = document.querySelector('#dreamVoiceInput .compat-back-btn');
+    
+    btn.style.display = 'none';
+    stopBtn.style.display = 'block';
     status.textContent = '';
+    if (backBtn) backBtn.style.display = 'none';
+    document.getElementById('dreamVoiceNext').style.display = 'none';
     
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const recorder = new MediaRecorder(stream);
+        dreamRecorder = new MediaRecorder(stream);
         const chunks = [];
         
-        recorder.ondataavailable = (e) => chunks.push(e.data);
+        dreamRecorder.ondataavailable = (e) => chunks.push(e.data);
         
-        recorder.onstop = () => {
+        dreamRecorder.onstop = () => {
             stream.getTracks().forEach(track => track.stop());
             dreamVoiceBlob = new Blob(chunks, { type: 'audio/webm' });
             
-            btn.textContent = '✅ 録音完了';
+            btn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            
+            if (dreamRecordDone) {
+                btn.textContent = '✅ 録音完了';
+                btn.disabled = true;
+            } else {
+                btn.textContent = '✅ 録音完了（タップで再録音）';
+                btn.disabled = false;
+            }
             btn.classList.add('recorded');
             status.textContent = '録音しました！';
-            btn.disabled = false;
             
             document.getElementById('dreamVoiceNext').style.display = 'block';
         };
         
-        recorder.start();
+        dreamRecorder.start();
         
         let count = 15;
-        const countdown = setInterval(() => {
+        stopBtn.textContent = `⏹️ 録音停止（${count}秒）`;
+        
+        dreamCountdown = setInterval(() => {
             count--;
             if (count > 0) {
-                btn.textContent = `🔴 録音中... ${count}秒`;
+                stopBtn.textContent = `⏹️ 録音停止（${count}秒）`;
             } else {
-                clearInterval(countdown);
-                if (recorder.state === 'recording') {
-                    recorder.stop();
+                clearInterval(dreamCountdown);
+                dreamCountdown = null;
+                if (dreamRecorder && dreamRecorder.state === 'recording') {
+                    dreamRecorder.stop();
                 }
             }
         }, 1000);
         
     } catch (error) {
         console.error('マイクエラー:', error);
+        btn.style.display = 'block';
         btn.disabled = false;
         btn.textContent = '🎤 録音する';
-await showCustomAlert('マイクへのアクセスが必要です', '🎤');
+        stopBtn.style.display = 'none';
+        if (backBtn) backBtn.style.display = 'block';
+        
+        // 初回エラー時のみクローバー返却
+        if (!dreamRecordDone && dreamState.ticketUsed) {
+            for (let i = 0; i < dreamState.ticketCost; i++) {
+                userData.freeTickets++;
+            }
+            dreamState.ticketUsed = false;
+            await saveUserData();
+            updateUI();
+        }
+        await showCustomAlert('マイクへのアクセスが必要です', '🎤');
+    }
+}
+
+// 夢占い録音停止
+function stopDreamVoice() {
+    if (dreamCountdown) {
+        clearInterval(dreamCountdown);
+        dreamCountdown = null;
+    }
+    if (dreamRecorder && dreamRecorder.state === 'recording') {
+        dreamRecorder.stop();
     }
 }
 
@@ -2893,29 +2985,33 @@ await showCustomAlert('夢の内容を録音してください', '🎤');
 
 // 夢占い実行
 async function submitDreamFortune() {
-    // クローバー確認
-const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🌙', '占う！', 'やめる');    if (!confirmed) {
-        return;
+    // 音声で既にクローバー消費済みの場合はスキップ
+    if (!dreamState.ticketUsed) {
+        // クローバー確認
+        const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🌙', '占う！', 'やめる');
+        if (!confirmed) {
+            return;
+        }
+        
+        // クローバーチェック
+        const totalTickets = userData.freeTickets + userData.earnedTickets;
+        if (totalTickets < dreamState.ticketCost) {
+            showTicketShortageModal();
+            return;
+        }
+        
+        // クローバー消費
+        for (let i = 0; i < dreamState.ticketCost; i++) {
+            if (userData.freeTickets > 0) {
+                userData.freeTickets--;
+            } else if (userData.earnedTickets > 0) {
+                userData.earnedTickets--;
+            }
+        }
+        await saveUserData();
+        updateUI();
+        dreamState.ticketUsed = true;
     }
-    
-// クローバーチェック
-    const totalTickets = userData.freeTickets + userData.earnedTickets;
-    if (totalTickets < dreamState.ticketCost) {
-        showTicketShortageModal();
-        return;
-    }
-    
-// クローバー消費
-    for (let i = 0; i < dreamState.ticketCost; i++) {
-        if (userData.freeTickets > 0) {
-            userData.freeTickets--;
-        } else if (userData.earnedTickets > 0) {
-            userData.earnedTickets--;
-}
-    }
-    await saveUserData();
-    updateUI();
-    dreamState.ticketUsed = true;
     
     // ローディング表示
     document.getElementById('dreamStep1').style.display = 'none';
@@ -3003,6 +3099,7 @@ function resetDream() {
         ticketUsed: false
     };
     dreamVoiceBlob = null;
+    dreamRecordDone = false;
     
     // フォームリセット
     const dreamText = document.getElementById('dreamText');
@@ -3023,12 +3120,18 @@ function resetDream() {
     const dreamWakeup = document.getElementById('dreamWakeup');
     if (dreamWakeup) dreamWakeup.value = '';
     
-    // 録音ボタンリセット
+// 録音ボタンリセット
     const voiceBtn = document.getElementById('dreamVoiceBtn');
     if (voiceBtn) {
         voiceBtn.textContent = '🎤 録音する';
         voiceBtn.classList.remove('recorded');
         voiceBtn.disabled = false;
+        voiceBtn.style.display = 'block';
+    }
+    
+    const voiceStopBtn = document.getElementById('dreamVoiceStopBtn');
+    if (voiceStopBtn) {
+        voiceStopBtn.style.display = 'none';
     }
     
     const voiceStatus = document.getElementById('dreamVoiceStatus');
