@@ -137,6 +137,83 @@ function hideGlobalLoading() {
     }
 }
 
+// ========================================
+// カスタム alert / confirm モーダル
+// ========================================
+
+// カスタムalert（OKボタンのみ）
+function showCustomAlert(message, icon = '💬') {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.id = 'customAlertModal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+                <div style="font-size: 3em; margin-bottom: 15px;">${icon}</div>
+                <p style="font-size: 1.1em; color: white; line-height: 1.6; margin-bottom: 25px; white-space: pre-line;">${message}</p>
+                <button onclick="this.closest('#customAlertModal').remove(); window.customAlertResolve && window.customAlertResolve();" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px 50px; border-radius: 25px; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);">
+                    OK
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        window.customAlertResolve = resolve;
+    });
+}
+
+// カスタムconfirm（はい/いいえボタン）
+function showCustomConfirm(message, icon = '🤔', yesText = 'はい', noText = 'いいえ') {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.id = 'customConfirmModal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+                <div style="font-size: 3em; margin-bottom: 15px;">${icon}</div>
+                <p style="font-size: 1.1em; color: white; line-height: 1.6; margin-bottom: 25px; white-space: pre-line;">${message}</p>
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="this.closest('#customConfirmModal').remove(); window.customConfirmResolve && window.customConfirmResolve(false);" style="flex: 1; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 25px; font-size: 1em; cursor: pointer;">
+                        ${noText}
+                    </button>
+                    <button onclick="this.closest('#customConfirmModal').remove(); window.customConfirmResolve && window.customConfirmResolve(true);" style="flex: 1; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);">
+                        ${yesText}
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        window.customConfirmResolve = resolve;
+    });
+}
+
 // カレンダー月移動用
 let currentCalendarMonth = new Date().getMonth();
 let currentCalendarYear = new Date().getFullYear();
@@ -1013,7 +1090,7 @@ async function startRecording() {
     } catch (error) {
         console.error('❌ マイクアクセスエラー:', error);
         btn.disabled = false;
-        alert('マイクへのアクセスが必要です');
+await showCustomAlert('マイクへのアクセスが必要です', '🎤');
     }
 }
 
@@ -1329,12 +1406,12 @@ async function purchaseTickets(amount, price) {
         });
         
         if (result.error) {
-            alert(result.error.message);
+await showCustomAlert(result.error.message, '❌');
         }
         
     } catch (error) {
         console.error('購入エラー:', error);
-        alert('購入処理中にエラーが発生しました');
+await showCustomAlert('購入処理中にエラーが発生しました', '❌');
     }
 }
 // ========================================
@@ -1368,12 +1445,12 @@ async function purchasePremium() {
         });
         
         if (result.error) {
-            alert(result.error.message);
+         await showCustomAlert(result.error.message, '❌');
         }
         
     } catch (error) {
         console.error('購入エラー:', error);
-        alert('購入処理中にエラーが発生しました');
+   await showCustomAlert('購入処理中にエラーが発生しました', '❌');
     }
 }
 
@@ -1607,7 +1684,7 @@ function shareToSNS() {
             userData.earnedTickets++;
             saveUserData();
             updateUI();
-            alert('シェアありがとう！🍀 1クローバー獲得！');
+          await showCustomAlert('シェアありがとう！\n🍀 1クローバー獲得！', '🎉');
         }).catch((error) => {
             console.log('シェアキャンセル');
         });
@@ -1639,16 +1716,18 @@ async function saveProfile() {
     userData.bloodType = document.getElementById('editBloodType').value;
     userData.gender = document.getElementById('editGender').value;
     
-    await saveUserData();
+await saveUserData();
     updateUI();
-    alert('保存しました！');
+    await showCustomAlert('保存しました！', '✅');
     goBack();
 }
 
 // データリセット確認
-function confirmReset() {
-    if (confirm('本当にすべてのデータをリセットしますか？\nこの操作は取り消せません。')) {
-        if (confirm('最終確認です。本当にリセットしますか？')) {
+async function confirmReset() {
+    const first = await showCustomConfirm('本当にすべてのデータをリセットしますか？\n\nこの操作は取り消せません。', '⚠️', 'リセット', 'やめる');
+    if (first) {
+        const second = await showCustomConfirm('最終確認です。\n本当にリセットしますか？', '🗑️', 'リセットする', 'やめる');
+        if (second) {
             resetAllData();
         }
     }
@@ -1661,9 +1740,10 @@ async function resetAllData() {
     localStorage.removeItem('voifor_today_fortune');
     localStorage.removeItem('voifor_fortune_history');
     
-    alert('データをリセットしました。アプリを再読み込みします。');
+await showCustomAlert('データをリセットしました。\nアプリを再読み込みします。', '✅');
     location.reload();
 }
+
 // ========================================
 // 履歴画面
 // ========================================
@@ -1757,7 +1837,7 @@ function showHistoryDetail(date) {
     const data = history[date];
     
     if (data) {
-        alert(`📅 ${formatDate(date)}\n\n${data.fortune || '詳細なし'}\n\n${data.summary || ''}`);
+        await showCustomAlert(`📅 ${formatDate(date)}\n\n${data.fortune || '詳細なし'}\n\n${data.summary || ''}`, '🔮');
     }
 }
 // ========================================
@@ -1830,7 +1910,7 @@ function selectSpread(num) {
     // クローバー確認
 const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
-        alert('クローバーが足りません');
+await showCustomAlert('クローバーが足りません', '😢');
         return;
     }
     
@@ -1856,10 +1936,10 @@ function selectTarotCategory(category) {
     renderTarotCards();
 }
 // Step3の戻る
-function confirmTarotStep3Back() {
+async function confirmTarotStep3Back() {
     if (tarotState.ticketUsed) {
         // クローバー消費済み → 戻れない
-        alert('クローバーを消費したため、戻れません');
+   await showCustomAlert('クローバーを消費したため、戻れません', '⚠️');
     } else {
         // カテゴリ選択 → Step2へ戻れる
         document.getElementById('tarotStep3').style.display = 'none';
@@ -1879,7 +1959,7 @@ function submitTarotTextQuestion() {
     // クローバー確認
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
-        alert('クローバーが足りません');
+await showCustomAlert('クローバーが足りません', '😢');
         return;
     }
     
@@ -2004,7 +2084,8 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
             return;
         }
         
-        if (!confirm(`🍀 ${tarotState.ticketCost}クローバー使用します。よろしいですか？`)) {
+const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}クローバー使用します。\nよろしいですか？`, '🃏', '占う！', 'やめる');
+        if (!confirmed) {
             return;
         }
         
@@ -2135,9 +2216,10 @@ function backToTarotStep2() {
 }
 
 // 戻る確認
-function confirmTarotBack() {
+async function confirmTarotBack() {
     if (tarotState.ticketUsed) {
-        if (confirm('クローバーを消費しています。戻るとクローバーは戻ってきません。本当に戻りますか？')) {
+        const confirmed = await showCustomConfirm('クローバーを消費しています。\n戻るとクローバーは戻ってきません。\n\n本当に戻りますか？', '⚠️', '戻る', 'やめる');
+        if (confirmed) {
             goBack();
         }
     } else {
@@ -2172,11 +2254,11 @@ async function startTarotVoiceQuestion() {
     // チケット確認
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < tarotState.ticketCost) {
-        alert('クローバーが足りません');
-        return;
-    }
+await showCustomAlert('クローバーが足りません', '😢');
+        return;    }
     
-    if (!confirm(`🍀 ${tarotState.ticketCost}クローバー使用します。よろしいですか？`)) {
+const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}クローバー使用します。\nよろしいですか？`, '🎤', '録音する！', 'やめる');
+    if (!confirmed) {
         return;
     }
     
@@ -2287,7 +2369,7 @@ async function startTarotVoiceRecording() {
     } catch (error) {
         console.error('マイクエラー:', error);
         document.getElementById('tarotVoiceModal')?.remove();
-        alert('マイクへのアクセスが必要です');
+await showCustomAlert('マイクへのアクセスが必要です', '🎤');
     }
 }
 
@@ -2409,10 +2491,11 @@ async function recordCompatVoice(personNum) {
     // 毎回クローバー確認＆消費
 const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < 1) {
-        alert('クローバーが足りません');
+await showCustomAlert('クローバーが足りません', '😢');
         return;
     }
-    if (!confirm('🍀 1クローバー消費します。録音後は戻れません。よろしいですか？')) {
+const confirmed = await showCustomConfirm('🍀 1クローバー消費します。\n録音後は戻れません。\n\nよろしいですか？', '🎤', '録音する！', 'やめる');
+    if (!confirmed) {
         return;
     }
     // クローバー消費
@@ -2478,7 +2561,7 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
         console.error('マイクエラー:', error);
         btn.disabled = false;
         btn.textContent = '🎤 録音する';
-        alert('マイクへのアクセスが必要です');
+await showCustomAlert('マイクへのアクセスが必要です', '🎤');
     }
 }
 
@@ -2532,13 +2615,13 @@ function goToCompatStep2() {
     const gender1 = document.getElementById('compat1Gender').value;
     
     if (!name1) {
-        alert('名前を入力してください');
+await showCustomAlert('名前を入力してください', '✏️');
         return;
     }
     
     // 名前以外に最低1つ必要
     if (!birthday1 && !blood1 && !gender1 && !compatVoice1) {
-        alert('生年月日・血液型・性別・音声のうち最低1つ入力してください');
+await showCustomAlert('生年月日・血液型・性別・音声のうち\n最低1つ入力してください', '📝');
         return;
     }
     
@@ -2555,13 +2638,13 @@ async function startCompatibilityFortune() {
     const gender2 = document.getElementById('compat2Gender').value;
     
     if (!name2) {
-        alert('名前を入力してください');
+await showCustomAlert('名前を入力してください', '✏️');
         return;
     }
     
     // 名前以外に最低1つ必要
     if (!birthday2 && !blood2 && !gender2 && !compatVoice2) {
-        alert('生年月日・血液型・性別・音声のうち最低1つ入力してください');
+await showCustomAlert('生年月日・血液型・性別・音声のうち\n最低1つ入力してください', '📝');
         return;
     }
     
@@ -2569,11 +2652,12 @@ async function startCompatibilityFortune() {
 if (!compatVoice1 && !compatVoice2) {
         const totalTickets = userData.freeTickets + userData.earnedTickets;
         if (totalTickets < 1) {
-            alert('クローバーが足りません');
+await showCustomAlert('クローバーが足りません', '😢');
             return;
         }
         
-        if (!confirm('🍀 1クローバー使用します。よろしいですか？')) {
+const confirmed = await showCustomConfirm('🍀 1クローバー使用します。\nよろしいですか？', '💕', '占う！', 'やめる');
+        if (!confirmed) {
             return;
         }
         
@@ -2663,9 +2747,10 @@ function retryCompatibility() {
 }
 
 // Step1の戻る
-function confirmCompatStep1Back() {
+async function confirmCompatStep1Back() {
     if (compatVoice1) {
-        if (confirm('クローバーを消費しています。戻りますか？')) {
+        const confirmed = await showCustomConfirm('クローバーを消費しています。\n戻りますか？', '⚠️', '戻る', 'やめる');
+        if (confirmed) {
             goBack();
         }
     } else {
@@ -2774,7 +2859,7 @@ async function recordDreamVoice() {
         console.error('マイクエラー:', error);
         btn.disabled = false;
         btn.textContent = '🎤 録音する';
-        alert('マイクへのアクセスが必要です');
+await showCustomAlert('マイクへのアクセスが必要です', '🎤');
     }
 }
 
@@ -2783,13 +2868,13 @@ function submitDreamContent() {
     if (dreamState.inputMethod === 'text') {
         const text = document.getElementById('dreamText').value.trim();
         if (!text) {
-            alert('夢の内容を入力してください');
+await showCustomAlert('夢の内容を入力してください', '✏️');
             return;
         }
         dreamState.content = text;
     } else {
         if (!dreamVoiceBlob) {
-            alert('夢の内容を録音してください');
+await showCustomAlert('夢の内容を録音してください', '🎤');
             return;
         }
         dreamState.content = '[音声入力]';
@@ -2808,14 +2893,15 @@ function submitDreamContent() {
 // 夢占い実行
 async function submitDreamFortune() {
     // クローバー確認
-    if (!confirm(`🍀 ${dreamState.ticketCost}クローバー使用します。よろしいですか？`)) {
+const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}クローバー使用します。\nよろしいですか？`, '🌙', '占う！', 'やめる');
+    if (!confirmed) {
         return;
     }
     
 // クローバーチェック
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < dreamState.ticketCost) {
-        alert('クローバーが足りません');
+await showCustomAlert('クローバーが足りません', '😢');
         return;
     }
     
@@ -2880,7 +2966,7 @@ showGlobalLoading([
         
     } catch (error) {
         console.error('夢占いエラー:', error);
-        alert('占いに失敗しました。クローバーは消費されていません。');
+    await showCustomAlert('占いに失敗しました。\nクローバーは消費されていません。', '😢');
     userData.earnedTickets += dreamState.ticketCost;
         await saveUserData();
         updateUI();
@@ -2967,9 +3053,10 @@ function resetDream() {
 }
 
 // 戻る確認
-function confirmDreamBack() {
+async function confirmDreamBack() {
     if (dreamState.ticketUsed) {
-        if (confirm('クローバーを消費しています。戻りますか？')) {
+        const confirmed = await showCustomConfirm('クローバーを消費しています。\n戻りますか？', '⚠️', '戻る', 'やめる');
+        if (confirmed) {
             resetDream();
             goBack();
         }
