@@ -3554,7 +3554,7 @@ if (splashVideo && splashScreen) {
     });
     
     splashVideo.addEventListener('ended', function() {
-        
+
             splashScreen.style.opacity = '0';
             splashScreen.style.transition = 'opacity 0.5s ease';
             setTimeout(() => {
@@ -3573,4 +3573,367 @@ if (splashVideo && splashScreen) {
             }
         }, 4000);
     }
-});
+});// ========================================
+// 魂の暴露占い
+// ========================================
+
+// 質問データ
+const soulQuestions = [
+    // 🧒 ルーツ・過去（4問）
+    { category: '🧒 ルーツ・過去', q: '親との関係はどうだった？', deep: 'それが今の自分にどう影響してると思う？', skip: false },
+    { category: '🧒 ルーツ・過去', q: '子供の頃、一番辛かった記憶は？', deep: 'その経験から何を学んだ？', skip: true },
+    { category: '🧒 ルーツ・過去', q: '親や先生に言われて今も残ってる言葉は？', deep: 'その言葉を今も信じてる？', skip: true },
+    { category: '🧒 ルーツ・過去', q: '子供の頃の夢は何だった？', deep: '今はどうなってる？諦めたならなぜ？まだ追ってるなら何が足りない？', skip: true },
+    
+    // 🧠 自己認識（4問）
+    { category: '🧠 自己認識', q: '自分のことをどう思ってる？', deep: 'それはいつからそう思ってる？', skip: false },
+    { category: '🧠 自己認識', q: '自分の一番嫌いなところは？', deep: 'それで困った経験は？', skip: false },
+    { category: '🧠 自己認識', q: '自分の好きなところは？', deep: 'それを周りは認めてくれてる？', skip: true },
+    { category: '🧠 自己認識', q: '"本当の自分"と"見せてる自分"の違いは？', deep: 'なぜ本当の自分を隠してる？', skip: true },
+    
+    // 💔 傷・闇（4問）
+    { category: '💔 傷・闇', q: '人生で一番傷ついた経験は？', deep: 'その傷は癒えた？まだ痛む？', skip: true },
+    { category: '💔 傷・闇', q: '許せない人はいる？', deep: '許したら自分はどうなると思う？', skip: true },
+    { category: '💔 傷・闇', q: '誰にも言えない秘密や本音は？', deep: 'それを言えたら楽になる？', skip: true },
+    { category: '💔 傷・闘', q: '自分を責めてしまうことはある？', deep: '何に対して自分を責めてる？', skip: true },
+    
+    // 👥 人間関係（4問）
+    { category: '👥 人間関係', q: '人間関係で繰り返す失敗パターンは？', deep: 'それは自分のせい？相手のせい？', skip: true },
+    { category: '👥 人間関係', q: '本当に信頼できる人は何人いる？', deep: 'もっと増やしたい？今ので十分？', skip: false },
+    { category: '👥 人間関係', q: '人に嫌われるのが怖い？', deep: '嫌われないために何を我慢してる？', skip: false },
+    { category: '👥 人間関係', q: '人に甘えることはできる？', deep: '甘えられないなら、なぜ？', skip: true },
+    
+    // 💼 仕事・お金（3問）
+    { category: '💼 仕事・お金', q: '今の仕事や収入に満足してる？', deep: '不満なら、なぜ変えようとしない？満足してるならそのままでOK！', skip: true },
+    { category: '💼 仕事・お金', q: 'お金に対してどんなイメージがある？', deep: 'それは誰から学んだ考え？', skip: false },
+    { category: '💼 仕事・お金', q: '成功することに恐れはある？', deep: '成功したら何を失うと思う？', skip: true },
+    
+    // 🔄 パターン・習慣（3問）
+    { category: '🔄 パターン・習慣', q: '"また同じことしてる"と思うことは？', deep: '分かってるのになぜ繰り返す？', skip: true },
+    { category: '🔄 パターン・習慣', q: 'いつも途中で諦めてしまうことは？', deep: '諦める時、自分に何て言い訳してる？', skip: true },
+    { category: '🔄 パターン・習慣', q: 'ストレスが溜まると何をする？', deep: 'それは逃げ？発散？', skip: false },
+    
+    // ✨ 強み・喜び（5問）
+    { category: '✨ 強み・喜び', q: '人生で一番嬉しかった経験は？', deep: 'その時の自分は何が良かった？', skip: false },
+    { category: '✨ 強み・喜び', q: '自分の強みは何だと思う？', deep: 'それを活かせてる？', skip: false },
+    { category: '✨ 強み・喜び', q: '誇りに思っていることは？', deep: 'それを周りは知ってる？', skip: true },
+    { category: '✨ 強み・喜び', q: '感謝している人は誰？', deep: 'ちゃんと伝えてる？', skip: false },
+    { category: '✨ 強み・喜び', q: '幸せを感じる瞬間は？', deep: '最近それを感じた？', skip: false },
+    
+    // 🌟 願望・恐れ（3問）
+    { category: '🌟 願望・恐れ', q: '本当はどんな自分になりたい？', deep: '今のままでいい？それとも何かが邪魔してる？', skip: false },
+    { category: '🌟 願望・恐れ', q: '一番怖いことは何？', deep: 'それが現実になったらどうなる？', skip: false },
+    { category: '🌟 願望・恐れ', q: '今の自分に点数をつけるなら何点？', deep: '120点の最高の自分になるには何が必要？', skip: false }
+];
+
+// 魂の暴露占い状態
+let soulState = {
+    currentIndex: 0,
+    answers: [],
+    deepAnswers: [],
+    voiceData: null,
+    isDeep: false
+};
+
+// 画面表示
+function showSoulScreen() {
+    resetSoul();
+    showScreen('soulScreen');
+}
+
+// リセット
+function resetSoul() {
+    soulState = {
+        currentIndex: 0,
+        answers: [],
+        deepAnswers: [],
+        voiceData: null,
+        isDeep: false
+    };
+    document.getElementById('soulStep1').style.display = 'block';
+    document.getElementById('soulStep2').style.display = 'none';
+    document.getElementById('soulStep3').style.display = 'none';
+    document.getElementById('soulStep4').style.display = 'none';
+    document.getElementById('soulLoading').style.display = 'none';
+    document.getElementById('soulResult').style.display = 'none';
+}
+
+// 質問開始
+function startSoulQuestions() {
+    // チケット確認
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    if (totalTickets < 3) {
+        showTicketShortageModal(3, totalTickets);
+        return;
+    }
+    
+    document.getElementById('soulStep1').style.display = 'none';
+    document.getElementById('soulStep2').style.display = 'block';
+    document.getElementById('soulQuestionTotal').textContent = soulQuestions.length;
+    showSoulQuestion();
+}
+
+// 質問表示
+function showSoulQuestion() {
+    const q = soulQuestions[soulState.currentIndex];
+    document.getElementById('soulQuestionNum').textContent = soulState.currentIndex + 1;
+    document.getElementById('soulCategory').textContent = q.category;
+    document.getElementById('soulQuestion').textContent = q.q;
+    document.getElementById('soulAnswer').value = soulState.answers[soulState.currentIndex] || '';
+    
+    // 戻るボタン（最初の質問では非表示）
+    document.getElementById('soulBackBtn').style.display = soulState.currentIndex === 0 ? 'none' : 'block';
+    
+    // スキップボタン
+    document.getElementById('soulSkipBtn').style.display = q.skip ? 'block' : 'none';
+}
+
+// 次の質問へ
+function nextSoulQuestion() {
+    const answer = document.getElementById('soulAnswer').value.trim();
+    
+    if (!answer && !soulQuestions[soulState.currentIndex].skip) {
+        showCustomAlert('この質問は回答が必要です');
+        return;
+    }
+    
+    // 回答を保存
+    soulState.answers[soulState.currentIndex] = answer;
+    
+    // 深掘りへ
+    if (answer) {
+        showSoulDeep();
+    } else {
+        // スキップの場合は深掘りもスキップ
+        soulState.deepAnswers[soulState.currentIndex] = '';
+        goToNextSoulQuestion();
+    }
+}
+
+// スキップ
+function skipSoulQuestion() {
+    soulState.answers[soulState.currentIndex] = '';
+    soulState.deepAnswers[soulState.currentIndex] = '';
+    goToNextSoulQuestion();
+}
+
+// 前の質問へ
+function prevSoulQuestion() {
+    if (soulState.currentIndex > 0) {
+        soulState.currentIndex--;
+        showSoulQuestion();
+    }
+}
+
+// 深掘り表示
+function showSoulDeep() {
+    const q = soulQuestions[soulState.currentIndex];
+    document.getElementById('soulStep2').style.display = 'none';
+    document.getElementById('soulStep3').style.display = 'block';
+    document.getElementById('soulDeepNum').textContent = soulState.currentIndex + 1;
+    document.getElementById('soulDeepTotal').textContent = soulQuestions.length;
+    document.getElementById('soulDeepQuestion').textContent = q.deep;
+    document.getElementById('soulDeepAnswer').value = soulState.deepAnswers[soulState.currentIndex] || '';
+}
+
+// 深掘りから戻る
+function backToSoulMain() {
+    document.getElementById('soulStep3').style.display = 'none';
+    document.getElementById('soulStep2').style.display = 'block';
+}
+
+// 深掘り送信
+function submitSoulDeep() {
+    const answer = document.getElementById('soulDeepAnswer').value.trim();
+    soulState.deepAnswers[soulState.currentIndex] = answer;
+    goToNextSoulQuestion();
+}
+
+// 次の質問へ進む
+function goToNextSoulQuestion() {
+    soulState.currentIndex++;
+    
+    if (soulState.currentIndex >= soulQuestions.length) {
+        // 全質問完了 → 音声へ
+        showSoulVoice();
+    } else {
+        document.getElementById('soulStep3').style.display = 'none';
+        document.getElementById('soulStep2').style.display = 'block';
+        showSoulQuestion();
+    }
+}
+
+// 音声画面表示
+function showSoulVoice() {
+    document.getElementById('soulStep2').style.display = 'none';
+    document.getElementById('soulStep3').style.display = 'none';
+    document.getElementById('soulStep4').style.display = 'block';
+    document.getElementById('soulVoiceStatus').textContent = '';
+    document.getElementById('soulSubmitBtn').style.display = 'none';
+}
+
+// 音声画面から戻る
+function backToSoulQuestions() {
+    soulState.currentIndex = soulQuestions.length - 1;
+    document.getElementById('soulStep4').style.display = 'none';
+    document.getElementById('soulStep2').style.display = 'block';
+    showSoulQuestion();
+}
+
+// 音声録音
+async function recordSoulVoice() {
+    const btn = document.getElementById('soulVoiceBtn');
+    const status = document.getElementById('soulVoiceStatus');
+    
+    if (isRecording) {
+        // 録音停止
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+        }
+        return;
+    }
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (e) => {
+            audioChunks.push(e.data);
+        };
+        
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            soulState.voiceData = audioBlob;
+            stream.getTracks().forEach(track => track.stop());
+            
+            btn.textContent = '🎤 録音し直す';
+            btn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+            status.textContent = '✅ 録音完了！';
+            document.getElementById('soulSubmitBtn').style.display = 'block';
+            isRecording = false;
+        };
+        
+        mediaRecorder.start();
+        isRecording = true;
+        btn.textContent = '⏹️ 録音停止';
+        btn.style.background = '#ff6b6b';
+        status.textContent = '🔴 録音中...';
+        
+        // 最大30秒で自動停止
+        setTimeout(() => {
+            if (isRecording && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
+        }, 30000);
+        
+    } catch (err) {
+        console.error('マイクエラー:', err);
+        showCustomAlert('マイクへのアクセスを許可してください');
+    }
+}
+
+// 鑑定実行
+async function submitSoulFortune() {
+    // チケット消費
+    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
+    if (totalTickets < 3) {
+        showTicketShortageModal(3, totalTickets);
+        return;
+    }
+    
+    // チケット消費処理
+    let remaining = 3;
+    if (userData.freeTickets >= remaining) {
+        userData.freeTickets -= remaining;
+        remaining = 0;
+    } else {
+        remaining -= userData.freeTickets;
+        userData.freeTickets = 0;
+    }
+    if (remaining > 0 && userData.earnedTickets >= remaining) {
+        userData.earnedTickets -= remaining;
+        remaining = 0;
+    } else if (remaining > 0) {
+        remaining -= userData.earnedTickets;
+        userData.earnedTickets = 0;
+    }
+    if (remaining > 0) {
+        userData.paidTickets -= remaining;
+    }
+    
+    await saveUserData();
+    updateUI();
+    
+    // ローディング表示
+    document.getElementById('soulStep4').style.display = 'none';
+    document.getElementById('soulLoading').style.display = 'block';
+    
+    try {
+        // 回答データを整形
+        let analysisText = '【魂の暴露占い - 回答データ】\n\n';
+        
+        for (let i = 0; i < soulQuestions.length; i++) {
+            if (soulState.answers[i]) {
+                analysisText += `Q${i+1}. ${soulQuestions[i].q}\n`;
+                analysisText += `A: ${soulState.answers[i]}\n`;
+                if (soulState.deepAnswers[i]) {
+                    analysisText += `深掘り: ${soulQuestions[i].deep}\n`;
+                    analysisText += `A: ${soulState.deepAnswers[i]}\n`;
+                }
+                analysisText += '\n';
+            }
+        }
+        
+        // 音声をテキスト化
+        let voiceText = '';
+        if (soulState.voiceData) {
+            const formData = new FormData();
+            formData.append('audio', soulState.voiceData, 'voice.webm');
+            
+            const transcribeRes = await fetch('https://voifor-backend.onrender.com/transcribe', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (transcribeRes.ok) {
+                const transcribeData = await transcribeRes.json();
+                voiceText = transcribeData.text || '';
+            }
+        }
+        
+        if (voiceText) {
+            analysisText += `【最後の音声メッセージ】\n「今の自分に一言」: ${voiceText}\n`;
+        }
+        
+        // AI鑑定
+        const response = await fetch('https://voifor-backend.onrender.com/soul-fortune', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                answers: analysisText,
+                userName: userData.name || 'あなた'
+            })
+        });
+        
+        if (!response.ok) throw new Error('鑑定エラー');
+        
+        const data = await response.json();
+        
+        // 結果表示
+        document.getElementById('soulLoading').style.display = 'none';
+        document.getElementById('soulResult').style.display = 'block';
+        document.getElementById('soulFortuneText').innerHTML = data.result.replace(/\n/g, '<br>');
+        
+    } catch (err) {
+        console.error('鑑定エラー:', err);
+        document.getElementById('soulLoading').style.display = 'none';
+        showCustomAlert('鑑定中にエラーが発生しました。もう一度お試しください。');
+        document.getElementById('soulStep4').style.display = 'block';
+    }
+}
+
+// もう一度占う
+function retrySoul() {
+    resetSoul();
+}

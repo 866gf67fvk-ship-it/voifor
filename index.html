@@ -166,6 +166,9 @@
                     <button class="fortune-card" onclick="showDreamScreen()">
                         🌙 夢占い
                     </button>
+                    <button class="fortune-card" onclick="showSoulScreen()">
+    🔮 魂の暴露占い
+</button>
                     <button class="fortune-card coming-soon" disabled>
                         🔜 Coming soon...
                     </button>
@@ -772,7 +775,111 @@
             </div>
         </div>
     </div>
-    
+ 
+ <!-- 魂の暴露占い画面 -->
+<div id="soulScreen" class="screen">
+    <div class="container">
+        <header class="app-header">
+            <h1>🔮 魂の暴露占い</h1>
+        </header>
+        
+        <!-- Step1: 説明画面 -->
+        <div id="soulStep1">
+            <div class="soul-intro">
+                <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 20px;">
+                    あなたの深層心理を徹底的に暴きます。<br>
+                    30の質問であなたの闇と光を解き明かします。
+                </p>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                    <p style="font-size: 1em; margin-bottom: 10px;">🔒 <strong>安心してください</strong></p>
+                    <ul style="text-align: left; padding-left: 20px; line-height: 2;">
+                        <li>回答内容は保存されません</li>
+                        <li>本音で答えるほど深い鑑定ができます</li>
+                        <li>正解/不正解はありません</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(255,100,100,0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <p>⚠️ 容赦のない鑑定結果が出ます</p>
+                    <p>⏱️ 所要時間: 10〜15分</p>
+                    <p>🎫 消費: 3チケット</p>
+                </div>
+                
+                <button class="submit-btn" onclick="startSoulQuestions()">始める</button>
+                <button class="compat-back-btn" onclick="goBack()">← 戻る</button>
+            </div>
+        </div>
+        
+        <!-- Step2: 質問画面 -->
+        <div id="soulStep2" style="display: none;">
+            <div class="soul-progress">
+                <span id="soulQuestionNum">1</span> / <span id="soulQuestionTotal">30</span>
+            </div>
+            <div class="soul-category" id="soulCategory">🧒 ルーツ・過去</div>
+            <div class="soul-question" id="soulQuestion">親との関係はどうだった？</div>
+            <textarea id="soulAnswer" class="soul-textarea" placeholder="本音で答えてください..."></textarea>
+            <p style="font-size: 0.85em; opacity: 0.7; margin: 10px 0;">🔒 この回答は保存されません</p>
+            <div class="soul-buttons">
+                <button class="soul-back-btn" id="soulBackBtn" onclick="prevSoulQuestion()">← 戻る</button>
+                <button class="soul-skip-btn" id="soulSkipBtn" onclick="skipSoulQuestion()" style="display: none;">スキップ</button>
+                <button class="soul-next-btn" onclick="nextSoulQuestion()">次へ →</button>
+            </div>
+        </div>
+        
+        <!-- Step3: 深掘り画面 -->
+        <div id="soulStep3" style="display: none;">
+            <div class="soul-progress">
+                <span id="soulDeepNum">1</span> / <span id="soulDeepTotal">30</span>
+            </div>
+            <div class="soul-deep-label">💭 深掘り質問</div>
+            <div class="soul-question" id="soulDeepQuestion">それが今の自分にどう影響してると思う？</div>
+            <textarea id="soulDeepAnswer" class="soul-textarea" placeholder="もう少し詳しく..."></textarea>
+            <p style="font-size: 0.85em; opacity: 0.7; margin: 10px 0;">🔒 この回答は保存されません</p>
+            <div class="soul-buttons">
+                <button class="soul-back-btn" onclick="backToSoulMain()">← 戻る</button>
+                <button class="soul-next-btn" onclick="submitSoulDeep()">次へ →</button>
+            </div>
+        </div>
+        
+        <!-- Step4: 最後の音声 -->
+        <div id="soulStep4" style="display: none;">
+            <div class="soul-final-intro">
+                <h3>🎤 最後の質問</h3>
+                <p style="margin: 20px 0;">これは声で答えてください。</p>
+                <p style="font-size: 0.85em; opacity: 0.7;">🔒 この回答は保存されません</p>
+            </div>
+            <div class="soul-final-question">
+                「今の自分に、一言伝えるとしたら？」
+            </div>
+            <button class="voice-record-btn" id="soulVoiceBtn" onclick="recordSoulVoice()">🎤 録音する</button>
+            <p id="soulVoiceStatus" class="voice-status"></p>
+            <button class="submit-btn" id="soulSubmitBtn" onclick="submitSoulFortune()" style="display: none;">🔮 鑑定する</button>
+            <button class="compat-back-btn" onclick="backToSoulQuestions()">← 戻る</button>
+        </div>
+        
+        <!-- ローディング -->
+        <div id="soulLoading" style="display: none;">
+            <div class="fortune-loading">
+                <div class="loading-spinner"></div>
+                <p>魂を分析しています...</p>
+            </div>
+        </div>
+        
+        <!-- 結果 -->
+        <div id="soulResult" style="display: none;">
+            <div class="result-card">
+                <h2 style="text-align: center; margin-bottom: 20px;">🔮 魂の暴露鑑定書</h2>
+                <div id="soulFortuneText" class="fortune-text"></div>
+            </div>
+            <div class="result-buttons">
+                <button class="submit-btn" onclick="retrySoul()">🔮 もう一度占う</button>
+                <button class="back-btn" onclick="goBack()">← 戻る</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 購入画面 -->
     <div id="purchaseScreen" class="screen">
         <div class="container">
