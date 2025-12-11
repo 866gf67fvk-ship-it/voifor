@@ -3891,7 +3891,7 @@ async function submitSoulFortune() {
             const formData = new FormData();
             formData.append('audio', soulState.voiceData, 'voice.webm');
             
-            const transcribeRes = await fetch('https://voifor-backend.onrender.com/transcribe', {
+            const transcribeRes = await fetch('https://voifor-server.onrender.com/transcribe', {
                 method: 'POST',
                 body: formData
             });
@@ -3907,7 +3907,7 @@ async function submitSoulFortune() {
         }
         
         // AI鑑定
-        const response = await fetch('https://voifor-backend.onrender.com/soul-fortune', {
+        const response = await fetch('https://voifor-server.onrender.com/soul-fortune', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
