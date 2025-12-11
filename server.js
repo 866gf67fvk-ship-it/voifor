@@ -9,7 +9,9 @@ const path = require('path');
 const { promisify } = require('util');
 const writeFile = promisify(fs.writeFile);
 const unlink = promisify(fs.unlink);
-
+// ファイルアップロード用
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 // Stripe
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -270,6 +272,127 @@ ${detailsText}
     } catch (error) {
         console.error('夢占いエラー:', error.message);
         res.status(500).json({ error: '夢占いに失敗しました' });
+    }
+});
+// ========================================
+// 音声→テキスト変換エンドポイント
+// ========================================
+app.post('/transcribe', upload.single('audio'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: '音声ファイルがありません' });
+        }
+        
+        console.log('音声変換リクエスト');
+        
+        // WebMをBase64に変換
+        const audioBase64 = req.file.buffer.toString('base64');
+        const wavBase64 = await convertWebMToWav('data:audio/webm;base64,' + audioBase64);
+        
+        const audio = { content: wavBase64 };
+        const config = {
+            encoding: 'LINEAR16',
+            sampleRateHertz: 16000,
+            languageCode: 'ja-JP',
+            enableAutomaticPunctuation: true,
+            audioChannelCount: 1,
+        };
+        
+        const [response] = await speechClient.recognize({ audio, config });
+        
+        if (!response.results || response.results.length === 0) {
+            return res.json({ text: '' });
+        }
+        
+        const text = response.results
+            .map(result => result.alternatives[0].transcript)
+            .join('');
+        
+        console.log('音声変換結果:', text);
+        res.json({ text });
+        
+    } catch (error) {
+        console.error('音声変換エラー:', error.message);
+        res.status(500).json({ error: '音声変換に失敗しました' });
+    }
+});
+
+// ========================================
+// 魂の暴露占いエンドポイント
+// ========================================
+app.post('/soul-fortune', async (req, res) => {
+    try {
+        const { answers, userName } = req.body;
+        console.log('魂の暴露占いリクエスト:', userName);
+        
+        const prompt = `あなたは「魂の暴露師」という占い師です。
+相手の心の奥底を見通し、本人すら気づいていない真実を暴き出す占い師です。
+
+【あなたの特徴】
+- シャドウワーク、深層心理学、スピリチュアルの専門知識を持つ
+- 表面的な慰めや当たり障りのないアドバイスは一切しない
+- 優しいが、容赦なく本質を突く
+- 占い師として神秘的な口調で話す
+
+【相談者の回答データ】
+相談者名: ${userName}
+
+${answers}
+
+【あなたがやること】
+この回答データを分析し、以下の構成で鑑定結果を書いてください：
+
+━━━━━━━━━━━━━━━━━━━━
+【あなたの隠された本音】
+━━━━━━━━━━━━━━━━━━━━
+（本当は〇〇と思っている、〇〇が欲しい、など。本人が認めたくない本心を暴く）
+
+━━━━━━━━━━━━━━━━━━━━
+【傷の根源】
+━━━━━━━━━━━━━━━━━━━━
+（過去のどの経験が今も影響しているか）
+
+━━━━━━━━━━━━━━━━━━━━
+【心の盲点】
+━━━━━━━━━━━━━━━━━━━━
+（自分では気づいていない思考のクセ、無意識のパターン）
+
+━━━━━━━━━━━━━━━━━━━━
+【繰り返すループの正体】
+━━━━━━━━━━━━━━━━━━━━
+（なぜ同じ失敗を繰り返すのか、その原因）
+
+━━━━━━━━━━━━━━━━━━━━
+【あなたの闇】
+━━━━━━━━━━━━━━━━━━━━
+（認めたくない自分の一面、シャドウ）
+
+━━━━━━━━━━━━━━━━━━━━
+【眠っている強み】
+━━━━━━━━━━━━━━━━━━━━
+（本人が気づいていない、または活かせていない強み）
+
+━━━━━━━━━━━━━━━━━━━━
+【魂の処方箋】
+━━━━━━━━━━━━━━━━━━━━
+（具体的なアドバイス、マインドセットの転換、行動指針）
+
+【重要】
+- 忖度なし、お世辞なしで容赦なく分析してください
+- ただし最後は希望を持てる内容で締めてください
+- 全体で800〜1200文字程度`;
+
+        const response = await anthropic.messages.create({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 2048,
+            messages: [{ role: 'user', content: prompt }]
+        });
+        
+        res.json({ result: response.content[0].text });
+        
+    } catch (error) {
+        console.error('魂の暴露占いエラー:', error.message);
+        res.status(500).json({ error: '鑑定に失敗しました' });
     }
 });
 // ========================================
