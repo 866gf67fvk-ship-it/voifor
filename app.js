@@ -3538,3 +3538,39 @@ function closeLegalModal() {
     const modal = document.getElementById('legalModal');
     if (modal) modal.remove();
 }
+// ========================================
+// スプラッシュ画面
+// ========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const splashVideo = document.getElementById('splashVideo');
+    const splashScreen = document.getElementById('splashScreen');
+    
+if (splashVideo && splashScreen) {
+    // 強制的に再生を試みる
+    splashVideo.play().catch(function() {
+        // 再生できない場合はスプラッシュを消す
+        splashScreen.style.display = 'none';
+    });
+    
+    splashVideo.addEventListener('ended', function() {
+        
+            splashScreen.style.opacity = '0';
+            splashScreen.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 500);
+        });
+        
+        // 動画が再生できない場合のフォールバック（4秒後に消える）
+        setTimeout(() => {
+            if (splashScreen.style.display !== 'none') {
+                splashScreen.style.opacity = '0';
+                splashScreen.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 500);
+            }
+        }, 4000);
+    }
+});
