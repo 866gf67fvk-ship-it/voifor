@@ -1,5 +1,11 @@
 {
   "appId": "com.takeappstudio.voifor",
   "appName": "VOIFOR",
-  "webDir": "www"
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "https"
+  }
 }
