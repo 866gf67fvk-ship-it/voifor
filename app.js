@@ -1,10 +1,13 @@
 // ========== BGM管理 ==========
 const bgmTracks = [
     'the-lights-of-the-village-190674.mp3',
+    'the-wishing-well-228532.mp3',
     'the-crystal-cave-198981.mp3',
-    'the-blue-room-mysterious-dark-piano-232920.mp3',
-    'mystic-dreams-242909.mp3',
-    'garden-fairytale-368607.mp3'
+    'the-land-of-wonder-159583.mp3',
+    'lullaby-serenity-dreamy-ballad-for-kids-355908.mp3',
+    'rainy-day-chill-lo-fi-276666.mp3',
+    'knock-knock-clap-clap-holiday-mix-428327.mp3',
+    'lofi-218275.mp3'
 ];
 let bgmAudio = null;
 let bgmEnabled = true;
