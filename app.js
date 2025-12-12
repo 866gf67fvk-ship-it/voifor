@@ -1,3 +1,47 @@
+// ========== BGM管理 ==========
+const bgmTracks = [
+    'the-lights-of-the-village-190674.mp3',
+    'the-crystal-cave-198981.mp3',
+    'the-blue-room-mysterious-dark-piano-232920.mp3',
+    'mystic-dreams-242909.mp3',
+    'garden-fairytale-368607.mp3'
+];
+let bgmAudio = null;
+let bgmEnabled = true;
+
+function playRandomBGM() {
+    if (!bgmEnabled) return;
+    const randomTrack = bgmTracks[Math.floor(Math.random() * bgmTracks.length)];
+    bgmAudio = new Audio(randomTrack);
+    bgmAudio.volume = 0.3;
+    bgmAudio.play().then(() => {
+        console.log('🎵 BGM再生:', randomTrack);
+    }).catch(e => {
+        console.log('BGM再生待機中');
+    });
+    bgmAudio.onended = () => playRandomBGM();
+}
+
+function stopBGM() {
+    if (bgmAudio) {
+        bgmAudio.pause();
+        console.log('🔇 BGM停止');
+    }
+}
+
+function resumeBGM() {
+    if (bgmAudio && bgmEnabled) {
+        bgmAudio.play().catch(() => {});
+        console.log('🎵 BGM再開');
+    }
+}
+
+// 最初のタップでBGM開始
+document.addEventListener('click', function startBGMOnce() {
+    playRandomBGM();
+    document.removeEventListener('click', startBGMOnce);
+}, { once: true });
+
 // ========================================
 // VOIFOR -声占い- メインアプリ
 // ========================================
@@ -1064,7 +1108,8 @@ async function startRecording() {
             audioChunks.push(event.data);
         };
         
-        mediaRecorder.onstop = async () => {
+mediaRecorder.onstop = async () => {
+            resumeBGM(); // ← 追加
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             await analyzeVoice(audioBlob);
             recordingStream.getTracks().forEach(track => track.stop());
@@ -1072,6 +1117,7 @@ async function startRecording() {
         
         mediaRecorder.start();
         isRecording = true;
+        stopBGM();
         
         btn.textContent = '🔴 録音中...';
         btn.classList.add('recording');
@@ -2342,6 +2388,7 @@ async function startTarotVoiceRecording() {
         };
         
         mediaRecorder.onstop = async () => {
+            resumeBGM(); // ← 追加
             recordingStream.getTracks().forEach(track => track.stop());
             document.getElementById('tarotVoiceModal')?.remove();
             
@@ -2357,6 +2404,7 @@ async function startTarotVoiceRecording() {
         
         mediaRecorder.start();
         isRecording = true;
+        stopBGM();
         
         // 音量可視化
         visualizeTarotVoice();
@@ -2528,11 +2576,14 @@ const confirmed = await showCustomConfirm('🍀 1枚消費します\n（録音�
         const recorder = new MediaRecorder(stream);
         const chunks = [];
         
+        stopBGM(); // ← 追加
+        
         recorder.ondataavailable = (e) => {
             chunks.push(e.data);
         };
         
         recorder.onstop = () => {
+            resumeBGM(); // ← 追加
             stream.getTracks().forEach(track => track.stop());
             const blob = new Blob(chunks, { type: 'audio/webm' });
             
@@ -2894,6 +2945,7 @@ async function startDreamRecording() {
         dreamRecorder.ondataavailable = (e) => chunks.push(e.data);
         
         dreamRecorder.onstop = () => {
+            resumeBGM(); // ← 追加
             stream.getTracks().forEach(track => track.stop());
             dreamVoiceBlob = new Blob(chunks, { type: 'audio/webm' });
             
@@ -2914,6 +2966,7 @@ async function startDreamRecording() {
         };
         
         dreamRecorder.start();
+        stopBGM();
         
         let count = 15;
         stopBtn.textContent = `⏹️ 録音停止（${count}秒）`;
@@ -3803,6 +3856,7 @@ async function recordSoulVoice() {
         };
         
         mediaRecorder.onstop = () => {
+            resumeBGM(); // ← 追加
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             soulState.voiceData = audioBlob;
             stream.getTracks().forEach(track => track.stop());
@@ -3816,6 +3870,7 @@ async function recordSoulVoice() {
         
         mediaRecorder.start();
         isRecording = true;
+        stopBGM(); 
         btn.textContent = '⏹️ 録音停止';
         btn.style.background = '#ff6b6b';
         status.textContent = '🔴 録音中...';
