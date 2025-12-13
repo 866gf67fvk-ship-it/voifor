@@ -384,107 +384,13 @@ function updateUI() {
 document.getElementById('freeTicketCount').textContent = userData.freeTickets;
 document.getElementById('earnedTicketCount').textContent = userData.earnedTickets; 
 
-// プレミアム表示
-let premiumBadge = document.getElementById('premiumBadge');
-if (!premiumBadge) {
-    premiumBadge = document.createElement('div');
-    premiumBadge.id = 'premiumBadge';
-    const ticketArea = document.querySelector('.ticket-display');
-    if (ticketArea) {
-        ticketArea.parentNode.insertBefore(premiumBadge, ticketArea.nextSibling);
-    }
-}
-
-// プレミアムスタイル用のクラス
-const mainScreen = document.getElementById('mainScreen');
-const ticketDisplay = document.querySelector('.ticket-display');
-
-if (isPremiumActive()) {
-    const remaining = getPremiumRemaining();
-    const expiry = new Date(userData.premiumExpiry);
-    const expiryStr = `${expiry.getMonth() + 1}/${expiry.getDate()}`;
-    
-    // プレミアムバッジ
-    premiumBadge.style.cssText = `
-        text-align: center;
-        margin: 15px 0;
-        padding: 15px 20px;
-        background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
-        border-radius: 20px;
-        color: #333;
-        font-weight: bold;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 165, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.3);
-        border: 2px solid rgba(255, 255, 255, 0.5);
-    `;
-    premiumBadge.style.display = 'block';
-    premiumBadge.innerHTML = `
-        <div style="font-size: 1.2em; margin-bottom: 5px;">👑 プレミアム会員 👑</div>
-        <div style="font-size: 0.9em; opacity: 0.9;">✨ 本日残り: <strong>${remaining}回</strong> ｜ 有効期限: ${expiryStr} ✨</div>
-    `;
-    
-    // クローバー表示エリアをゴールドに
-    if (ticketDisplay) {
-        ticketDisplay.style.cssText = `
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.15) 50%, rgba(255, 215, 0, 0.2) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), 0 0 30px rgba(255, 165, 0, 0.2);
-            border-radius: 15px;
-            padding: 15px;
-        `;
-    }
-    
-    // ゴールドキラキラを追加
-    if (!document.getElementById('premiumSparkles')) {
-        const sparkleContainer = document.createElement('div');
-        sparkleContainer.id = 'premiumSparkles';
-        sparkleContainer.innerHTML = `
-            <style>
-                @keyframes goldSparkle {
-                    0%, 100% { opacity: 0; transform: scale(0); }
-                    50% { opacity: 1; transform: scale(1); }
-                }
-                .gold-sparkle {
-                    position: fixed;
-                    width: 8px;
-                    height: 8px;
-                    background: radial-gradient(circle, #FFD700 0%, transparent 70%);
-                    border-radius: 50%;
-                    pointer-events: none;
-                    animation: goldSparkle 3s ease-in-out infinite;
-                    z-index: 1;
-                }
-            </style>
-        `;
-        document.body.appendChild(sparkleContainer);
-        
-        // ゴールドキラキラを20個追加
-        for (let i = 0; i < 20; i++) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'gold-sparkle';
-            sparkle.style.left = Math.random() * 100 + '%';
-            sparkle.style.top = Math.random() * 100 + '%';
-            sparkle.style.animationDelay = Math.random() * 3 + 's';
-            sparkleContainer.appendChild(sparkle);
-        }
-    }
-    
-} else {
-    premiumBadge.style.display = 'none';
-    
-    // 通常に戻す
-    if (ticketDisplay) {
-        ticketDisplay.style.cssText = '';
-    }
-    
-    // ゴールドキラキラを削除
-    const sparkles = document.getElementById('premiumSparkles');
-    if (sparkles) sparkles.remove();
-}
+// プレミアム表示（超豪華版）
+applyPremiumStyle();
 
 // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
-
+     
 // プロフィール表示（入力があるものだけ表示）
 const profileItems = [];
 
@@ -4299,4 +4205,177 @@ async function submitSoulFortune() {
 // もう一度占う
 function retrySoul() {
     resetSoul();
+}
+// ========================================
+// プレミアム豪華演出
+// ========================================
+
+function applyPremiumStyle() {
+    const isPremium = isPremiumActive();
+    
+    // 既存のプレミアム要素を削除
+    document.getElementById('premiumBadge')?.remove();
+    document.getElementById('premiumStyle')?.remove();
+    
+    if (!isPremium) return;
+    
+    const remaining = getPremiumRemaining();
+    const expiry = new Date(userData.premiumExpiry);
+    const expiryStr = `${expiry.getMonth() + 1}/${expiry.getDate()}`;
+    
+    // プレミアム専用スタイルを追加
+    const style = document.createElement('style');
+    style.id = 'premiumStyle';
+    style.textContent = `
+        /* プレミアム時のVOIFORタイトル */
+        .app-header h1 {
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700, #FFA500) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            text-shadow: none !important;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 165, 0, 0.6)) !important;
+            animation: premiumTitleGlow 2s ease-in-out infinite !important;
+        }
+        
+        @keyframes premiumTitleGlow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 165, 0, 0.6)); }
+            50% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 1)) drop-shadow(0 0 40px rgba(255, 165, 0, 0.8)); }
+        }
+        
+        /* プレミアムバッジ */
+        #premiumBadge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FFD700 50%, #FFA500 75%, #FFD700 100%);
+            background-size: 200% 200%;
+            animation: premiumShine 3s linear infinite;
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.8),
+                0 0 40px rgba(255, 165, 0, 0.6),
+                0 0 60px rgba(255, 215, 0, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+            border-radius: 25px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 350px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #premiumBadge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
+            animation: premiumSweep 4s linear infinite;
+        }
+        
+        @keyframes premiumShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        @keyframes premiumSweep {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        /* 今日の声占いボタンをゴールドに */
+        .fortune-btn, .main-fortune-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700) !important;
+            background-size: 200% 200% !important;
+            animation: premiumShine 3s linear infinite !important;
+            border: 2px solid rgba(255, 255, 255, 0.5) !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 165, 0, 0.4) !important;
+            color: #333 !important;
+            font-weight: bold !important;
+        }
+        
+        /* ゴールドの光パーティクル */
+        .gold-particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #FFD700;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            box-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500;
+            animation: floatUp 8s linear infinite;
+        }
+        
+        @keyframes floatUp {
+            0% { 
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(-10vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+        
+        /* 画面全体にゴールドの縁取り */
+        #mainScreen {
+            border: 3px solid transparent;
+            background-image: linear-gradient(#0f0f23, #0f0f23), 
+                              linear-gradient(135deg, #FFD700, #FFA500, #FFD700, #FFA500);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.2); }
+            50% { box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.4); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // プレミアムバッジを作成
+    const badge = document.createElement('div');
+    badge.id = 'premiumBadge';
+    badge.innerHTML = `
+        <div style="position: relative; z-index: 1;">
+            <div style="font-size: 1.5em; margin-bottom: 8px; color: #333; text-shadow: 0 0 10px rgba(255,255,255,0.8);">
+                👑 PREMIUM 👑
+            </div>
+            <div style="font-size: 1em; color: #333; font-weight: bold;">
+                本日残り: <span style="font-size: 1.3em; color: #8B0000;">${remaining}回</span>
+            </div>
+            <div style="font-size: 0.85em; color: #555; margin-top: 5px;">
+                有効期限: ${expiryStr}まで
+            </div>
+        </div>
+    `;
+    
+    // メイン画面の上部に挿入
+    const mainContent = document.querySelector('#mainScreen .container');
+    const header = document.querySelector('#mainScreen .app-header');
+    if (mainContent && header) {
+        header.after(badge);
+    } else {
+        document.querySelector('#mainScreen')?.prepend(badge);
+    }
+    
+    // ゴールドパーティクルを追加
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'gold-particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+        document.body.appendChild(particle);
+    }
 }
