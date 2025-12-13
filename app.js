@@ -1440,7 +1440,7 @@ function saveFortuneHistory(dateStr, fortune, summary, type = 'voice') {
 // ========================================
 
 // Stripe公開キー
-const stripe = Stripe('pk_test_51SPaWsIpIpuVRpxZBE0LgYxH5Fn8nwzh7EYRQAK2GMvxiKYoZi1zT3RA36VNLZb9o7TMm5W3J7A3X5f7Cq0PEr0f00ThNZl8gn');
+const stripe = Stripe('pk_test_51SMV1CELHu2Nzyd3uX3GhBQVEhybahRSTuij8byQ2VTYMzVTF6DhgYSY3VLSu5j0i6YzBcnrTKdmnw8lIuDhoNKw00foWY7Lc9');
 
 // クローバー購入
 async function purchaseTickets(amount, price) {
