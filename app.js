@@ -303,6 +303,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ユーザーデータ読み込み
     await loadUserData();
     
+// 決済成功後の処理
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+        const amount = parseInt(urlParams.get('amount')) || 0;
+        if (amount > 0) {
+            userData.earnedTickets += amount;
+            await saveUserData();
+            await showCustomAlert(`🎉 購入完了！\n⭐ ${amount}クローバーを獲得しました！`, '✅');
+        }
+        // URLパラメータをクリア（リロードで重複付与を防ぐ）
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (urlParams.get('canceled') === 'true') {
+        await showCustomAlert('購入がキャンセルされました', '❌');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
  // カレンダー表示
     renderCalendar();
     
