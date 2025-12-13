@@ -72,61 +72,61 @@ const characterTemplates = {
     devilMale: {
         defaultName: '鬼術師',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764268818/u4834658121_A_cute_chibi_demon_fortune_teller_character_small_b8d8bc81-26e3-4456-a478-b2a609fc70fe_3_s14cdn.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '占ってやるぜ！'
     },
     devilFemale: {
         defaultName: '鬼巫女',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269013/u4834658121_A_cute_chibi_demon_fortune_teller_character_small_b8d8bc81-26e3-4456-a478-b2a609fc70fe_2_eileck.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '占ってあげるわよ💕'
     },
     angelMale: {
         defaultName: 'エンジェル♂',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269049/u4834658121_A_cute_chibi_angel_fortune_teller_character_white_6469a933-2db5-40bf-af2f-7a4757fab116_3_nqhd7q.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '一緒に占いましょう✨'
     },
     angelFemale: {
         defaultName: 'エンジェル♀',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269392/u4834658121_A_cute_chibi_angel_fortune_teller_character_white_dfe8d8c8-cff0-447d-8c3c-7d8b417105b4_1_e5ddvi.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '占わせてくださいね💕'
     },
     jesterMale: {
         defaultName: 'ピエロ♂',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269038/u4834658121_A_cute_chibi_jester_fortune_teller_character_colo_70f0ae95-dfef-4686-9415-3e3dca5130a2_0_o74bse.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '占っちゃうよん！✨'
     },
     jesterFemale: {
         defaultName: 'ピエロ♀',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269038/u4834658121_A_cute_chibi_jester_fortune_teller_character_colo_70f0ae95-dfef-4686-9415-3e3dca5130a2_3_rhnwuu.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '占うよ〜！💕'
     },
     elfMale: {
         defaultName: 'エルフ♂',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269024/u4834658121_____--v_7_dc3fac00-dc89-440c-b28e-9fe33ff8b3a8_0_1_uabcje.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '未来を見せてあげよう✨'
     },
     elfFemale: {
         defaultName: 'エルフ♀',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269094/u4834658121_____--v_7_1a2a511d-936c-447f-9525-f2358094ae5c_0_zinx1g.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '占わせていただきますわ💕'
     },
     fairy: {
         defaultName: 'フェアリー',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269036/u4834658121_A_cute_chibi_fairy_fortune_teller_character_trans_a96b325e-fc10-43ed-aec5-dadff09ae0db_2_npiwaf.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '占うの！楽しみだね！✨'
     },
     cat: {
         defaultName: 'クロネコ',
         image: 'https://res.cloudinary.com/dgtsmtijl/image/upload/v1764269055/u4834658121_A_cute_black_cat_fortune_teller_sitting_on_mystic_b1566c70-0a16-4513-aea5-6bc94f8b8f98_2_uvkr3s.png',
-        emoji: '⭐',
+        emoji: '🍀',
         speech: '別に...占ってあげるにゃ✨'
     }
 };
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (amount > 0) {
             userData.earnedTickets += amount;
             await saveUserData();
-            await showCustomAlert(`🎉 購入完了！\n⭐ ${amount}クローバーを獲得しました！`, '✅');
+            await showCustomAlert(`🎉 購入完了！\n🍀 ${amount}クローバーを獲得しました！`, '✅');
         }
         // URLパラメータをクリア（リロードで重複付与を防ぐ）
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -829,8 +829,8 @@ modal.innerHTML = `
             <div style="background: rgba(102, 126, 234, 0.2); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
                 <div style="color: white; font-size: 0.9em; line-height: 1.7;">
                     ✨ <strong>紹介特典</strong><br>
-                    • SNSでシェア → <strong style="color: #4ade80;">⭐+1</strong><br>
-                    • 友達がコード使用 → <strong style="color: #4ade80;">⭐+1</strong><br>
+                    • SNSでシェア → <strong style="color: #4ade80;">🍀+1</strong><br>
+                    • 友達がコード使用 → <strong style="color: #4ade80;">🍀+1</strong><br>
                     • 友達も → <strong style="color: #FFD700;">🍀+1</strong><br>
                     <br>
                     📊 <strong>今週の実績</strong>: <strong style="color: #FFD700;">${weeklyCount}人</strong> / 週3人まで<br>
@@ -943,11 +943,11 @@ const platformName = platform === 'line' ? 'LINE' : '𝕏';
     const otherPlatform = platform === 'line' ? '𝕏' : 'LINE';
     const otherDone = shareData[platform === 'line' ? 'x' : 'line'];
        
-    let message = `🎉 ${platformName}シェアありがとう！\n⭐+1クローバーを獲得しました！`;
+    let message = `🎉 ${platformName}シェアありがとう！\n🍀+1クローバーを獲得しました！`;
     if (!otherDone) {
-        message += `\n\n💡 ${otherPlatform}でもシェアすると更に⭐+1！`;
+        message += `\n\n💡 ${otherPlatform}でもシェアすると更に🍀+1！`;
     }
-    message += `\n\n現在の保有:\n🍀 ${userData.freeTickets}枚\n⭐ ${userData.earnedTickets}枚`;
+ message += `\n\n現在の保有:\n☘️ 無料: ${userData.freeTickets}枚\n🍀 獲得: ${userData.earnedTickets}枚`;
     
     alert(message);
 }
@@ -1013,7 +1013,7 @@ async function awardReferrerBonus() {
         return;
     }
     
-    // 紹介者に⭐+1
+    // 紹介者に🍀+1
     const { error: updateError } = await supabase
         .from('users')
         .update({ earned_tickets: referrer.earned_tickets + 1 })
@@ -1631,7 +1631,7 @@ function showAdConfirmModal(remaining) {
         <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
             <div style="font-size: 3em; margin-bottom: 15px;">🎥</div>
             <h2 style="font-size: 1.3em; margin-bottom: 15px; color: white;">動画を見てクローバーGET！</h2>
-            <p style="font-size: 1em; color: white; margin-bottom: 10px;">30秒の動画を見ると<br><span style="color: #4ade80; font-weight: bold;">🍀 +1クローバー</span>GET！</p>
+            <p style="font-size: 1em; color: white; margin-bottom: 10px;">30秒の動画を見ると<br><span style="color: #4ade80; font-weight: bold;">☘️+1クローバー</span>GET！</p>
             <p style="font-size: 0.9em; opacity: 0.7; color: white; margin-bottom: 25px;">残り視聴可能回数: <span style="color: #FFD700; font-weight: bold;">${remaining}回</span></p>
             <div style="display: flex; gap: 15px;">
                 <button onclick="this.closest('#adConfirmModal').remove()" style="flex: 1; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 25px; font-size: 1em; cursor: pointer;">
@@ -1745,10 +1745,10 @@ async function claimAdReward() {
     const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
     const remaining = MAX_DAILY_ADS - (adData[today] || 0);
     
-    if (success) {
-        alert(`🎉 🍀+1を獲得しました！\n\n現在の保有:\n🍀 無料: ${userData.freeTickets}枚\n⭐ 獲得: ${userData.earnedTickets}枚\n\n本日の残り視聴可能回数: ${remaining}回`);
+if (success) {
+        alert(`🎉 ☘️+1を獲得しました！\n\n現在の保有:\n☘️ 無料: ${userData.freeTickets}枚\n🍀 獲得: ${userData.earnedTickets}枚\n\n本日の残り視聴可能回数: ${remaining}回`);
     } else {
-        alert(`⚠️ 🍀無料クローバーは上限(5枚)に達しています\n\n現在の保有:\n🍀 無料: ${userData.freeTickets}枚（上限）\n⭐ 獲得: ${userData.earnedTickets}枚\n\n無料クローバーを使ってからまた受け取れます！`);
+        alert(`⚠️ ☘️無料クローバーは上限(5枚)に達しています\n\n現在の保有:\n☘️ 無料: ${userData.freeTickets}枚（上限）\n🍀 獲得: ${userData.earnedTickets}枚\n\n無料クローバーを使ってからまた受け取れます！`);
     }
 }
 
@@ -2554,7 +2554,7 @@ function showZodiacAndEto(personNum) {
             '獅子座': '♌', '乙女座': '♍', '天秤座': '♎', '蠍座': '♏',
             '射手座': '♐', '山羊座': '♑', '水瓶座': '♒', '魚座': '♓'
         };
-        zodiacDisplay.textContent = `${zodiacEmoji[zodiac] || '⭐'} ${zodiac}`;
+        zodiacDisplay.textContent = `${zodiacEmoji[zodiac] || '🍀'} ${zodiac}`;
         
         // 干支
         if (etoDisplay) {
@@ -2750,7 +2750,7 @@ const confirmed = await showCustomConfirm('🍀 1枚使用しますか？', '�
             return;
         }
         
-        // クローバー消費（🍀無料 → ⭐獲得 の順）
+        // クローバー消費（🍀無料 → 🍀獲得 の順）
         if (userData.freeTickets > 0) {
             userData.freeTickets--;
         } else if (userData.earnedTickets > 0) {
@@ -3301,7 +3301,7 @@ function backToDreamStep2() {
 function showTicketConfirmModal(requiredTickets, fortuneType) {
     return new Promise((resolve) => {
      const totalTickets = userData.freeTickets + userData.earnedTickets;
-        const ticketType = requiredTickets === 0 ? '🎁 無料' : (userData.freeTickets > 0 ? '🍀 無料クローバー' : '⭐ 獲得クローバー');
+    const ticketType = requiredTickets === 0 ? '🎁 無料' : (userData.freeTickets > 0 ? '☘️ 無料クローバー' : '🍀 獲得クローバー');
         
         const modal = document.createElement('div');
         modal.id = 'ticketConfirmModal';
