@@ -38,6 +38,16 @@ function resumeBGM() {
         console.log('🎵 BGM再開');
     }
 }
+// 画面が非表示になったらBGM停止、表示されたら再開
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // 画面が非表示（バックグラウンド）
+        stopBGM();
+    } else {
+        // 画面が表示（フォアグラウンド）
+        resumeBGM();
+    }
+});
 
 // 最初のタップでBGM開始
 document.addEventListener('click', function startBGMOnce() {
