@@ -384,31 +384,107 @@ function updateUI() {
 document.getElementById('freeTicketCount').textContent = userData.freeTickets;
 document.getElementById('earnedTicketCount').textContent = userData.earnedTickets; 
 
-// プレミアムバッジ表示
+// プレミアム表示
 let premiumBadge = document.getElementById('premiumBadge');
 if (!premiumBadge) {
-    // バッジ要素がなければ作成
     premiumBadge = document.createElement('div');
     premiumBadge.id = 'premiumBadge';
-    premiumBadge.style.cssText = 'text-align: center; margin: 10px 0; padding: 10px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 15px; color: #333; font-weight: bold;';
     const ticketArea = document.querySelector('.ticket-display');
     if (ticketArea) {
         ticketArea.parentNode.insertBefore(premiumBadge, ticketArea.nextSibling);
     }
 }
 
+// プレミアムスタイル用のクラス
+const mainScreen = document.getElementById('mainScreen');
+const ticketDisplay = document.querySelector('.ticket-display');
+
 if (isPremiumActive()) {
     const remaining = getPremiumRemaining();
+    const expiry = new Date(userData.premiumExpiry);
+    const expiryStr = `${expiry.getMonth() + 1}/${expiry.getDate()}`;
+    
+    // プレミアムバッジ
+    premiumBadge.style.cssText = `
+        text-align: center;
+        margin: 15px 0;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+        border-radius: 20px;
+        color: #333;
+        font-weight: bold;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 165, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+    `;
     premiumBadge.style.display = 'block';
-    premiumBadge.innerHTML = `👑 プレミアム会員 <span style="font-size: 0.9em;">｜本日残り: ${remaining}回</span>`;
+    premiumBadge.innerHTML = `
+        <div style="font-size: 1.2em; margin-bottom: 5px;">👑 プレミアム会員 👑</div>
+        <div style="font-size: 0.9em; opacity: 0.9;">✨ 本日残り: <strong>${remaining}回</strong> ｜ 有効期限: ${expiryStr} ✨</div>
+    `;
+    
+    // クローバー表示エリアをゴールドに
+    if (ticketDisplay) {
+        ticketDisplay.style.cssText = `
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.15) 50%, rgba(255, 215, 0, 0.2) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), 0 0 30px rgba(255, 165, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+        `;
+    }
+    
+    // ゴールドキラキラを追加
+    if (!document.getElementById('premiumSparkles')) {
+        const sparkleContainer = document.createElement('div');
+        sparkleContainer.id = 'premiumSparkles';
+        sparkleContainer.innerHTML = `
+            <style>
+                @keyframes goldSparkle {
+                    0%, 100% { opacity: 0; transform: scale(0); }
+                    50% { opacity: 1; transform: scale(1); }
+                }
+                .gold-sparkle {
+                    position: fixed;
+                    width: 8px;
+                    height: 8px;
+                    background: radial-gradient(circle, #FFD700 0%, transparent 70%);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    animation: goldSparkle 3s ease-in-out infinite;
+                    z-index: 1;
+                }
+            </style>
+        `;
+        document.body.appendChild(sparkleContainer);
+        
+        // ゴールドキラキラを20個追加
+        for (let i = 0; i < 20; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'gold-sparkle';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 3 + 's';
+            sparkleContainer.appendChild(sparkle);
+        }
+    }
+    
 } else {
     premiumBadge.style.display = 'none';
+    
+    // 通常に戻す
+    if (ticketDisplay) {
+        ticketDisplay.style.cssText = '';
+    }
+    
+    // ゴールドキラキラを削除
+    const sparkles = document.getElementById('premiumSparkles');
+    if (sparkles) sparkles.remove();
 }
 
 // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
-     
+
 // プロフィール表示（入力があるものだけ表示）
 const profileItems = [];
 
