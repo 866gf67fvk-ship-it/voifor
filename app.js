@@ -293,7 +293,12 @@ let userData = {
     birth: '',               // 生年月日
     bloodType: '',           // 血液型
     isRegistered: false,     // 登録済みか
-    characterName: ''        // キャラクター名
+    characterName: '',       // キャラクター名
+    // プレミアム関連
+    isPremium: false,        // プレミアム会員か
+    premiumExpiry: null,     // プレミアム有効期限
+    premiumDailyCount: 0,    // 今日のプレミアム使用回数
+    premiumLastDate: null    // 最後にプレミアム使用した日
 };
 
 // 初期化
@@ -307,7 +312,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
         const amount = parseInt(urlParams.get('amount')) || 0;
-        if (amount > 0) {
+        
+        if (amount === 0) {
+            // プレミアム購入成功
+            userData.isPremium = true;
+            const expiry = new Date();
+            expiry.setMonth(expiry.getMonth() + 1);
+            userData.premiumExpiry = expiry.toISOString();
+            userData.premiumDailyCount = 0;
+            userData.premiumLastDate = null;
+            await saveUserData();
+            await showCustomAlert(`🎉 プレミアム登録完了！\n\n👑 1日20回まで占い放題！\n有効期限: ${expiry.toLocaleDateString('ja-JP')}`, '✅');
+        } else if (amount > 0) {
             userData.earnedTickets += amount;
             await saveUserData();
             await showCustomAlert(`🎉 購入完了！\n🍀 ${amount}クローバーを獲得しました！`, '✅');
@@ -368,10 +384,31 @@ function updateUI() {
 document.getElementById('freeTicketCount').textContent = userData.freeTickets;
 document.getElementById('earnedTicketCount').textContent = userData.earnedTickets; 
 
+// プレミアムバッジ表示
+let premiumBadge = document.getElementById('premiumBadge');
+if (!premiumBadge) {
+    // バッジ要素がなければ作成
+    premiumBadge = document.createElement('div');
+    premiumBadge.id = 'premiumBadge';
+    premiumBadge.style.cssText = 'text-align: center; margin: 10px 0; padding: 10px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 15px; color: #333; font-weight: bold;';
+    const ticketArea = document.querySelector('.ticket-display');
+    if (ticketArea) {
+        ticketArea.parentNode.insertBefore(premiumBadge, ticketArea.nextSibling);
+    }
+}
+
+if (isPremiumActive()) {
+    const remaining = getPremiumRemaining();
+    premiumBadge.style.display = 'block';
+    premiumBadge.innerHTML = `👑 プレミアム会員 <span style="font-size: 0.9em;">｜本日残り: ${remaining}回</span>`;
+} else {
+    premiumBadge.style.display = 'none';
+}
+
 // 連続日数・合計
     document.getElementById('streakCount').textContent = userData.streak;
     document.getElementById('totalCount').textContent = userData.totalReadings;
-    
+     
 // プロフィール表示（入力があるものだけ表示）
 const profileItems = [];
 
@@ -555,7 +592,7 @@ async function loadUserData() {
             await createNewUser(deviceId);
 } else if (data) {
             // 既存ユーザー
-userData.freeTickets = data.free_tickets;
+            userData.freeTickets = data.free_tickets;
             userData.earnedTickets = data.earned_tickets;
             userData.streak = data.streak;
             userData.totalReadings = data.total_readings;
@@ -569,6 +606,11 @@ userData.freeTickets = data.free_tickets;
             userData.bloodType = data.blood_type || '';
             userData.isRegistered = data.is_registered || false;
             userData.oduu = data.id;
+            // プレミアム関連
+            userData.isPremium = data.is_premium || false;
+            userData.premiumExpiry = data.premium_expiry || null;
+            userData.premiumDailyCount = data.premium_daily_count || 0;
+            userData.premiumLastDate = data.premium_last_date || null;
             console.log('📁 ユーザーデータ読み込み完了');
         }
     } catch (err) {
@@ -597,7 +639,7 @@ async function saveUserData() {
     try {
 const { error } = await supabase
             .from('users')
-.update({
+            .update({
                 free_tickets: userData.freeTickets,
                 earned_tickets: userData.earnedTickets,
                 streak: userData.streak,
@@ -610,7 +652,12 @@ const { error } = await supabase
                 name: userData.name,
                 birth: userData.birth,
                 blood_type: userData.bloodType,
-                is_registered: userData.isRegistered
+                is_registered: userData.isRegistered,
+                // プレミアム関連
+                is_premium: userData.isPremium,
+                premium_expiry: userData.premiumExpiry,
+                premium_daily_count: userData.premiumDailyCount,
+                premium_last_date: userData.premiumLastDate
             })
             .eq('device_id', deviceId);
         
@@ -1055,9 +1102,27 @@ async function startVoiceFortune() {
         await saveUserData();
     }
     
- const totalTickets = userData.freeTickets + userData.earnedTickets;
-    const isFirstToday = !userData.dailyFortuneCount || userData.dailyFortuneCount === 0;
+    // プレミアム会員の場合
+    if (isPremiumActive()) {
+        if (!canUsePremiumToday()) {
+            await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+            return;
+        }
+        
+        const remaining = getPremiumRemaining();
+        const confirmed = await showCustomConfirm(`👑 プレミアム占い\n\n本日残り: ${remaining}回`, '🔮', '占う！', 'やめる');
+        if (!confirmed) return;
+        
+        userData.premiumDailyCount++;
+        await saveUserData();
+        
+        proceedToFortuneScreen();
+        return;
+    }
     
+    const totalTickets = userData.freeTickets + userData.earnedTickets;
+    const isFirstToday = !userData.dailyFortuneCount || userData.dailyFortuneCount === 0;
+
     // パターン①: 1日1回無料がある場合
     if (isFirstToday) {
         const confirmed = await showTicketConfirmModal(0, '今日の占い');
@@ -1497,6 +1562,47 @@ await showCustomAlert(result.error.message, '❌');
 await showCustomAlert('購入処理中にエラーが発生しました', '❌');
     }
 }
+// ========================================
+// プレミアム判定関数
+// ========================================
+
+// プレミアム有効判定
+function isPremiumActive() {
+    if (!userData.isPremium) return false;
+    if (!userData.premiumExpiry) return false;
+    
+    const now = new Date();
+    const expiry = new Date(userData.premiumExpiry);
+    return now < expiry;
+}
+
+// 今日のプレミアム使用可能判定
+function canUsePremiumToday() {
+    if (!isPremiumActive()) return false;
+    
+    const today = new Date().toDateString();
+    
+    // 日付が変わったらリセット
+    if (userData.premiumLastDate !== today) {
+        userData.premiumDailyCount = 0;
+        userData.premiumLastDate = today;
+    }
+    
+    return userData.premiumDailyCount < 20;
+}
+
+// プレミアム残り回数
+function getPremiumRemaining() {
+    if (!isPremiumActive()) return 0;
+    
+    const today = new Date().toDateString();
+    if (userData.premiumLastDate !== today) {
+        return 20;
+    }
+    
+    return Math.max(0, 20 - userData.premiumDailyCount);
+}
+
 // ========================================
 // プレミアム・無料獲得
 // ========================================
@@ -1990,9 +2096,20 @@ async function selectSpread(num) {
     tarotState.spread = num;
     tarotState.ticketCost = num === 1 ? 1 : 2;
     
+    // プレミアム会員はチケット不要
+    if (isPremiumActive()) {
+        if (!canUsePremiumToday()) {
+            await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+            return;
+        }
+        document.getElementById('tarotStep1').style.display = 'none';
+        document.getElementById('tarotStep2').style.display = 'block';
+        return;
+    }
+    
     // クローバー確認
-const totalTickets = userData.freeTickets + userData.earnedTickets;
-if (totalTickets < tarotState.ticketCost) {
+    const totalTickets = userData.freeTickets + userData.earnedTickets;
+    if (totalTickets < tarotState.ticketCost) {
         showTicketShortageModal();
         return;
     }
@@ -2052,6 +2169,15 @@ if (!question) {
 
 // タロットテキスト質問確認モーダル
 function showTarotTextConfirmModal(question) {
+    // プレミアム会員かどうかで表示を変える
+    let costText = '';
+    if (isPremiumActive()) {
+        const remaining = getPremiumRemaining();
+        costText = `👑 プレミアム（本日残り: ${remaining}回）`;
+    } else {
+        costText = `🍀 ${tarotState.ticketCost}クローバー使用します`;
+    }
+    
     const modal = document.createElement('div');
     modal.id = 'tarotTextConfirmModal';
     modal.style.cssText = `
@@ -2074,7 +2200,7 @@ function showTarotTextConfirmModal(question) {
             <h2 style="font-size: 1.3em; margin-bottom: 15px; color: white;">タロット占い</h2>
             <p style="font-size: 1em; color: white; margin-bottom: 10px;">この質問で占いますか？</p>
             <p style="font-size: 0.95em; color: #FFD700; margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px;">「${question}」</p>
-            <p style="font-size: 0.9em; opacity: 0.8; color: white; margin-bottom: 20px;">🍀 ${tarotState.ticketCost}クローバー使用します</p>
+        <p style="font-size: 0.9em; opacity: 0.8; color: white; margin-bottom: 20px;">${costText}</p>
             <div style="display: flex; gap: 15px;">
                 <button onclick="this.closest('#tarotTextConfirmModal').remove()" style="flex: 1; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 25px; font-size: 1em; cursor: pointer;">
                     やめる
@@ -2094,20 +2220,27 @@ function showTarotTextConfirmModal(question) {
 }
 
 // タロットテキスト質問確定
-function confirmTarotTextQuestion(question) {
+async function confirmTarotTextQuestion(question) {
     document.getElementById('tarotTextConfirmModal')?.remove();
     
-    // クローバー消費
-    for (let i = 0; i < tarotState.ticketCost; i++) {
-        if (userData.freeTickets > 0) {
-            userData.freeTickets--;
-        } else if (userData.earnedTickets > 0) {
-            userData.earnedTickets--;
+    // プレミアム会員の場合
+    if (isPremiumActive()) {
+        userData.premiumDailyCount++;
+        tarotState.ticketUsed = true;
+        await saveUserData();
+    } else {
+        // 通常ユーザー：クローバー消費
+        for (let i = 0; i < tarotState.ticketCost; i++) {
+            if (userData.freeTickets > 0) {
+                userData.freeTickets--;
+            } else if (userData.earnedTickets > 0) {
+                userData.earnedTickets--;
+            }
         }
+        tarotState.ticketUsed = true;
+        await saveUserData();
+        updateUI();
     }
-    tarotState.ticketUsed = true;
-    saveUserData();
-    updateUI();
     
     // 質問をカテゴリとして保存
     tarotState.category = question;
@@ -2160,29 +2293,44 @@ function toggleTarotCard(index) {
 async function revealCards() {
     // 声で質問の場合は既にクローバー消費済み
     if (!tarotState.ticketUsed) {
-        // クローバー確認
-const totalTickets = userData.freeTickets + userData.earnedTickets;
-if (totalTickets < tarotState.ticketCost) {
-            showTicketShortageModal();
-            return;
-        }
-        
-const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}枚使用しますか？`, '🔮', '占う！', 'やめる');
-        if (!confirmed) {
-            return;
-        }
-        
-        // クローバー消費
-        for (let i = 0; i < tarotState.ticketCost; i++) {
-            if (userData.freeTickets > 0) {
-                userData.freeTickets--;
-} else if (userData.earnedTickets > 0) {
-                userData.earnedTickets--;
+        // プレミアム会員の場合
+        if (isPremiumActive()) {
+            if (!canUsePremiumToday()) {
+                await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+                return;
             }
+            const remaining = getPremiumRemaining();
+            const confirmed = await showCustomConfirm(`👑 プレミアム占い\n\n本日残り: ${remaining}回`, '🔮', '占う！', 'やめる');
+            if (!confirmed) return;
+            
+            userData.premiumDailyCount++;
+            tarotState.ticketUsed = true;
+            await saveUserData();
+        } else {
+            // 通常ユーザー
+            const totalTickets = userData.freeTickets + userData.earnedTickets;
+            if (totalTickets < tarotState.ticketCost) {
+                showTicketShortageModal();
+                return;
+            }
+            
+            const confirmed = await showCustomConfirm(`🍀 ${tarotState.ticketCost}枚使用しますか？`, '🔮', '占う！', 'やめる');
+            if (!confirmed) {
+                return;
+            }
+            
+            // クローバー消費
+            for (let i = 0; i < tarotState.ticketCost; i++) {
+                if (userData.freeTickets > 0) {
+                    userData.freeTickets--;
+                } else if (userData.earnedTickets > 0) {
+                    userData.earnedTickets--;
+                }
+            }
+            tarotState.ticketUsed = true;
+            await saveUserData();
+            updateUI();
         }
-        tarotState.ticketUsed = true;
-        await saveUserData();
-        updateUI();
     }
     
 document.getElementById('tarotStep3').style.display = 'none';
@@ -2574,24 +2722,38 @@ let compatVoice2 = null;
 
 // 相性占い用録音
 async function recordCompatVoice(personNum) {
-    // 毎回クローバー確認＆消費
-const totalTickets = userData.freeTickets + userData.earnedTickets;
-    if (totalTickets < 1) {
-        showTicketShortageModal();
-        return;
+    // プレミアム会員の場合
+    if (isPremiumActive()) {
+        if (!canUsePremiumToday()) {
+            await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+            return;
+        }
+        const remaining = getPremiumRemaining();
+        const confirmed = await showCustomConfirm(`👑 プレミアム録音\n\n本日残り: ${remaining}回`, '🎤', '録音', 'やめる');
+        if (!confirmed) return;
+        
+        userData.premiumDailyCount++;
+        await saveUserData();
+    } else {
+        // 通常ユーザー
+        const totalTickets = userData.freeTickets + userData.earnedTickets;
+        if (totalTickets < 1) {
+            showTicketShortageModal();
+            return;
+        }
+        const confirmed = await showCustomConfirm('🍀 1枚消費します\n（録音後は戻れません）', '🎤', '録音', 'やめる');
+        if (!confirmed) {
+            return;
+        }
+        // クローバー消費
+        if (userData.freeTickets > 0) {
+            userData.freeTickets--;
+        } else if (userData.earnedTickets > 0) {
+            userData.earnedTickets--;
+        }
+        await saveUserData();
+        updateUI();
     }
-const confirmed = await showCustomConfirm('🍀 1枚消費します\n（録音後は戻れません）', '🎤', '録音', 'やめる');
-    if (!confirmed) {
-        return;
-    }
-    // クローバー消費
-    if (userData.freeTickets > 0) {
-        userData.freeTickets--;
-} else if (userData.earnedTickets > 0) {
-        userData.earnedTickets--;
-    }
-    await saveUserData();
-    updateUI();
     
     const btn = document.getElementById(`compat${personNum}VoiceBtn`);
     const status = document.getElementById(`compat${personNum}VoiceStatus`);
@@ -2737,28 +2899,44 @@ await showCustomAlert('生年月日・血液型・性別・音声のうち\n最�
         return;
     }
     
-    // クローバー確認（録音していない場合のみ）
-if (!compatVoice1 && !compatVoice2) {
-        const totalTickets = userData.freeTickets + userData.earnedTickets;
-        if (totalTickets < 1) {
-            showTicketShortageModal();
-            return;
+ // クローバー確認（録音していない場合のみ）
+    if (!compatVoice1 && !compatVoice2) {
+        // プレミアム会員の場合
+        if (isPremiumActive()) {
+            if (!canUsePremiumToday()) {
+                await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+                return;
+            }
+            const remaining = getPremiumRemaining();
+            const confirmed = await showCustomConfirm(`👑 プレミアム占い\n\n本日残り: ${remaining}回`, '💕', '占う！', 'やめる');
+            if (!confirmed) return;
+            
+            userData.premiumDailyCount++;
+            compatState.ticketUsed = true;
+            await saveUserData();
+        } else {
+            // 通常ユーザー
+            const totalTickets = userData.freeTickets + userData.earnedTickets;
+            if (totalTickets < 1) {
+                showTicketShortageModal();
+                return;
+            }
+            
+            const confirmed = await showCustomConfirm('🍀 1枚使用しますか？', '💕', '占う！', 'やめる');
+            if (!confirmed) {
+                return;
+            }
+            
+            // クローバー消費（☘️無料 → 🍀獲得 の順）
+            if (userData.freeTickets > 0) {
+                userData.freeTickets--;
+            } else if (userData.earnedTickets > 0) {
+                userData.earnedTickets--;
+            }
+            compatState.ticketUsed = true;
+            await saveUserData();
+            updateUI();
         }
-        
-const confirmed = await showCustomConfirm('🍀 1枚使用しますか？', '💕', '占う！', 'やめる');
-        if (!confirmed) {
-            return;
-        }
-        
-        // クローバー消費（🍀無料 → 🍀獲得 の順）
-        if (userData.freeTickets > 0) {
-            userData.freeTickets--;
-        } else if (userData.earnedTickets > 0) {
-            userData.earnedTickets--;
-        }
-        compatState.ticketUsed = true;
-        await saveUserData();
-        updateUI();
     }
     
 // ローディング表示
@@ -2922,12 +3100,30 @@ async function recordDreamVoice() {
         return;
     }
     
-    // 再録音済みなら何もしない
+// 再録音済みなら何もしない
     if (dreamRecordDone && dreamVoiceBlob) {
         return;
     }
     
-    // 初回：クローバー確認
+    // プレミアム会員の場合
+    if (isPremiumActive()) {
+        if (!canUsePremiumToday()) {
+            await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+            return;
+        }
+        const remaining = getPremiumRemaining();
+        const confirmed = await showCustomConfirm(`👑 プレミアム録音\n\n本日残り: ${remaining}回`, '🎤', '録音', 'やめる');
+        if (!confirmed) return;
+        
+        userData.premiumDailyCount++;
+        dreamState.ticketUsed = true;
+        await saveUserData();
+        
+        startDreamRecording();
+        return;
+    }
+    
+    // 通常ユーザー：クローバー確認
     const totalTickets = userData.freeTickets + userData.earnedTickets;
     if (totalTickets < dreamState.ticketCost) {
         showTicketShortageModal();
@@ -3077,30 +3273,45 @@ await showCustomAlert('夢の内容を録音してください', '🎤');
 async function submitDreamFortune() {
     // 音声で既にクローバー消費済みの場合はスキップ
     if (!dreamState.ticketUsed) {
-        // クローバー確認
-        const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🌙', '占う！', 'やめる');
-        if (!confirmed) {
-            return;
-        }
-        
-        // クローバーチェック
-        const totalTickets = userData.freeTickets + userData.earnedTickets;
-        if (totalTickets < dreamState.ticketCost) {
-            showTicketShortageModal();
-            return;
-        }
-        
-        // クローバー消費
-        for (let i = 0; i < dreamState.ticketCost; i++) {
-            if (userData.freeTickets > 0) {
-                userData.freeTickets--;
-            } else if (userData.earnedTickets > 0) {
-                userData.earnedTickets--;
+        // プレミアム会員の場合
+        if (isPremiumActive()) {
+            if (!canUsePremiumToday()) {
+                await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+                return;
             }
+            const remaining = getPremiumRemaining();
+            const confirmed = await showCustomConfirm(`👑 プレミアム占い\n\n本日残り: ${remaining}回`, '🌙', '占う！', 'やめる');
+            if (!confirmed) return;
+            
+            userData.premiumDailyCount++;
+            dreamState.ticketUsed = true;
+            await saveUserData();
+        } else {
+            // 通常ユーザー：クローバー確認
+            const confirmed = await showCustomConfirm(`🍀 ${dreamState.ticketCost}枚使用しますか？`, '🌙', '占う！', 'やめる');
+            if (!confirmed) {
+                return;
+            }
+            
+            // クローバーチェック
+            const totalTickets = userData.freeTickets + userData.earnedTickets;
+            if (totalTickets < dreamState.ticketCost) {
+                showTicketShortageModal();
+                return;
+            }
+            
+            // クローバー消費
+            for (let i = 0; i < dreamState.ticketCost; i++) {
+                if (userData.freeTickets > 0) {
+                    userData.freeTickets--;
+                } else if (userData.earnedTickets > 0) {
+                    userData.earnedTickets--;
+                }
+            }
+            await saveUserData();
+            updateUI();
+            dreamState.ticketUsed = true;
         }
-        await saveUserData();
-        updateUI();
-        dreamState.ticketUsed = true;
     }
     
     // ローディング表示
@@ -3904,35 +4115,42 @@ async function recordSoulVoice() {
 
 // 鑑定実行
 async function submitSoulFortune() {
-    // チケット消費
-    const totalTickets = userData.freeTickets + userData.earnedTickets + userData.paidTickets;
-    if (totalTickets < 3) {
-        showTicketShortageModal(3, totalTickets);
-        return;
-    }
-    
-    // チケット消費処理
-    let remaining = 3;
-    if (userData.freeTickets >= remaining) {
-        userData.freeTickets -= remaining;
-        remaining = 0;
+    // プレミアム会員の場合
+    if (isPremiumActive()) {
+        if (!canUsePremiumToday()) {
+            await showCustomAlert('👑 本日の占い回数（20回）に達しました\n\n明日またお楽しみください！', '⚠️');
+            return;
+        }
+        const remaining = getPremiumRemaining();
+        const confirmed = await showCustomConfirm(`👑 プレミアム占い\n\n本日残り: ${remaining}回`, '🔮', '鑑定する！', 'やめる');
+        if (!confirmed) return;
+        
+        userData.premiumDailyCount++;
+        await saveUserData();
     } else {
-        remaining -= userData.freeTickets;
-        userData.freeTickets = 0;
+        // 通常ユーザー：チケット消費
+        const totalTickets = userData.freeTickets + userData.earnedTickets;
+        if (totalTickets < 3) {
+            showTicketShortageModal();
+            return;
+        }
+        
+        const confirmed = await showCustomConfirm('🍀 3枚使用しますか？', '🔮', '鑑定する！', 'やめる');
+        if (!confirmed) return;
+        
+        // チケット消費処理
+        let ticketsToUse = 3;
+        if (userData.freeTickets >= ticketsToUse) {
+            userData.freeTickets -= ticketsToUse;
+        } else {
+            ticketsToUse -= userData.freeTickets;
+            userData.freeTickets = 0;
+            userData.earnedTickets -= ticketsToUse;
+        }
+        
+        await saveUserData();
+        updateUI();
     }
-    if (remaining > 0 && userData.earnedTickets >= remaining) {
-        userData.earnedTickets -= remaining;
-        remaining = 0;
-    } else if (remaining > 0) {
-        remaining -= userData.earnedTickets;
-        userData.earnedTickets = 0;
-    }
-    if (remaining > 0) {
-        userData.paidTickets -= remaining;
-    }
-    
-    await saveUserData();
-    updateUI();
     
     // ローディング表示
     document.getElementById('soulStep4').style.display = 'none';
