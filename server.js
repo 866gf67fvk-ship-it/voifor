@@ -395,6 +395,71 @@ ${answers}
         res.status(500).json({ error: '鑑定に失敗しました' });
     }
 });
+
+// ========================================
+// Stripe決済エンドポイント
+// ========================================
+app.post('/create-checkout-session', async (req, res) => {
+    try {
+        const { amount, price, type, userId } = req.body;
+        console.log('決済リクエスト:', type, amount, price);
+
+        let lineItems;
+        let mode = 'payment';
+
+        if (type === 'premium') {
+            // プレミアムプラン（サブスクリプション）
+            mode = 'subscription';
+            lineItems = [{
+                price_data: {
+                    currency: 'jpy',
+                    product_data: {
+                        name: 'VOIFOR プレミアム',
+                        description: '占い放題（1日20回）・広告なし',
+                    },
+                    unit_amount: 1480,
+                    recurring: {
+                        interval: 'month',
+                    },
+                },
+                quantity: 1,
+            }];
+        } else {
+            // クローバー購入（単発）
+            lineItems = [{
+                price_data: {
+                    currency: 'jpy',
+                    product_data: {
+                        name: `VOIFOR クローバー ${amount}枚`,
+                        description: `占いチケット ${amount}回分`,
+                    },
+                    unit_amount: price,
+                },
+                quantity: 1,
+            }];
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: lineItems,
+            mode: mode,
+            success_url: `https://voifor.vercel.app/?success=true&amount=${amount || 0}`,
+            cancel_url: 'https://voifor.vercel.app/?canceled=true',
+            metadata: {
+                userId: userId,
+                amount: amount || 0,
+                type: type
+            }
+        });
+
+        res.json({ id: session.id });
+
+    } catch (error) {
+        console.error('Stripe決済エラー:', error.message);
+        res.status(500).json({ error: '決済処理に失敗しました' });
+    }
+});
+
 // ========================================
 // ヘルスチェック
 // ========================================
