@@ -12,8 +12,9 @@ const unlink = promisify(fs.unlink);
 // ファイルアップロード用
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
-// Stripe
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// PAY.JP
+const Payjp = require('payjp');
+const payjp = Payjp(process.env.PAYJP_SECRET_KEY);
 
 // Supabase
 const { createClient } = require('@supabase/supabase-js');
@@ -457,6 +458,85 @@ app.post('/create-checkout-session', async (req, res) => {
     } catch (error) {
         console.error('Stripe決済エラー:', error.message);
         res.status(500).json({ error: '決済処理に失敗しました' });
+    }
+});
+
+// ========================================
+// PAY.JP 決済エンドポイント
+// ========================================
+
+// 都度課金（クローバー購入）
+app.post('/create-payment', async (req, res) => {
+    try {
+        const { token, amount, tickets, deviceId } = req.body;
+        console.log('決済リクエスト:', amount, '円', tickets, '枚');
+
+        const charge = await payjp.charges.create({
+            amount: amount,
+            currency: 'jpy',
+            card: token,
+            description: `VOIFOR クローバー ${tickets}枚`
+        });
+
+        if (charge.paid) {
+            // Supabaseでチケット追加
+            const { data, error } = await supabase
+                .from('users')
+                .select('paid_tickets')
+                .eq('device_id', deviceId)
+                .single();
+
+            if (!error && data) {
+                await supabase
+                    .from('users')
+                    .update({ paid_tickets: (data.paid_tickets || 0) + tickets })
+                    .eq('device_id', deviceId);
+            }
+
+            res.json({ success: true, chargeId: charge.id });
+        } else {
+            res.status(400).json({ success: false, error: '決済に失敗しました' });
+        }
+
+    } catch (error) {
+        console.error('決済エラー:', error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 定期課金（プレミアムプラン）
+app.post('/create-subscription', async (req, res) => {
+    try {
+        const { token, deviceId } = req.body;
+        console.log('サブスク登録リクエスト');
+
+        // 顧客作成
+        const customer = await payjp.customers.create({
+            card: token,
+            description: `VOIFOR User: ${deviceId}`
+        });
+
+        // サブスクリプション作成（プランIDは後で設定）
+        const subscription = await payjp.subscriptions.create({
+            customer: customer.id,
+            plan: process.env.PAYJP_PLAN_ID
+        });
+
+        // Supabaseで更新
+        await supabase
+            .from('users')
+            .update({ 
+                is_premium: true,
+                premium_customer_id: customer.id,
+                premium_subscription_id: subscription.id
+            })
+            .eq('device_id', deviceId);
+
+        res.json({ success: true, subscriptionId: subscription.id });
+
+    } catch (error) {
+        console.error('サブスク登録エラー:', error.message);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 

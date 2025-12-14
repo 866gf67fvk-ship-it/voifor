@@ -1508,12 +1508,17 @@ const payjpPublicKey = 'pk_test_85dfd6fab5061d365785d049';
 
 // クローバー購入
 async function purchaseTickets(tickets, price) {
-    Payjp(payjpPublicKey).open({
-        text: `¥${price}で${tickets}クローバーを購入`,
-        onCreatedHandler: async function(response) {
+    PayjpCheckout.open({
+        key: payjpPublicKey,
+        amount: price,
+        locale: 'ja',
+        text: '購入する',
+        submitText: '購入',
+        namePlaceholder: 'カード名義人',
+        onCreated: async function(response) {
             await processPurchase(response.id, tickets, price);
         },
-        onFailedHandler: function(statusCode, errorResponse) {
+        onFailed: function(statusCode, errorResponse) {
             showCustomAlert('カード情報の入力に失敗しました', '❌');
         }
     });
@@ -1601,12 +1606,17 @@ function getPremiumRemaining() {
 
 // プレミアム購入
 async function purchasePremium() {
-    Payjp(payjpPublicKey).open({
-        text: '¥1,480/月でプレミアム登録',
-        onCreatedHandler: async function(response) {
+    PayjpCheckout.open({
+        key: payjpPublicKey,
+        amount: 1480,
+        locale: 'ja',
+        text: 'プレミアム登録',
+        submitText: '登録する',
+        namePlaceholder: 'カード名義人',
+        onCreated: async function(response) {
             await processSubscription(response.id);
         },
-        onFailedHandler: function(statusCode, errorResponse) {
+        onFailed: function(statusCode, errorResponse) {
             showCustomAlert('カード情報の入力に失敗しました', '❌');
         }
     });
