@@ -4379,3 +4379,205 @@ function applyPremiumStyle() {
         document.body.appendChild(particle);
     }
 }
+// ========================================
+// 引き継ぎコード機能
+// ========================================
+
+// 引き継ぎ画面表示
+function showTransferScreen() {
+    showScreen('transferScreen');
+    displayTransferCode();
+}
+
+// 引き継ぎコード表示
+async function displayTransferCode() {
+    const deviceId = localStorage.getItem('voifor_device_id');
+    if (!deviceId) return;
+    
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('transfer_code')
+            .eq('device_id', deviceId)
+            .single();
+        
+        if (data && data.transfer_code) {
+            document.getElementById('transferCodeDisplay').textContent = data.transfer_code;
+        } else {
+            // コードがなければ生成
+            const newCode = generateTransferCode();
+            await saveTransferCode(newCode);
+            document.getElementById('transferCodeDisplay').textContent = newCode;
+        }
+    } catch (err) {
+        console.error('引き継ぎコード取得エラー:', err);
+    }
+}
+
+// 引き継ぎコード生成（8文字）
+function generateTransferCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
+// 引き継ぎコード保存
+async function saveTransferCode(code) {
+    const deviceId = localStorage.getItem('voifor_device_id');
+    if (!deviceId) return;
+    
+    try {
+        await supabase
+            .from('users')
+            .update({ transfer_code: code })
+            .eq('device_id', deviceId);
+        console.log('引き継ぎコード保存完了:', code);
+    } catch (err) {
+        console.error('引き継ぎコード保存エラー:', err);
+    }
+}
+
+// 引き継ぎコードをコピー
+function copyTransferCode() {
+    const code = document.getElementById('transferCodeDisplay').textContent;
+    if (code && code !== '--------') {
+        navigator.clipboard.writeText(code).then(() => {
+            alert('✅ コピーしました！\n\n' + code);
+        }).catch(() => {
+            alert('コード: ' + code + '\n\n手動でコピーしてください');
+        });
+    }
+}
+
+// 引き継ぎコードを適用
+async function applyTransferCode() {
+    const inputCode = document.getElementById('transferCodeInput').value.toUpperCase().trim();
+    
+    if (!inputCode || inputCode.length !== 8) {
+        alert('⚠️ 8文字の引き継ぎコードを入力してください');
+        return;
+    }
+    
+    // 自分のコードかチェック
+    const myCode = document.getElementById('transferCodeDisplay').textContent;
+    if (inputCode === myCode) {
+        alert('⚠️ これは現在のアカウントのコードです');
+        return;
+    }
+    
+    if (!confirm('⚠️ 現在のデータは上書きされます。\n本当に引き継ぎますか？')) {
+        return;
+    }
+    
+    try {
+        // 入力されたコードのユーザーを検索
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('transfer_code', inputCode)
+            .single();
+        
+        if (error || !data) {
+            alert('❌ このコードは見つかりませんでした');
+            return;
+        }
+        
+        // 現在のdevice_idを新しいユーザーデータに紐付け
+        const currentDeviceId = localStorage.getItem('voifor_device_id');
+        
+        // 古いデバイスIDを更新（このデバイスで引き継ぎ先のデータを使う）
+        await supabase
+            .from('users')
+            .update({ device_id: currentDeviceId })
+            .eq('transfer_code', inputCode);
+        
+        // ローカルデータを更新
+        userData.freeTickets = data.free_tickets || 0;
+        userData.earnedTickets = data.earned_tickets || 0;
+        userData.paidTickets = data.paid_tickets || 0;
+        userData.streak = data.streak || 0;
+        userData.totalReadings = data.total_readings || 0;
+        userData.selectedCharacter = data.selected_character || 'devilMale';
+        userData.checkedDates = data.checked_dates ? JSON.parse(data.checked_dates) : [];
+        
+        updateUI();
+        
+        alert('✅ 引き継ぎ完了！\nデータを復元しました');
+        showMainScreen();
+        
+    } catch (err) {
+        console.error('引き継ぎエラー:', err);
+        alert('❌ 引き継ぎに失敗しました');
+    }
+}
+// 引き継ぎ入力画面表示（初回登録画面から）
+function showTransferInput() {
+    const code = prompt('引き継ぎコードを入力してください（8文字）');
+    
+    if (!code) return;
+    
+    const inputCode = code.toUpperCase().trim();
+    
+    if (inputCode.length !== 8) {
+        alert('⚠️ 8文字の引き継ぎコードを入力してください');
+        return;
+    }
+    
+    applyTransferCodeFromRegistration(inputCode);
+}
+
+// 初回登録画面からの引き継ぎ適用
+async function applyTransferCodeFromRegistration(inputCode) {
+    try {
+        // 入力されたコードのユーザーを検索
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('transfer_code', inputCode)
+            .single();
+        
+        if (error || !data) {
+            alert('❌ このコードは見つかりませんでした');
+            return;
+        }
+        
+        // 現在のdevice_idを更新
+        const currentDeviceId = localStorage.getItem('voifor_device_id') || 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem('voifor_device_id', currentDeviceId);
+        
+        // デバイスIDを新しいユーザーデータに紐付け
+        await supabase
+            .from('users')
+            .update({ device_id: currentDeviceId })
+            .eq('transfer_code', inputCode);
+        
+        // ローカルデータを更新
+        userData.freeTickets = data.free_tickets || 0;
+        userData.earnedTickets = data.earned_tickets || 0;
+        userData.paidTickets = data.paid_tickets || 0;
+        userData.streak = data.streak || 0;
+        userData.totalReadings = data.total_readings || 0;
+        userData.selectedCharacter = data.selected_character || 'devilMale';
+        userData.checkedDates = data.checked_dates ? JSON.parse(data.checked_dates) : [];
+        userData.name = data.name || '';
+        userData.birth = data.birth || '';
+        userData.bloodType = data.blood_type || '';
+        userData.gender = data.gender || '';
+        
+        // 登録済みフラグを立てる
+        localStorage.setItem('voifor_registered', 'true');
+        
+        updateUI();
+        renderCalendar();
+        
+        alert('✅ 引き継ぎ完了！\nデータを復元しました');
+        showScreen('mainScreen');
+        
+    } catch (err) {
+        console.error('引き継ぎエラー:', err);
+        alert('❌ 引き継ぎに失敗しました');
+    }
+}
