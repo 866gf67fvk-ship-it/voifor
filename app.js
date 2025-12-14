@@ -1500,50 +1500,60 @@ function saveFortuneHistory(dateStr, fortune, summary, type = 'voice') {
     localStorage.setItem('voifor_fortune_history', JSON.stringify(history));
 }
 // ========================================
-// クローバー購入（Stripe）
+// クローバー購入（PAY.JP）
 // ========================================
 
-// Stripe公開キー
-const stripe = Stripe('pk_test_51SMV1CELHu2Nzyd3uX3GhBQVEhybahRSTuij8byQ2VTYMzVTF6DhgYSY3VLSu5j0i6YzBcnrTKdmnw8lIuDhoNKw00foWY7Lc9');
+// PAY.JP公開キー
+const payjpPublicKey = 'pk_test_85dfd6fab5061d365785d049';
 
 // クローバー購入
-async function purchaseTickets(amount, price) {
+async function purchaseTickets(tickets, price) {
+    Payjp(payjpPublicKey).open({
+        text: `¥${price}で${tickets}クローバーを購入`,
+        onCreatedHandler: async function(response) {
+            await processPurchase(response.id, tickets, price);
+        },
+        onFailedHandler: function(statusCode, errorResponse) {
+            showCustomAlert('カード情報の入力に失敗しました', '❌');
+        }
+    });
+}
+
+// 決済処理
+async function processPurchase(token, tickets, price) {
     try {
         const deviceId = getDeviceId();
         
-        const response = await fetch('https://voifor-server.onrender.com/create-checkout-session', {
+        const response = await fetch('https://voifor-server.onrender.com/create-payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                amount: amount,
-                price: price,
-                type: 'ticket',
-                userId: deviceId
+                token: token,
+                amount: price,
+                tickets: tickets,
+                deviceId: deviceId
             })
         });
         
-        if (!response.ok) {
-            throw new Error('決済エラー');
-        }
+        const result = await response.json();
         
-        const session = await response.json();
-        
-        // Stripeの決済ページにリダイレクト
-        const result = await stripe.redirectToCheckout({
-            sessionId: session.id
-        });
-        
-        if (result.error) {
-await showCustomAlert(result.error.message, '❌');
+        if (result.success) {
+            userData.paidTickets = (userData.paidTickets || 0) + tickets;
+            await saveUserData();
+            updateUI();
+            await showCustomAlert(`✅ 購入完了！\n${tickets}クローバーを追加しました`, '🎉');
+        } else {
+            await showCustomAlert('❌ 決済に失敗しました: ' + (result.error || ''), '❌');
         }
         
     } catch (error) {
-        console.error('購入エラー:', error);
-await showCustomAlert('購入処理中にエラーが発生しました', '❌');
+        console.error('決済エラー:', error);
+        await showCustomAlert('決済処理中にエラーが発生しました', '❌');
     }
 }
+
 // ========================================
 // プレミアム判定関数
 // ========================================
@@ -1591,37 +1601,50 @@ function getPremiumRemaining() {
 
 // プレミアム購入
 async function purchasePremium() {
+    Payjp(payjpPublicKey).open({
+        text: '¥1,480/月でプレミアム登録',
+        onCreatedHandler: async function(response) {
+            await processSubscription(response.id);
+        },
+        onFailedHandler: function(statusCode, errorResponse) {
+            showCustomAlert('カード情報の入力に失敗しました', '❌');
+        }
+    });
+}
+
+// サブスク処理
+async function processSubscription(token) {
     try {
         const deviceId = getDeviceId();
         
-        const response = await fetch('https://voifor-server.onrender.com/create-checkout-session', {
+        const response = await fetch('https://voifor-server.onrender.com/create-subscription', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                type: 'premium',
-                userId: deviceId
+                token: token,
+                deviceId: deviceId
             })
         });
         
-        if (!response.ok) {
-            throw new Error('決済エラー');
-        }
+        const result = await response.json();
         
-        const session = await response.json();
-        
-        const result = await stripe.redirectToCheckout({
-            sessionId: session.id
-        });
-        
-        if (result.error) {
-         await showCustomAlert(result.error.message, '❌');
+        if (result.success) {
+            userData.isPremium = true;
+            const expiry = new Date();
+            expiry.setMonth(expiry.getMonth() + 1);
+            userData.premiumExpiry = expiry.toISOString();
+            await saveUserData();
+            updateUI();
+            await showCustomAlert('✅ プレミアム登録完了！\n毎日20回まで占い放題です', '👑');
+        } else {
+            await showCustomAlert('❌ 登録に失敗しました: ' + (result.error || ''), '❌');
         }
         
     } catch (error) {
-        console.error('購入エラー:', error);
-   await showCustomAlert('購入処理中にエラーが発生しました', '❌');
+        console.error('サブスク登録エラー:', error);
+        await showCustomAlert('登録処理中にエラーが発生しました', '❌');
     }
 }
 
@@ -1994,7 +2017,8 @@ const tabId = {
         'voice': 'tabVoice',
         'tarot': 'tabTarot',
         'compatibility': 'tabCompat',
-        'dream': 'tabDream'
+        'dream': 'tabDream',
+        'soul': 'tabSoul'
     };
     
     document.getElementById(tabId[type]).classList.add('active');
