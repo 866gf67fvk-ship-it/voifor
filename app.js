@@ -1579,7 +1579,7 @@ function showPaymentModal(tickets, price, type) {
             <h2 style="text-align: center; margin-bottom: 20px; color: white;">💳 ${title}</h2>
             <p style="text-align: center; color: #FFD700; font-size: 1.3em; margin-bottom: 20px;">¥${price.toLocaleString()}</p>
             
-            <div id="payjp-card-element" style="background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; margin-bottom: 20px;"></div>
+<div id="payjp-card-element" style="background: white; padding: 18px 15px; border-radius: 10px; margin-bottom: 20px; min-height: 55px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);"></div>
             <div id="card-errors" style="color: #ff6b6b; font-size: 0.9em; margin-bottom: 15px; text-align: center;"></div>
             
             <button id="payBtn" onclick="submitPaymentElements(${tickets}, ${price}, '${type}')" 
@@ -1599,11 +1599,24 @@ function showPaymentModal(tickets, price, type) {
     document.body.appendChild(modal);
     
     // PAY.JP Elements マウント
-    setTimeout(() => {
+setTimeout(() => {
         try {
             const payjp = getPayjp();
             const elements = payjp.elements();
-            window.cardElement = elements.create('card');
+            const cardStyle = {
+                base: {
+                    fontSize: '16px',
+                    lineHeight: '28px',
+                    color: '#333',
+                    '::placeholder': {
+                        color: '#999'
+                    }
+                },
+                invalid: {
+                    color: '#e25950'
+                }
+            };
+            window.cardElement = elements.create('card', { style: cardStyle });
             window.cardElement.mount('#payjp-card-element');
             
             window.cardElement.on('change', function(event) {
