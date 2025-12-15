@@ -1952,10 +1952,13 @@ function showVideoAd() {
         </div>
     `;
     
-    document.body.appendChild(videoModal);
+document.body.appendChild(videoModal);
+    console.log('🎬 動画モーダル表示完了');
     
-    // 30秒後に報酬ボタン表示
+    // 5秒後に報酬ボタン表示（テスト用）
     setTimeout(() => {
+        console.log('⏰ タイマー発火');
+        
         const claimBtn = document.getElementById('claimRewardBtn');
         if (claimBtn) {
             claimBtn.style.display = 'inline-block';
