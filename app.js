@@ -1900,6 +1900,11 @@ function showAdConfirmModal(remaining) {
 
 // 動画広告表示
 function showVideoAd() {
+    // BGM停止
+    if (currentBgm) {
+        currentBgm.pause();
+    }
+    
     // 1日の視聴制限チェック
     const today = new Date().toDateString();
     const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
@@ -1967,11 +1972,15 @@ function closeVideoAd(claimReward) {
         modal.remove();
     }
     
+    // BGM再開
+    if (currentBgm) {
+        currentBgm.play();
+    }
+    
     if (claimReward) {
         giveAdReward();
     }
 }
-
 
 // 広告報酬付与
 async function giveAdReward() {
