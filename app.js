@@ -1505,6 +1505,14 @@ function saveFortuneHistory(dateStr, fortune, summary, type = 'voice') {
 
 // PAY.JP公開キー
 const payjpPublicKey = 'pk_test_85dfd6fab5061d365785d049';
+let payjpInstance = null;
+
+function getPayjp() {
+    if (!payjpInstance) {
+        payjpInstance = Payjp(payjpPublicKey);
+    }
+    return payjpInstance;
+}
 
 // クローバー購入
 async function purchaseTickets(tickets, price) {
@@ -1659,17 +1667,16 @@ async function submitPayment(tickets, price, type) {
     btn.disabled = true;
     
 try {
-        const payjp = Payjp(payjpPublicKey);
+        const payjp = getPayjp();
         
-        const card = {
-            number: cardNumber,
-            exp_month: expiry[0],
-            exp_year: '20' + expiry[1],
-            cvc: cvc,
-            name: name
-        };
-        
-        payjp.createToken(card, async function(status, response) {
+        payjp.createToken({
+            card: {
+                number: cardNumber,
+                cvc: cvc,
+                exp_month: expiry[0],
+                exp_year: '20' + expiry[1]
+            }
+        }, async function(status, response) {
             if (status === 200) {
                 closePaymentModal();
                 
