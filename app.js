@@ -1900,8 +1900,90 @@ function showAdConfirmModal(remaining) {
 
 // 動画広告表示
 function showVideoAd() {
-    showCustomAlert('🎬 動画広告は準備中です！\n\nもうしばらくお待ちください✨', '🚧');
+    // 1日の視聴制限チェック
+    const today = new Date().toDateString();
+    const adData = JSON.parse(localStorage.getItem('voifor_ad_data') || '{}');
+    const todayCount = adData[today] || 0;
+    
+    if (todayCount >= MAX_DAILY_ADS) {
+        showCustomAlert('本日の動画視聴は上限に達しました\nまた明日お越しください！', '📺');
+        return;
+    }
+    
+    // 動画モーダル表示
+    const videoModal = document.createElement('div');
+    videoModal.id = 'videoAdModal';
+    videoModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    `;
+    
+    videoModal.innerHTML = `
+        <div style="width: 100%; max-width: 350px; text-align: center;">
+            <p style="color: white; margin-bottom: 15px; font-size: 1.1em;">🎬 動画を最後まで見てクローバーGET！</p>
+            <div style="position: relative; width: 100%; padding-bottom: 177.78%; background: #000; border-radius: 15px; overflow: hidden;">
+                <iframe 
+                    id="ytPlayer"
+                    src="https://www.youtube.com/embed/Ocw0YTRA3xU?enablejsapi=1&autoplay=1&rel=0&playsinline=1" 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <button onclick="closeVideoAd(false)" style="margin-top: 20px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 12px 30px; border-radius: 25px; font-size: 1em; cursor: pointer;">
+                ✕ 閉じる
+            </button>
+            <button onclick="closeVideoAd(true)" id="claimRewardBtn" style="margin-top: 10px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; color: #333; padding: 12px 30px; border-radius: 25px; font-size: 1em; cursor: pointer; display: none; font-weight: bold;">
+                🍀 クローバーを受け取る
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(videoModal);
+    
+    // 30秒後に報酬ボタン表示
+    setTimeout(() => {
+        const claimBtn = document.getElementById('claimRewardBtn');
+        if (claimBtn) {
+            claimBtn.style.display = 'inline-block';
+        }
+    }, 30000);
 }
+
+// 動画広告を閉じる
+function closeVideoAd(claimReward) {
+    const modal = document.getElementById('videoAdModal');
+    if (modal) {
+        modal.remove();
+    }
+    
+    if (claimReward) {
+        giveAdReward();
+    }
+}
+```
+
+---
+
+## 仕組み
+```
+「🎥 動画みて+1」タップ
+    ↓
+そらことの宣伝動画が再生
+    ↓
+30秒後に「クローバーを受け取る」ボタン出現
+    ↓
+タップでクローバー獲得！🍀
 
 // 広告報酬付与
 async function giveAdReward() {
