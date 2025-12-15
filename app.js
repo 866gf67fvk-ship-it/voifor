@@ -1956,12 +1956,15 @@ document.body.appendChild(videoModal);
     console.log('🎬 動画モーダル表示完了');
     
     // 5秒後に報酬ボタン表示（テスト用）
-    setTimeout(() => {
+setTimeout(() => {
         console.log('⏰ タイマー発火');
-        
         const claimBtn = document.getElementById('claimRewardBtn');
+        console.log('🔍 ボタン要素:', claimBtn);
         if (claimBtn) {
             claimBtn.style.display = 'inline-block';
+            console.log('✅ ボタン表示完了');
+        } else {
+            console.log('❌ ボタンが見つからない');
         }
     }, 5000);
 }
