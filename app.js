@@ -1970,13 +1970,14 @@ function closeVideoAd(claimReward) {
         modal.remove();
     }
     
-// BGM再開
+    // BGM再開
     resumeBGM();
     
     if (claimReward) {
         giveAdReward();
     }
 }
+  
 
 // 広告報酬付与
 async function giveAdReward() {
