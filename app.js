@@ -1579,7 +1579,13 @@ function showPaymentModal(tickets, price, type) {
             <h2 style="text-align: center; margin-bottom: 20px; color: white;">💳 ${title}</h2>
             <p style="text-align: center; color: #FFD700; font-size: 1.3em; margin-bottom: 20px;">¥${price.toLocaleString()}</p>
             
-<div id="payjp-card-element" style="background: white; padding: 18px 15px; border-radius: 10px; margin-bottom: 20px; min-height: 55px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);"></div>
+<div style="margin-bottom: 20px;">
+                <div id="payjp-card-number" style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; min-height: 50px;"></div>
+                <div style="display: flex; gap: 10px;">
+                    <div id="payjp-card-expiry" style="flex: 1; background: white; padding: 15px; border-radius: 10px; min-height: 50px;"></div>
+                    <div id="payjp-card-cvc" style="flex: 1; background: white; padding: 15px; border-radius: 10px; min-height: 50px;"></div>
+                </div>
+            </div>
             <div id="card-errors" style="color: #ff6b6b; font-size: 0.9em; margin-bottom: 15px; text-align: center;"></div>
             
             <button id="payBtn" onclick="submitPaymentElements(${tickets}, ${price}, '${type}')" 
@@ -1606,27 +1612,33 @@ setTimeout(() => {
             const cardStyle = {
                 base: {
                     fontSize: '16px',
-                    lineHeight: '28px',
+                    lineHeight: '24px',
                     color: '#333',
                     '::placeholder': {
-                        color: '#999'
+                        color: '#aaa'
                     }
                 },
                 invalid: {
                     color: '#e25950'
                 }
             };
-            window.cardElement = elements.create('card', { style: cardStyle });
-            window.cardElement.mount('#payjp-card-element');
-            
-            window.cardElement.on('change', function(event) {
+            window.cardNumberElement = elements.create('cardNumber', { style: cardStyle, placeholder: 'カード番号' });
+            window.cardExpiryElement = elements.create('cardExpiry', { style: cardStyle, placeholder: '有効期限' });
+            window.cardCvcElement = elements.create('cardCvc', { style: cardStyle, placeholder: 'CVC' });
+            window.cardNumberElement.mount('#payjp-card-number');
+            window.cardExpiryElement.mount('#payjp-card-expiry');
+            window.cardCvcElement.mount('#payjp-card-cvc');         
+const handleError = function(event) {
                 const displayError = document.getElementById('card-errors');
                 if (event.error) {
                     displayError.textContent = event.error.message;
                 } else {
                     displayError.textContent = '';
                 }
-            });
+            };
+            window.cardNumberElement.on('change', handleError);
+            window.cardExpiryElement.on('change', handleError);
+            window.cardCvcElement.on('change', handleError);
         } catch (e) {
             console.error('Elements初期化エラー:', e);
         }
@@ -1645,7 +1657,7 @@ async function submitPaymentElements(tickets, price, type) {
     
     try {
         const payjp = getPayjp();
-        const result = await payjp.createToken(window.cardElement);
+    const result = await payjp.createToken(window.cardNumberElement);
         
         if (result.error) {
             document.getElementById('card-errors').textContent = result.error.message;
