@@ -1516,7 +1516,7 @@ function getPayjp() {
 
 // クローバー購入
 async function purchaseTickets(tickets, price) {
-    showPaymentModal(tickets, price, 'ticket');
+    showCustomAlert('💳 決済機能は準備中です！\n\nもうしばらくお待ちください✨', '🚧');
 }
 
 // 決済処理
@@ -1741,7 +1741,7 @@ function getPremiumRemaining() {
 
 // プレミアム購入
 async function purchasePremium() {
-    showPaymentModal(0, 1480, 'premium');
+    showCustomAlert('👑 プレミアム登録は準備中です！\n\nもうしばらくお待ちください✨', '🚧');
 }
 
 // サブスク処理
@@ -1898,140 +1898,9 @@ function showAdConfirmModal(remaining) {
 // Unity Ads 動画広告
 // ========================================
 
-const UNITY_GAME_ID = '6004691';
-const UNITY_PLACEMENT_ID = 'Rewarded_Android';
-let unityAdsInitialized = false;
-
-// Unity Ads 初期化
-function initUnityAds() {
-    if (unityAdsInitialized) return;
-    
-    try {
-        UnityAds.initialize(UNITY_GAME_ID, true); // true = テストモード
-        unityAdsInitialized = true;
-        console.log('✅ Unity Ads 初期化完了');
-    } catch (e) {
-        console.error('Unity Ads 初期化エラー:', e);
-    }
-}
-
-// ページ読み込み時に初期化
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initUnityAds, 2000);
-});
-
 // 動画広告表示
 function showVideoAd() {
-    if (!unityAdsInitialized) {
-        initUnityAds();
-    }
-    
-    // ローディング表示
-    const loadingModal = document.createElement('div');
-    loadingModal.id = 'adLoadingModal';
-    loadingModal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.9);
-        z-index: 10000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    `;
-    loadingModal.innerHTML = `
-        <div style="text-align: center; color: white;">
-            <div style="font-size: 3em; margin-bottom: 20px;">🎬</div>
-            <p style="font-size: 1.2em;">広告を読み込み中...</p>
-        </div>
-    `;
-    document.body.appendChild(loadingModal);
-    
-    try {
-        UnityAds.show(UNITY_PLACEMENT_ID, {
-            onStart: function() {
-                console.log('広告開始');
-                document.getElementById('adLoadingModal')?.remove();
-            },
-            onComplete: function() {
-                console.log('広告視聴完了');
-                document.getElementById('adLoadingModal')?.remove();
-                giveAdReward();
-            },
-            onSkip: function() {
-                console.log('広告スキップ');
-                document.getElementById('adLoadingModal')?.remove();
-                showCustomAlert('広告をスキップしました\n最後まで見るとクローバーがもらえます', '⚠️');
-            },
-            onError: function(error) {
-                console.error('広告エラー:', error);
-                document.getElementById('adLoadingModal')?.remove();
-                showFallbackAd();
-            }
-        });
-    } catch (e) {
-        console.error('Unity Ads エラー:', e);
-        document.getElementById('adLoadingModal')?.remove();
-        showFallbackAd();
-    }
-}
-
-// フォールバック広告（Unity Adsが使えない場合）
-function showFallbackAd() {
-    const adModal = document.createElement('div');
-    adModal.id = 'videoAdModal';
-    adModal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.85);
-        z-index: 10000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-    `;
-    
-    adModal.innerHTML = `
-        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
-            <h2 style="font-size: 1.5em; margin-bottom: 20px; color: white;">🎥 広告を再生中...</h2>
-            <div style="font-size: 4em; margin: 30px 0; color: #FFD700; font-weight: bold;" id="adCountdown">30</div>
-            <p style="font-size: 1em; opacity: 0.7; color: white; margin-bottom: 25px;">広告終了後にクローバーを獲得できます</p>
-            <button onclick="cancelFallbackAd()" style="background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 12px 30px; border-radius: 25px; font-size: 1em; cursor: pointer;">
-                キャンセル
-            </button>
-        </div>
-    `;
-    
-    document.body.appendChild(adModal);
-    
-    let count = 30;
-    const countdownEl = document.getElementById('adCountdown');
-    
-    window.fallbackAdInterval = setInterval(() => {
-        count--;
-        countdownEl.textContent = count;
-        
-        if (count <= 0) {
-            clearInterval(window.fallbackAdInterval);
-            window.fallbackAdInterval = null;
-            document.getElementById('videoAdModal')?.remove();
-            giveAdReward();
-        }
-    }, 1000);
-}
-
-// フォールバック広告キャンセル
-function cancelFallbackAd() {
-    if (window.fallbackAdInterval) {
-        clearInterval(window.fallbackAdInterval);
-        window.fallbackAdInterval = null;
-    }
-    document.getElementById('videoAdModal')?.remove();
+    showCustomAlert('🎬 動画広告は準備中です！\n\nもうしばらくお待ちください✨', '🚧');
 }
 
 // 広告報酬付与
