@@ -1539,8 +1539,8 @@ async function processPurchase(token, tickets, price) {
         
         const result = await response.json();
         
-        if (result.success) {
-            userData.paidTickets = (userData.paidTickets || 0) + tickets;
+if (result.success) {
+            userData.earnedTickets = (userData.earnedTickets || 0) + tickets;
             await saveUserData();
             updateUI();
             await showCustomAlert(`✅ 購入完了！\n${tickets}クローバーを追加しました`, '🎉');
