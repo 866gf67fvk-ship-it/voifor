@@ -1579,32 +1579,10 @@ function showPaymentModal(tickets, price, type) {
             <h2 style="text-align: center; margin-bottom: 20px; color: white;">💳 ${title}</h2>
             <p style="text-align: center; color: #FFD700; font-size: 1.3em; margin-bottom: 20px;">¥${price.toLocaleString()}</p>
             
-            <div style="margin-bottom: 15px;">
-                <label style="color: white; font-size: 0.9em;">カード番号</label>
-                <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19" 
-                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 1.1em; margin-top: 5px;">
-            </div>
+            <div id="payjp-card-element" style="background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; margin-bottom: 20px;"></div>
+            <div id="card-errors" style="color: #ff6b6b; font-size: 0.9em; margin-bottom: 15px; text-align: center;"></div>
             
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <div style="flex: 1;">
-                    <label style="color: white; font-size: 0.9em;">有効期限</label>
-                    <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5"
-                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 1.1em; margin-top: 5px;">
-                </div>
-                <div style="flex: 1;">
-                    <label style="color: white; font-size: 0.9em;">CVC</label>
-                    <input type="text" id="cardCvc" placeholder="123" maxlength="4"
-                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 1.1em; margin-top: 5px;">
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <label style="color: white; font-size: 0.9em;">カード名義人</label>
-                <input type="text" id="cardName" placeholder="TARO YAMADA"
-                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 1.1em; margin-top: 5px; text-transform: uppercase;">
-            </div>
-            
-            <button id="payBtn" onclick="submitPayment(${tickets}, ${price}, '${type}')" 
+            <button id="payBtn" onclick="submitPaymentElements(${tickets}, ${price}, '${type}')" 
                 style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 12px; color: white; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-bottom: 10px;">
                 支払う
             </button>
@@ -1620,81 +1598,59 @@ function showPaymentModal(tickets, price, type) {
     
     document.body.appendChild(modal);
     
-    // カード番号フォーマット
-    document.getElementById('cardNumber').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
-        let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
-        e.target.value = formatted;
-    });
-    
-    // 有効期限フォーマット
-    document.getElementById('cardExpiry').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 2) {
-            value = value.substring(0, 2) + '/' + value.substring(2);
+    // PAY.JP Elements マウント
+    setTimeout(() => {
+        try {
+            const payjp = getPayjp();
+            const elements = payjp.elements();
+            window.cardElement = elements.create('card');
+            window.cardElement.mount('#payjp-card-element');
+            
+            window.cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+        } catch (e) {
+            console.error('Elements初期化エラー:', e);
         }
-        e.target.value = value;
-    });
+    }, 100);
 }
-
 // 決済モーダルを閉じる
 function closePaymentModal() {
     document.getElementById('paymentModal')?.remove();
 }
 
-// 決済送信
-async function submitPayment(tickets, price, type) {
-    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
-    const expiry = document.getElementById('cardExpiry').value.split('/');
-    const cvc = document.getElementById('cardCvc').value;
-    const name = document.getElementById('cardName').value;
-    
-    if (!cardNumber || cardNumber.length < 14) {
-        await showCustomAlert('カード番号を入力してください', '⚠️');
-        return;
-    }
-    if (expiry.length !== 2) {
-        await showCustomAlert('有効期限を入力してください', '⚠️');
-        return;
-    }
-    if (!cvc || cvc.length < 3) {
-        await showCustomAlert('CVCを入力してください', '⚠️');
-        return;
-    }
-    
+// 決済送信（Elements版）
+async function submitPaymentElements(tickets, price, type) {
     const btn = document.getElementById('payBtn');
     btn.textContent = '処理中...';
     btn.disabled = true;
     
-try {
+    try {
         const payjp = getPayjp();
+        const result = await payjp.createToken(window.cardElement);
         
-        const response = await payjp.createToken({
-            card: {
-                number: cardNumber,
-                cvc: cvc,
-                exp_month: parseInt(expiry[0]),
-                exp_year: parseInt('20' + expiry[1])
-            }
-        });
-        
-        if (response.error) {
+        if (result.error) {
+            document.getElementById('card-errors').textContent = result.error.message;
             btn.textContent = '支払う';
             btn.disabled = false;
-            await showCustomAlert('カード情報が正しくありません: ' + response.error.message, '❌');
             return;
         }
         
         closePaymentModal();
         
         if (type === 'premium') {
-            await processSubscription(response.id);
+            await processSubscription(result.id);
         } else {
-            await processPurchase(response.id, tickets, price);
+            await processPurchase(result.id, tickets, price);
         }
         
     } catch (error) {
-        console.error('トークン作成エラー:', error);
+        console.error('決済エラー:', error);
         btn.textContent = '支払う';
         btn.disabled = false;
         await showCustomAlert('決済処理中にエラーが発生しました', '❌');
