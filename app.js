@@ -1901,9 +1901,7 @@ function showAdConfirmModal(remaining) {
 // 動画広告表示
 function showVideoAd() {
     // BGM停止
-    if (currentBgm) {
-        currentBgm.pause();
-    }
+    stopBGM();
     
     // 1日の視聴制限チェック
     const today = new Date().toDateString();
@@ -1972,10 +1970,8 @@ function closeVideoAd(claimReward) {
         modal.remove();
     }
     
-    // BGM再開
-    if (currentBgm) {
-        currentBgm.play();
-    }
+// BGM再開
+    resumeBGM();
     
     if (claimReward) {
         giveAdReward();
