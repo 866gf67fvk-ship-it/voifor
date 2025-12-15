@@ -1669,13 +1669,11 @@ async function submitPayment(tickets, price, type) {
 try {
         const payjp = getPayjp();
         
-        payjp.createToken({
-            card: {
-                number: cardNumber,
-                cvc: cvc,
-                exp_month: expiry[0],
-                exp_year: '20' + expiry[1]
-            }
+payjp.createToken({
+            number: cardNumber,
+            cvc: cvc,
+            exp_month: expiry[0],
+            exp_year: '20' + expiry[1]
         }, async function(status, response) {
             if (status === 200) {
                 closePaymentModal();
