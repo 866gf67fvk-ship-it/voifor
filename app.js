@@ -1658,8 +1658,8 @@ async function submitPayment(tickets, price, type) {
     btn.textContent = '処理中...';
     btn.disabled = true;
     
-    try {
-        Payjp.setPublicKey(payjpPublicKey);
+try {
+        const payjp = Payjp(payjpPublicKey);
         
         const card = {
             number: cardNumber,
@@ -1669,7 +1669,7 @@ async function submitPayment(tickets, price, type) {
             name: name
         };
         
-        Payjp.createToken(card, async function(status, response) {
+        payjp.createToken(card, async function(status, response) {
             if (status === 200) {
                 closePaymentModal();
                 
