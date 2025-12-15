@@ -1971,7 +1971,7 @@ claimBtn.style.display = 'inline-block';
         } else {
             console.log('❌ ボタンが見つからない');
         }
-    }, 5000);
+}, 30000);
 }
 
 // 動画広告を閉じる
