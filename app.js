@@ -1961,7 +1961,12 @@ setTimeout(() => {
         const claimBtn = document.getElementById('claimRewardBtn');
         console.log('🔍 ボタン要素:', claimBtn);
         if (claimBtn) {
-            claimBtn.style.display = 'inline-block';
+claimBtn.style.display = 'inline-block';
+            claimBtn.style.position = 'fixed';
+            claimBtn.style.bottom = '100px';
+            claimBtn.style.left = '50%';
+            claimBtn.style.transform = 'translateX(-50%)';
+            claimBtn.style.zIndex = '99999';
             console.log('✅ ボタン表示完了');
         } else {
             console.log('❌ ボタンが見つからない');
