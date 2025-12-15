@@ -4647,17 +4647,66 @@ async function applyTransferCode() {
 }
 // 引き継ぎ入力画面表示（初回登録画面から）
 function showTransferInput() {
-    const code = prompt('引き継ぎコードを入力してください（8文字）');
+    const modal = document.createElement('div');
+    modal.id = 'transferInputModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    `;
     
-    if (!code) return;
+    modal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 30%, #2d1b69 50%, #1a1a4e 70%, #0f0f23 100%); padding: 30px; border-radius: 25px; max-width: 400px; width: 100%; box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3); border: 3px solid #FFB6C1; text-align: center;">
+            <div style="font-size: 2.5em; margin-bottom: 15px;">🔑</div>
+            <h2 style="font-size: 1.3em; margin-bottom: 20px; color: white;">引き継ぎコードで復元</h2>
+            <p style="font-size: 0.95em; color: rgba(255,255,255,0.8); margin-bottom: 20px;">以前のアカウントの引き継ぎコード（8文字）を入力してください</p>
+            <input type="text" id="transferCodeInputModal" maxlength="8" placeholder="例: ABCD1234" 
+                style="width: 100%; padding: 15px; font-size: 1.3em; text-align: center; border-radius: 12px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; letter-spacing: 3px; font-family: monospace; text-transform: uppercase; margin-bottom: 20px;">
+            <div style="display: flex; gap: 15px;">
+                <button onclick="document.getElementById('transferInputModal').remove()" 
+                    style="flex: 1; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 15px; border-radius: 25px; font-size: 1em; cursor: pointer;">
+                    キャンセル
+                </button>
+                <button onclick="submitTransferInputModal()" 
+                    style="flex: 1; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);">
+                    復元する
+                </button>
+            </div>
+        </div>
+    `;
     
-    const inputCode = code.toUpperCase().trim();
+    document.body.appendChild(modal);
     
-    if (inputCode.length !== 8) {
-        alert('⚠️ 8文字の引き継ぎコードを入力してください');
+    // 入力欄にフォーカス
+    setTimeout(() => {
+        document.getElementById('transferCodeInputModal').focus();
+    }, 100);
+    
+    // モーダル外クリックで閉じる
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+}
+
+// 引き継ぎモーダルの送信処理
+async function submitTransferInputModal() {
+    const input = document.getElementById('transferCodeInputModal');
+    const inputCode = input.value.toUpperCase().trim();
+    
+    if (!inputCode || inputCode.length !== 8) {
+        await showCustomAlert('8文字の引き継ぎコードを入力してください', '⚠️');
         return;
     }
     
+    document.getElementById('transferInputModal').remove();
     applyTransferCodeFromRegistration(inputCode);
 }
 
