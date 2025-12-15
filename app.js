@@ -1953,25 +1953,19 @@ function showVideoAd() {
     `;
     
 document.body.appendChild(videoModal);
-    console.log('🎬 動画モーダル表示完了');
     
-    // 5秒後に報酬ボタン表示（テスト用）
-setTimeout(() => {
-        console.log('⏰ タイマー発火');
+// 30秒後に報酬ボタン表示
+    setTimeout(() => {
         const claimBtn = document.getElementById('claimRewardBtn');
-        console.log('🔍 ボタン要素:', claimBtn);
         if (claimBtn) {
-claimBtn.style.display = 'inline-block';
+            claimBtn.style.display = 'inline-block';
             claimBtn.style.position = 'fixed';
             claimBtn.style.bottom = '100px';
             claimBtn.style.left = '50%';
             claimBtn.style.transform = 'translateX(-50%)';
             claimBtn.style.zIndex = '99999';
-            console.log('✅ ボタン表示完了');
-        } else {
-            console.log('❌ ボタンが見つからない');
         }
-}, 30000);
+    }, 30000);
 }
 
 // 動画広告を閉じる
