@@ -1960,7 +1960,7 @@ function showVideoAd() {
         if (claimBtn) {
             claimBtn.style.display = 'inline-block';
         }
-    }, 30000);
+    }, 5000);
 }
 
 // 動画広告を閉じる
