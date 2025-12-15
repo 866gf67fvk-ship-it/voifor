@@ -1651,13 +1651,25 @@ function closePaymentModal() {
 
 // 決済送信（Elements版）
 async function submitPaymentElements(tickets, price, type) {
+    const title = type === 'premium' ? 'プレミアム登録' : `クローバー${tickets}枚`;
+    const confirmed = await showCustomConfirm(
+        `${title}\n¥${price.toLocaleString()}を決済しますか？`,
+        '💳',
+        '決済する',
+        'キャンセル'
+    );
+    
+    if (!confirmed) {
+        return;
+    }
+    
     const btn = document.getElementById('payBtn');
     btn.textContent = '処理中...';
     btn.disabled = true;
     
     try {
         const payjp = getPayjp();
-    const result = await payjp.createToken(window.cardNumberElement);
+        const result = await payjp.createToken(window.cardNumberElement);
         
         if (result.error) {
             document.getElementById('card-errors').textContent = result.error.message;
