@@ -547,18 +547,46 @@ function showMainScreen() {
 // ========================================
 
 // デバイスID取得・生成
-function getDeviceId() {
+let cachedDeviceId = null;
+
+async function getDeviceId() {
+    if (cachedDeviceId) return cachedDeviceId;
+    
+    // まずlocalStorageを確認
     let deviceId = localStorage.getItem('voifor_device_id');
+    
+    // Capacitor Preferencesも確認
+    if (!deviceId && window.Capacitor && Capacitor.Plugins.Preferences) {
+        try {
+            const result = await Capacitor.Plugins.Preferences.get({ key: 'voifor_device_id' });
+            deviceId = result.value;
+        } catch (e) {
+            console.log('Preferences読み込みエラー:', e);
+        }
+    }
+    
+    // なければ新規生成
     if (!deviceId) {
         deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        localStorage.setItem('voifor_device_id', deviceId);
     }
+    
+    // 両方に保存
+    localStorage.setItem('voifor_device_id', deviceId);
+    if (window.Capacitor && Capacitor.Plugins.Preferences) {
+        try {
+            await Capacitor.Plugins.Preferences.set({ key: 'voifor_device_id', value: deviceId });
+        } catch (e) {
+            console.log('Preferences保存エラー:', e);
+        }
+    }
+    
+    cachedDeviceId = deviceId;
     return deviceId;
 }
 
 // ユーザーデータ読み込み
 async function loadUserData() {
-    const deviceId = getDeviceId();
+    const deviceId = await getDeviceId();
     
     try {
         // Supabaseから取得
@@ -616,7 +644,7 @@ async function createNewUser(deviceId) {
 
 // ユーザーデータ保存
 async function saveUserData() {
-    const deviceId = getDeviceId();
+    const deviceId = await getDeviceId();
     
     try {
 const { error } = await supabase
