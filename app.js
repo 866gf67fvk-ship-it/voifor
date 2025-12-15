@@ -1669,26 +1669,29 @@ async function submitPayment(tickets, price, type) {
 try {
         const payjp = getPayjp();
         
-payjp.createToken({
-            number: cardNumber,
-            cvc: cvc,
-            exp_month: expiry[0],
-            exp_year: '20' + expiry[1]
-        }, async function(status, response) {
-            if (status === 200) {
-                closePaymentModal();
-                
-                if (type === 'premium') {
-                    await processSubscription(response.id);
-                } else {
-                    await processPurchase(response.id, tickets, price);
-                }
-            } else {
-                btn.textContent = '支払う';
-                btn.disabled = false;
-                await showCustomAlert('カード情報が正しくありません', '❌');
+        const response = await payjp.createToken({
+            card: {
+                number: cardNumber,
+                cvc: cvc,
+                exp_month: parseInt(expiry[0]),
+                exp_year: parseInt('20' + expiry[1])
             }
         });
+        
+        if (response.error) {
+            btn.textContent = '支払う';
+            btn.disabled = false;
+            await showCustomAlert('カード情報が正しくありません: ' + response.error.message, '❌');
+            return;
+        }
+        
+        closePaymentModal();
+        
+        if (type === 'premium') {
+            await processSubscription(response.id);
+        } else {
+            await processPurchase(response.id, tickets, price);
+        }
         
     } catch (error) {
         console.error('トークン作成エラー:', error);
