@@ -1971,19 +1971,7 @@ function closeVideoAd(claimReward) {
         giveAdReward();
     }
 }
-```
 
----
-
-## 仕組み
-```
-「🎥 動画みて+1」タップ
-    ↓
-そらことの宣伝動画が再生
-    ↓
-30秒後に「クローバーを受け取る」ボタン出現
-    ↓
-タップでクローバー獲得！🍀
 
 // 広告報酬付与
 async function giveAdReward() {
