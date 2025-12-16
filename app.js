@@ -305,6 +305,14 @@ let userData = {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🌟 VOIFOR 起動中...');
     
+    // デバッグ：ストレージ確認
+    console.log('📦 NativeStorage存在:', !!window.NativeStorage);
+    if (window.NativeStorage) {
+        const savedId = window.NativeStorage.get('voifor_device_id');
+        console.log('📦 NativeStorage device_id:', savedId);
+    }
+    console.log('📦 localStorage device_id:', localStorage.getItem('voifor_device_id'));
+    
     // ユーザーデータ読み込み
     await loadUserData();
     
