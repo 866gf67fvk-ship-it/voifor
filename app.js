@@ -607,6 +607,8 @@ cachedDeviceId = deviceId;
 async function loadUserData() {
     const deviceId = await getDeviceId();
     
+    alert('loadUserData開始！\ndeviceId: ' + deviceId);
+    
     try {
         // Supabaseから取得
         const { data, error } = await supabase
