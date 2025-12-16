@@ -304,21 +304,7 @@ let userData = {
 // 初期化
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🌟 VOIFOR 起動中...');
-    
-// 3秒後にストレージ確認
-    setTimeout(() => {
-        const hasCapacitor = typeof Capacitor !== 'undefined';
-        const hasPlugins = hasCapacitor && Capacitor.Plugins;
-        const hasPrefs = hasPlugins && Capacitor.Plugins.Preferences;
-        const hasAndroid = typeof AndroidStorage !== 'undefined';
-        alert(
-            'Capacitor: ' + hasCapacitor + 
-            '\nPlugins: ' + !!hasPlugins + 
-            '\nPreferences: ' + !!hasPrefs +
-            '\nAndroidStorage: ' + hasAndroid
-        );
-    }, 3000);
-    
+        
     // デバッグ：ストレージ確認
     console.log('📦 NativeStorage存在:', !!window.NativeStorage);
     if (window.NativeStorage) {
@@ -576,13 +562,13 @@ async function getDeviceId() {
     
     let deviceId = null;
     
-    // AndroidStorageから取得
-    if (window.AndroidStorage) {
+    // Capacitor Preferencesから取得
+    if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Preferences) {
         try {
-            deviceId = window.AndroidStorage.get('voifor_device_id');
-            console.log('📦 AndroidStorage から取得:', deviceId);
+            const result = await Capacitor.Plugins.Preferences.get({ key: 'voifor_device_id' });
+            deviceId = result.value;
         } catch (e) {
-            console.log('AndroidStorage読み込みエラー:', e);
+            console.log('Preferences読み込みエラー:', e);
         }
     }
     
@@ -598,16 +584,15 @@ async function getDeviceId() {
     
     // 両方に保存
     localStorage.setItem('voifor_device_id', deviceId);
-    if (window.AndroidStorage) {
+    if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Preferences) {
         try {
-            window.AndroidStorage.save('voifor_device_id', deviceId);
+            await Capacitor.Plugins.Preferences.set({ key: 'voifor_device_id', value: deviceId });
         } catch (e) {
-            console.log('AndroidStorage保存エラー:', e);
+            console.log('Preferences保存エラー:', e);
         }
     }
     
     cachedDeviceId = deviceId;
-       
     return deviceId;
 }
 
