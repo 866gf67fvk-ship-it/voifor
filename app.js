@@ -593,22 +593,14 @@ async function getDeviceId() {
     }
     
 cachedDeviceId = deviceId;
-    
-    // デバッグ：保存確認
-    if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Preferences) {
-        const check = await Capacitor.Plugins.Preferences.get({ key: 'voifor_device_id' });
-        alert('保存確認:\ndevice_id: ' + deviceId + '\nPreferencesから: ' + check.value);
-    }
-    
+   
     return deviceId;
 }
 
 // ユーザーデータ読み込み
 async function loadUserData() {
     const deviceId = await getDeviceId();
-    
-    alert('loadUserData開始！\ndeviceId: ' + deviceId);
-    
+        
     try {
         // Supabaseから取得
         const { data, error } = await supabase
@@ -620,7 +612,6 @@ async function loadUserData() {
 if (error && error.code === 'PGRST116') {
             // ユーザーが存在しない→新規作成
             console.log('🆕 新規ユーザー作成');
-            alert('新規ユーザー作成！\ndevice_id: ' + deviceId);
             await createNewUser(deviceId);
 } else if (data) {
             // 既存ユーザー
@@ -650,7 +641,6 @@ userData.isRegistered = data.is_registered || false;
         }
 } catch (err) {
         console.error('❌ データ読み込みエラー:', err);
-        alert('❌ エラー発生！\n' + err.message);
     }
 }
 
