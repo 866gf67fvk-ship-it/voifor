@@ -592,7 +592,14 @@ async function getDeviceId() {
         }
     }
     
-    cachedDeviceId = deviceId;
+cachedDeviceId = deviceId;
+    
+    // デバッグ：保存確認
+    if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Preferences) {
+        const check = await Capacitor.Plugins.Preferences.get({ key: 'voifor_device_id' });
+        alert('保存確認:\ndevice_id: ' + deviceId + '\nPreferencesから: ' + check.value);
+    }
+    
     return deviceId;
 }
 
@@ -626,8 +633,11 @@ async function loadUserData() {
             userData.name = data.name || '';
             userData.birth = data.birth || '';
             userData.bloodType = data.blood_type || '';
-            userData.isRegistered = data.is_registered || false;
+userData.isRegistered = data.is_registered || false;
             userData.oduu = data.id;
+            
+            // デバッグ
+            alert('Supabaseから読み込み:\nisRegistered: ' + userData.isRegistered + '\nname: ' + userData.name);
             // プレミアム関連
             userData.isPremium = data.is_premium || false;
             userData.premiumExpiry = data.premium_expiry || null;
