@@ -615,9 +615,10 @@ async function loadUserData() {
             .eq('device_id', deviceId)
             .single();
         
-        if (error && error.code === 'PGRST116') {
+if (error && error.code === 'PGRST116') {
             // ユーザーが存在しない→新規作成
             console.log('🆕 新規ユーザー作成');
+            alert('新規ユーザー作成！\ndevice_id: ' + deviceId);
             await createNewUser(deviceId);
 } else if (data) {
             // 既存ユーザー
