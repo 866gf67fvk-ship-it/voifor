@@ -305,6 +305,20 @@ let userData = {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🌟 VOIFOR 起動中...');
     
+// 3秒後にストレージ確認
+    setTimeout(() => {
+        const hasCapacitor = typeof Capacitor !== 'undefined';
+        const hasPlugins = hasCapacitor && Capacitor.Plugins;
+        const hasPrefs = hasPlugins && Capacitor.Plugins.Preferences;
+        const hasAndroid = typeof AndroidStorage !== 'undefined';
+        alert(
+            'Capacitor: ' + hasCapacitor + 
+            '\nPlugins: ' + !!hasPlugins + 
+            '\nPreferences: ' + !!hasPrefs +
+            '\nAndroidStorage: ' + hasAndroid
+        );
+    }, 3000);
+    
     // デバッグ：ストレージ確認
     console.log('📦 NativeStorage存在:', !!window.NativeStorage);
     if (window.NativeStorage) {
@@ -593,10 +607,7 @@ async function getDeviceId() {
     }
     
     cachedDeviceId = deviceId;
-    
-    // デバッグ表示
-    alert('AndroidStorage: ' + (window.AndroidStorage ? 'あり' : 'なし') + '\ndevice_id: ' + deviceId);
-    
+       
     return deviceId;
 }
 
