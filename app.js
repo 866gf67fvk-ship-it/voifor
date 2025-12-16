@@ -648,8 +648,9 @@ userData.isRegistered = data.is_registered || false;
             userData.premiumLastDate = data.premium_last_date || null;
             console.log('📁 ユーザーデータ読み込み完了');
         }
-    } catch (err) {
+} catch (err) {
         console.error('❌ データ読み込みエラー:', err);
+        alert('❌ エラー発生！\n' + err.message);
     }
 }
 
