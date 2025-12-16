@@ -339,9 +339,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         // URLパラメータをクリア（リロードで重複付与を防ぐ）
         window.history.replaceState({}, document.title, window.location.pathname);
     }
-    if (urlParams.get('canceled') === 'true') {
+if (urlParams.get('canceled') === 'true') {
         await showCustomAlert('購入がキャンセルされました', '❌');
         window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // URLパラメータで直接ページ表示
+    const pageParam = urlParams.get('page');
+    if (pageParam === 'privacy') {
+        showPrivacyPage();
+        return;
+    }
+    if (pageParam === 'terms') {
+        showTermsPage();
+        return;
+    }
+    if (pageParam === 'legal') {
+        showLegalPage();
+        return;
     }
 
  // カレンダー表示
@@ -4840,4 +4855,88 @@ async function applyTransferCodeFromRegistration(inputCode) {
         console.error('引き継ぎエラー:', err);
         alert('❌ 引き継ぎに失敗しました');
     }
+}
+
+// ========================================
+// 直接アクセス用ページ表示
+// ========================================
+
+function showPrivacyPage() {
+    document.body.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 50%, #0f0f23 100%); min-height: 100vh; padding: 20px; color: white; font-family: sans-serif;">
+            <h1 style="text-align: center; color: #FFB6C1; margin-bottom: 30px;">プライバシーポリシー</h1>
+            <div style="max-width: 600px; margin: 0 auto; line-height: 1.8;">
+                <p>VOIFOR運営事務局（以下「当事務局」）は、本アプリ「VOIFOR -声占い-」（以下「本アプリ」）における個人情報の取り扱いについて、以下のとおりプライバシーポリシーを定めます。</p>
+                
+                <h2 style="color: #FFB6C1; margin-top: 30px;">収集する情報</h2>
+                <ul>
+                    <li>ニックネーム、生年月日、血液型</li>
+                    <li>音声データ（占い実行時のみ使用）</li>
+                    <li>占い履歴</li>
+                    <li>決済情報（PAY.JP社を通じて処理）</li>
+                </ul>
+                
+                <h2 style="color: #FFB6C1; margin-top: 30px;">利用目的</h2>
+                <ul>
+                    <li>占いサービスの提供</li>
+                    <li>サービスの改善・開発</li>
+                    <li>お問い合わせへの対応</li>
+                </ul>
+                
+                <h2 style="color: #FFB6C1; margin-top: 30px;">音声データの取り扱い</h2>
+                <p>音声データは占い結果の生成にのみ使用し、生成完了後はサーバーに保存しません。</p>
+                
+                <h2 style="color: #FFB6C1; margin-top: 30px;">第三者提供</h2>
+                <p>以下の場合を除き、個人情報を第三者に提供しません。</p>
+                <ul>
+                    <li>ご本人の同意がある場合</li>
+                    <li>法令に基づく場合</li>
+                    <li>決済処理に必要な場合（PAY.JP社）</li>
+                </ul>
+                
+                <h2 style="color: #FFB6C1; margin-top: 30px;">お問い合わせ</h2>
+                <p>プライバシーポリシーに関するお問い合わせは、アプリ内のお問い合わせ機能よりご連絡ください。</p>
+                
+                <p style="margin-top: 30px; text-align: right;">制定日: 2025年1月1日<br>VOIFOR運営事務局</p>
+            </div>
+        </div>
+    `;
+}
+
+function showTermsPage() {
+    document.body.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 50%, #0f0f23 100%); min-height: 100vh; padding: 20px; color: white; font-family: sans-serif;">
+            <h1 style="text-align: center; color: #FFB6C1; margin-bottom: 30px;">利用規約</h1>
+            <div style="max-width: 600px; margin: 0 auto; line-height: 1.8;">
+                <p>本利用規約は、VOIFOR運営事務局が提供する「VOIFOR -声占い-」の利用条件を定めるものです。</p>
+                <h2 style="color: #FFB6C1; margin-top: 30px;">サービス内容</h2>
+                <p>本アプリは、音声認識とAI技術を用いた占いエンターテインメントサービスです。占い結果は娯楽目的であり、将来を保証するものではありません。</p>
+                <h2 style="color: #FFB6C1; margin-top: 30px;">禁止事項</h2>
+                <ul>
+                    <li>不正アクセスや改ざん行為</li>
+                    <li>他のユーザーへの迷惑行為</li>
+                    <li>商用利用（許可なく）</li>
+                </ul>
+                <p style="margin-top: 30px; text-align: right;">制定日: 2025年1月1日<br>VOIFOR運営事務局</p>
+            </div>
+        </div>
+    `;
+}
+
+function showLegalPage() {
+    document.body.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 50%, #0f0f23 100%); min-height: 100vh; padding: 20px; color: white; font-family: sans-serif;">
+            <h1 style="text-align: center; color: #FFB6C1; margin-bottom: 30px;">特定商取引法に基づく表記</h1>
+            <div style="max-width: 600px; margin: 0 auto; line-height: 1.8;">
+                <p><strong>販売事業者:</strong> VOIFOR運営事務局</p>
+                <p><strong>運営責任者:</strong> 個人事業主</p>
+                <p><strong>所在地:</strong> 請求があった場合に遅滞なく開示します</p>
+                <p><strong>連絡先:</strong> アプリ内お問い合わせよりご連絡ください</p>
+                <p><strong>販売価格:</strong> アプリ内に表示</p>
+                <p><strong>支払方法:</strong> クレジットカード決済</p>
+                <p><strong>返品・キャンセル:</strong> デジタルコンテンツの性質上、購入後の返品・キャンセルはできません</p>
+                <p style="margin-top: 30px; text-align: right;">制定日: 2025年1月1日<br>VOIFOR運営事務局</p>
+            </div>
+        </div>
+    `;
 }
