@@ -552,17 +552,16 @@ let cachedDeviceId = null;
 async function getDeviceId() {
     if (cachedDeviceId) return cachedDeviceId;
     
-    // まずlocalStorageを確認
-    let deviceId = localStorage.getItem('voifor_device_id');
+    let deviceId = null;
     
-    // Capacitor Preferencesも確認
-    if (!deviceId && window.Capacitor && Capacitor.Plugins.Preferences) {
-        try {
-            const result = await Capacitor.Plugins.Preferences.get({ key: 'voifor_device_id' });
-            deviceId = result.value;
-        } catch (e) {
-            console.log('Preferences読み込みエラー:', e);
-        }
+    // ネイティブストレージから取得（Androidアプリ用）
+    if (window.NativeStorage) {
+        deviceId = window.NativeStorage.get('voifor_device_id');
+    }
+    
+    // なければlocalStorageを確認
+    if (!deviceId) {
+        deviceId = localStorage.getItem('voifor_device_id');
     }
     
     // なければ新規生成
@@ -572,12 +571,8 @@ async function getDeviceId() {
     
     // 両方に保存
     localStorage.setItem('voifor_device_id', deviceId);
-    if (window.Capacitor && Capacitor.Plugins.Preferences) {
-        try {
-            await Capacitor.Plugins.Preferences.set({ key: 'voifor_device_id', value: deviceId });
-        } catch (e) {
-            console.log('Preferences保存エラー:', e);
-        }
+    if (window.NativeStorage) {
+        window.NativeStorage.save('voifor_device_id', deviceId);
     }
     
     cachedDeviceId = deviceId;
