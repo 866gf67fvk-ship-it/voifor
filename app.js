@@ -630,8 +630,6 @@ if (error && error.code === 'PGRST116') {
 userData.isRegistered = data.is_registered || false;
             userData.oduu = data.id;
             
-            // デバッグ
-            alert('Supabaseから読み込み:\nisRegistered: ' + userData.isRegistered + '\nname: ' + userData.name);
             // プレミアム関連
             userData.isPremium = data.is_premium || false;
             userData.premiumExpiry = data.premium_expiry || null;
