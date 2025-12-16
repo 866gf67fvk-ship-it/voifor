@@ -562,9 +562,14 @@ async function getDeviceId() {
     
     let deviceId = null;
     
-    // ネイティブストレージから取得（Androidアプリ用）
-    if (window.NativeStorage) {
-        deviceId = window.NativeStorage.get('voifor_device_id');
+    // AndroidStorageから取得
+    if (window.AndroidStorage) {
+        try {
+            deviceId = window.AndroidStorage.get('voifor_device_id');
+            console.log('📦 AndroidStorage から取得:', deviceId);
+        } catch (e) {
+            console.log('AndroidStorage読み込みエラー:', e);
+        }
     }
     
     // なければlocalStorageを確認
@@ -579,11 +584,19 @@ async function getDeviceId() {
     
     // 両方に保存
     localStorage.setItem('voifor_device_id', deviceId);
-    if (window.NativeStorage) {
-        window.NativeStorage.save('voifor_device_id', deviceId);
+    if (window.AndroidStorage) {
+        try {
+            window.AndroidStorage.save('voifor_device_id', deviceId);
+        } catch (e) {
+            console.log('AndroidStorage保存エラー:', e);
+        }
     }
     
     cachedDeviceId = deviceId;
+    
+    // デバッグ表示
+    alert('AndroidStorage: ' + (window.AndroidStorage ? 'あり' : 'なし') + '\ndevice_id: ' + deviceId);
+    
     return deviceId;
 }
 
