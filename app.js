@@ -645,8 +645,6 @@ async function loadUserData() {
             .eq('device_id', deviceId)
             .single();
         
-        alert('Supabase結果:\ndata: ' + (data ? 'あり' : 'なし') + '\nerror: ' + (error ? error.code : 'なし') + '\nis_registered: ' + (data ? data.is_registered : 'N/A'));
-        
 if (error && error.code === 'PGRST116') {
             // ユーザーが存在しない→新規作成
             console.log('🆕 新規ユーザー作成');
@@ -665,7 +663,9 @@ if (error && error.code === 'PGRST116') {
             userData.name = data.name || '';
             userData.birth = data.birth || '';
             userData.bloodType = data.blood_type || '';
-userData.isRegistered = data.is_registered || false;
+            userData.isRegistered = data.is_registered || false;
+            userData.gender = data.gender || '';
+            userData.characterName = data.character_name || '';
             userData.oduu = data.id;
             
             // プレミアム関連
@@ -714,6 +714,8 @@ const { error } = await supabase
                 name: userData.name,
                 birth: userData.birth,
                 blood_type: userData.bloodType,
+                gender: userData.gender,
+                character_name: userData.characterName,
                 is_registered: userData.isRegistered,
                 // プレミアム関連
                 is_premium: userData.isPremium,
