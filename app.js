@@ -578,21 +578,16 @@ async function getDeviceId() {
     if (cachedDeviceId) return cachedDeviceId;
     
     let deviceId = null;
-    
-    // デバッグ: Capacitor存在確認
-    const hasCapacitor = typeof Capacitor !== 'undefined';
-    const hasPlugins = hasCapacitor && Capacitor.Plugins;
-    const hasPrefs = hasPlugins && Capacitor.Plugins.Preferences;
-    
-    alert('デバッグ:\nCapacitor: ' + hasCapacitor + '\nPlugins: ' + hasPlugins + '\nPreferences: ' + hasPrefs);
+    let debugMsg = 'デバッグ:\n';
     
     // Capacitor Preferencesから取得
     if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Preferences) {
         try {
             const result = await Capacitor.Plugins.Preferences.get({ key: 'voifor_device_id' });
             deviceId = result.value;
+            debugMsg += 'Prefs取得: ' + (deviceId || 'null') + '\n';
         } catch (e) {
-            console.log('Preferences読み込みエラー:', e);
+            debugMsg += 'Prefsエラー: ' + e.message + '\n';
         }
     }
     
@@ -606,17 +601,21 @@ async function getDeviceId() {
         deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
     }
     
-    // 両方に保存
+// 両方に保存
     localStorage.setItem('voifor_device_id', deviceId);
     if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Preferences) {
         try {
             await Capacitor.Plugins.Preferences.set({ key: 'voifor_device_id', value: deviceId });
+            debugMsg += 'Prefs保存: OK\n';
         } catch (e) {
-            console.log('Preferences保存エラー:', e);
+            debugMsg += 'Prefs保存エラー: ' + e.message + '\n';
         }
     }
     
-cachedDeviceId = deviceId;
+    debugMsg += '最終ID: ' + deviceId;
+    alert(debugMsg);
+    
+    cachedDeviceId = deviceId;
    
     return deviceId;
 }
@@ -624,6 +623,8 @@ cachedDeviceId = deviceId;
 // ユーザーデータ読み込み
 async function loadUserData() {
     const deviceId = await getDeviceId();
+    
+    alert('loadUserData開始\ndeviceId: ' + deviceId);
         
     try {
         // Supabaseから取得
@@ -632,6 +633,8 @@ async function loadUserData() {
             .select('*')
             .eq('device_id', deviceId)
             .single();
+        
+        alert('Supabase結果:\ndata: ' + (data ? 'あり' : 'なし') + '\nerror: ' + (error ? error.code : 'なし') + '\nis_registered: ' + (data ? data.is_registered : 'N/A'));
         
 if (error && error.code === 'PGRST116') {
             // ユーザーが存在しない→新規作成
@@ -663,6 +666,7 @@ userData.isRegistered = data.is_registered || false;
         }
 } catch (err) {
         console.error('❌ データ読み込みエラー:', err);
+        alert('catchエラー: ' + err.message);
     }
 }
 
