@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VOIFOR -声占い-</title>
+    <meta name="theme-color" content="#667eea">
+    
+<!-- Supabase SDK（ローカル） -->
+    <script src="supabase.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    
+<link rel="stylesheet" href="style.css?v=158">
+
+</head>
+<body>
+<!-- スプラッシュ画面 -->
+<div id="splashScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a0a2e; z-index: 99999; display: flex; justify-content: center; align-items: center;">
+    <img src="splash.png" style="width: 100%; height: 100%; object-fit: cover;">
+</div>
+<!-- 初回登録画面 -->
+    <div id="registrationScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1 class="main-title">VOIFOR</h1>
+                <p>-声占い-</p>
+            </header>
+            
+            <div class="registration-form">
+                <p class="welcome-text">
+                    ✨ ようこそ！<br>
+                    あなたのことを教えてください
+                </p>
+                
+<div class="input-group">
+                    <label>お名前（10文字まで）<span class="required">*必須</span></label>
+                    <input type="text" id="regName" placeholder="ニックネームでOK" maxlength="10">
+                </div>
+                
+<div class="input-group">
+    <label>生年月日</label>
+    <div class="birthday-select-row">
+        <select id="regBirthYear">
+            <option value="">年</option>
+        </select>
+        <select id="regBirthMonth">
+            <option value="">月</option>
+        </select>
+        <select id="regBirthDay">
+            <option value="">日</option>
+        </select>
+    </div>
+</div>
+                
+                <div class="input-group">
+                    <label>血液型</label>
+                    <select id="regBloodType">
+                        <option value="">選択してください</option>
+                        <option value="A">A型</option>
+                        <option value="B">B型</option>
+                        <option value="O">O型</option>
+                        <option value="AB">AB型</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>性別</label>
+                    <select id="regGender">
+                        <option value="">選択してください</option>
+                        <option value="male">男性</option>
+                        <option value="female">女性</option>
+                        <option value="other">その他</option>
+                    </select>
+                </div>
+                
+ <!-- 紹介コード入力欄 -->
+                <div class="referral-input-box">
+                    <div class="referral-label">🎁 紹介コードをお持ちですか？</div>
+                    <input type="text" id="referralCodeInput" placeholder="紹介コード（任意）">
+                    <div class="referral-hint">✨ 入力すると、あなたと紹介者にボーナス！</div>
+                </div>
+                
+                <button class="register-btn" onclick="completeRegistration()">
+                    占いを始める ✨
+                </button>
+                
+                <div style="text-align: center; margin: 20px 0; opacity: 0.6;">または</div>
+                
+                <button class="register-btn" onclick="showTransferInput()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    📱 引き継ぎコードで復元
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!-- メイン画面 -->
+    <div id="mainScreen" class="screen active">
+        <div class="container">
+            
+            <!-- タイトル -->
+            <header class="app-header">
+                <h1 class="main-title">VOIFOR</h1>
+                <p>-声占い-</p>
+            </header>
+
+<!-- キャラ＆カレンダーエリア -->
+            <div class="main-info-row">
+<!-- 左：キャラ画像（タップで選択画面へ） -->
+<div class="character-area" onclick="showCharacterSelect()">
+    <div id="characterImage" class="character-image"></div>
+    <div id="characterNameDisplay" class="character-name-display"></div>
+</div>
+<!-- 右：カレンダー（上）＋プロフ（下） -->
+                <div class="right-column">
+                    <div class="calendar-area" onclick="openCalendarModal()">
+                        <div id="calendarDisplay" class="mini-calendar"></div>
+                    </div>
+<div class="user-stats" onclick="showSettingsScreen()">
+<div class="profile-line" id="profileInfoLine">
+    <!-- JSで動的生成 -->
+</div>
+    <div class="profile-line stats-line">
+        <span>🔥<span id="streakCount">0</span></span>
+        <span class="profile-sep">|</span>
+        <span>📊<span id="totalCount">0</span></span>
+    </div>
+</div>
+                </div>
+            </div>
+            <!-- キャラの言葉/占い結果 -->
+            <div class="speech-bubble" id="speechBubble">
+                占いの準備ができました！
+            </div>
+            <!-- 今日の占いボタン -->
+            <button class="main-fortune-btn" onclick="startVoiceFortune()">
+                🔮  今日の声占い  🔮
+            </button>
+
+            <!-- クローバー＆設定エリア -->
+            <div class="action-row">
+<div class="ticket-info" onclick="showPurchaseScreen()">
+    <span class="ticket-free">無料☘️ <span id="freeTicketCount">3</span></span>
+    <span class="ticket-divider">|</span>
+    <span class="ticket-earned">🍀 <span id="earnedTicketCount">0</span></span>
+</div>
+
+                <div class="side-buttons">
+                    <button onclick="showSettingsScreen()">⚙️ 設定</button>
+                    <button onclick="showHistoryScreen()">📜 履歴</button>
+                </div>
+            </div>
+
+            <!-- 動画＆招待エリア -->
+            <div class="action-row">
+                <button class="ad-btn" onclick="watchAdForTicket()">
+                    🎥 動画みて+1
+                </button>
+                <button class="invite-btn" onclick="showReferralScreen()">
+                    🌸 招待
+                </button>
+            </div>
+
+            <!-- その他占い -->
+            <div class="other-fortune-section">
+                <h2>その他占い</h2>
+                <div class="fortune-grid">
+                    <button class="fortune-card" onclick="showCompatibilityScreen()">
+                        💕 相性占い
+                    </button>
+                    <button class="fortune-card" onclick="showTarotScreen()">
+                        🃏 タロット<br>占い
+                    </button>
+                    <button class="fortune-card" onclick="showDreamScreen()">
+                        🌙 夢占い
+                    </button>
+                    <button class="fortune-card" onclick="showSoulScreen()">
+    🔮 魂の暴露<br>占い
+</button>
+                    <button class="fortune-card coming-soon" disabled>
+                        🔜 Coming soon...
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<!-- キャラ選択画面 -->
+    <div id="characterSelectScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>キャラ選択</h1>
+                <p>占い師を選んでね</p>
+            </header>
+            
+            <button class="section-back-btn" onclick="goBack()">← 戻る</button>
+            
+            <div class="character-grid" id="characterGrid">
+                <!-- JSで生成 -->
+            </div>
+        </div>
+    </div>
+<!-- 占い画面 -->
+    <div id="fortuneScreen" class="screen">
+        <div class="container">
+<header class="app-header">
+                <h1>🔮 今日の占い</h1>
+            </header>
+            
+<!-- キャラ画像 -->
+            <div class="fortune-char-area">
+                <button class="fortune-back-btn" onclick="goBack()">←</button>
+                <div id="fortuneCharImage" class="fortune-char-image"></div>
+                <p id="fortuneCharSpeech" class="fortune-char-speech">3秒間、声を聞かせて！</p>
+            </div>
+            
+            <!-- 録音エリア -->
+            <div id="recordingArea">
+                <button id="recordBtn" class="record-btn" onclick="startRecording()">🎤 録音開始</button>
+                <div id="voiceMeter" class="voice-meter" style="display: none;">
+                    <div id="voiceLevel" class="voice-level"></div>
+                </div>
+                <p id="countdown" class="countdown"></p>
+            </div>
+            
+            <!-- 占い中表示 -->
+            <div id="fortuneLoading" class="fortune-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p id="loadingText">占い中...</p>
+            </div>
+            
+            <!-- 占い結果 -->
+            <div id="fortuneResult" style="display: none;">
+                <div class="result-card">
+                    <div id="fortuneText" class="fortune-text"></div>
+                </div>
+                <div class="lucky-info">
+                    <div class="lucky-item">🍀 <span id="luckyItem"></span></div>
+                    <div class="lucky-item">🎨 <span id="luckyColor"></span></div>
+                    <div class="lucky-item">🔢 <span id="luckyNumber"></span></div>
+                </div>
+<div class="result-buttons">
+                    <button class="record-btn" onclick="retryFortune()">🔮 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
+            </div>
+        </div>
+ </div>
+
+    <!-- カレンダーモーダル -->
+    <div id="calendarModal" class="modal" onclick="closeCalendarModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+<div class="modal-header">
+    <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+    <h2 id="modalMonthTitle">2025年12月</h2>
+    <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+    <button class="modal-close" onclick="closeCalendarModal()">&times;</button>
+</div>
+            <div id="modalCalendarGrid" class="modal-calendar-grid"></div>
+            <div id="modalHistoryArea" class="modal-history">
+                <p class="history-placeholder">日付をタップして履歴を見る</p>
+            </div>
+        </div>
+     </div>
+
+<!-- キャラ確認モーダル -->
+<div id="characterConfirmModal" class="modal" onclick="closeCharacterConfirm(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2>キャラクター変更</h2>
+            <button class="modal-close" onclick="closeCharacterConfirm()">&times;</button>
+        </div>
+        <div class="character-confirm-body">
+            <p id="characterConfirmText">このキャラを選びますか？</p>
+            <div class="character-name-input">
+                <label for="characterNameInput">名前をつける</label>
+            <input type="text" id="characterNameInput" placeholder="例：ぼいふぉちゃん" maxlength="7">
+            </div>
+        </div>
+        <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="closeCharacterConfirm()">やめる</button>
+            <button class="modal-btn confirm" onclick="confirmCharacterSelect()">選ぶ</button>
+        </div>
+    </div>
+</div>
+
+<!-- 設定画面 -->
+    <div id="settingsScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <button class="header-back-btn" onclick="goBack()">←</button>
+                <h1>⚙️ 設定</h1>
+            </header>
+            
+<div class="settings-menu">
+<button class="settings-btn" onclick="showCharacterSelect()" data-icon="🧸">
+    <span class="settings-text">キャラクター変更</span>
+    <span class="settings-arrow">→</span>
+</button>
+    
+    <button class="settings-btn" onclick="showEditScreen()" data-icon="📖">
+        <span class="settings-text">プロフィール編集</span>
+        <span class="settings-arrow">→</span>
+    </button>
+    
+<button class="settings-btn" onclick="showPurchaseScreen()" data-icon="🍀">
+    <span class="settings-text">クローバー購入</span>
+    <span class="settings-arrow">→</span>
+</button>
+
+<button class="settings-btn" onclick="showLegalScreen()" data-icon="🔒">
+    <span class="settings-text">利用規約・プライバシー</span>
+    <span class="settings-arrow">→</span>
+</button>
+
+<button class="settings-btn" onclick="showTransferScreen()" data-icon="📱">
+    <span class="settings-text">機種変更・引き継ぎ</span>
+    <span class="settings-arrow">→</span>
+</button>
+    
+    <button class="settings-btn danger" onclick="confirmReset()" data-icon="🗑️">
+        <span class="settings-text">データリセット</span>
+        <span class="settings-arrow">→</span>
+    </button>
+</div>
+            
+<div class="app-info">
+                <p>VOIFOR -声占い- v1.0</p>
+                <p>© 2025 VOIFOR</p>
+            </div>
+        </div>
+    </div>
+
+<!-- 法的情報画面 -->
+<div id="legalScreen" class="screen">
+    <div class="container">
+        <header class="app-header">
+            <button class="header-back-btn" onclick="goBack()">←</button>
+            <h1>🔒 法的情報</h1>
+        </header>
+        
+        <div class="settings-menu">
+<button class="settings-btn" onclick="showLegalModal('terms')">
+                <span class="settings-text">利用規約</span>
+                <span class="settings-arrow">→</span>
+            </button>
+            
+            <button class="settings-btn" onclick="showLegalModal('privacy')">
+                <span class="settings-text">プライバシーポリシー</span>
+                <span class="settings-arrow">→</span>
+            </button>
+            
+            <button class="settings-btn" onclick="showLegalModal('tokushoho')">
+                <span class="settings-text">特定商取引法に基づく表記</span>
+                <span class="settings-arrow">→</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- プロフィール編集画面 -->
+    <div id="editScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1 style="font-size: 1.8em;">プロフィール編集</h1>
+            </header>
+            
+            <button class="form-back-btn" onclick="goBack()">← 戻る</button>
+            
+<div class="form-group">
+    <label>お名前（10文字まで）</label>
+    <input type="text" id="editName" placeholder="ニックネームでOK" maxlength="10">
+</div>
+    
+<div class="form-group">
+    <label>生年月日</label>
+    <div class="birthday-select-row">
+        <select id="editBirthYear">
+            <option value="">年</option>
+        </select>
+        <select id="editBirthMonth">
+            <option value="">月</option>
+        </select>
+        <select id="editBirthDay">
+            <option value="">日</option>
+        </select>
+    </div>
+</div>
+    
+<div class="form-group">
+    <label>血液型</label>
+    <select id="editBloodType">
+        <option value="">選択してください</option>
+        <option value="A">A型</option>
+        <option value="B">B型</option>
+        <option value="O">O型</option>
+        <option value="AB">AB型</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>性別</label>
+    <select id="editGender">
+        <option value="">選択してください</option>
+        <option value="male">男性</option>
+        <option value="female">女性</option>
+        <option value="other">その他</option>
+    </select>
+</div>
+
+<div style="height: 40px;"></div>
+
+<button class="save-btn" onclick="saveProfile()">✅ 保存する</button>
+</div>
+        </div>
+    </div>
+  
+<!-- 履歴画面 -->
+    <div id="historyScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1>📜 占い履歴</h1>
+            </header>
+            
+            <button class="section-back-btn" onclick="goBack()">← 戻る</button>
+            
+<div class="history-layout">
+                <div class="history-sidebar">
+                    <button class="history-tab active" id="tabAll" onclick="filterHistory('all')">すべて</button>
+                    <button class="history-tab" id="tabVoice" onclick="filterHistory('voice')">🎤 声占い</button>
+                    <button class="history-tab" id="tabTarot" onclick="filterHistory('tarot')">🃏 タロット</button>
+                    <button class="history-tab" id="tabCompat" onclick="filterHistory('compatibility')">💕 相性</button>
+                   <button class="history-tab" id="tabDream" onclick="filterHistory('dream')">🌙 夢占い</button>
+                    <button class="history-tab" id="tabSoul" onclick="filterHistory('soul')">🔮 魂暴露</button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <!-- JSで生成 -->
+                </div>
+            </div>
+        </div>
+    </div>   
+
+<!-- タロット占い画面 -->
+    <div id="tarotScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1 style="font-size: 1.8em;">🃏 タロット占い</h1>
+            </header>
+                        
+            <!-- Step1: 枚数選択 -->
+            <div id="tarotStep1">
+                <h3 class="step-title">カードを何枚引きますか？</h3>
+                <div class="spread-cards">
+                    <div class="spread-card" onclick="selectSpread(1)">
+                        <div class="spread-card-icon">🃏</div>
+                        <div class="spread-card-title">1枚引き</div>
+                        <div class="spread-card-desc">シンプルに今の状況を占う</div>
+                        <div class="spread-card-cost">🍀 1枚</div>
+                    </div>
+<div class="spread-card" onclick="selectSpread(3)">
+                        <div class="spread-card-icon">🃏🃏🃏</div>
+                        <div class="spread-card-title">3枚引き</div>
+                        <div class="spread-card-desc">過去・現在・未来を占う</div>
+                        <div class="spread-card-cost">🍀 2枚</div>
+                    </div>
+                </div>
+                <button class="compat-back-btn" onclick="goBack()">← 戻る</button>
+            </div>
+            
+<!-- Step2: 質問入力 -->
+<div id="tarotStep2" style="display: none;">
+    <h3 class="step-title">質問方法を選んでください</h3>
+    
+    <p style="text-align: center; opacity: 0.8; margin-bottom: 15px;">カテゴリから選ぶ</p>
+    <div class="category-grid">
+        <button class="category-btn" onclick="selectTarotCategory('恋愛')">💕 恋愛</button>
+        <button class="category-btn" onclick="selectTarotCategory('仕事')">💼 仕事</button>
+        <button class="category-btn" onclick="selectTarotCategory('金運')">💰 金運</button>
+        <button class="category-btn" onclick="selectTarotCategory('人間関係')">👥 人間関係</button>
+        <button class="category-btn" onclick="selectTarotCategory('健康')">🏥 健康</button>
+        <button class="category-btn" onclick="selectTarotCategory('全般')">✨ 全般</button>
+    </div>
+    
+    <div style="text-align: center; margin: 20px 0; opacity: 0.5;">── または ──</div>
+    
+    <p style="text-align: center; opacity: 0.8; margin-bottom: 10px;">自分で質問を入力</p>
+    <div class="tarot-text-input">
+        <input type="text" id="tarotQuestionInput" placeholder="例：今の仕事を続けるべき？" maxlength="100">
+        <button class="submit-btn" onclick="submitTarotTextQuestion()" style="margin-top: 10px;">📝 この質問で占う</button>
+    </div>
+    
+    <div style="text-align: center; margin: 20px 0; opacity: 0.5;">── または ──</div>
+    
+    <div class="voice-option">
+        <button class="voice-category-btn" onclick="startTarotVoiceQuestion()">🎤 声で質問する</button>
+    </div>
+    <button class="compat-back-btn" onclick="backToTarotStep1()">← 戻る</button>
+</div>         
+            <!-- Step3: カード選択 -->
+            <div id="tarotStep3" style="display: none;">
+                <h3 class="step-title">カードを<span id="cardCount">1</span>枚選んでください</h3>
+                <p class="selected-info">選んだ枚数: <span id="selectedCount">0</span> / <span id="maxCards">1</span></p>
+                <div class="tarot-cards" id="tarotCards"></div>
+<button class="submit-btn" id="revealBtn" onclick="revealCards()" disabled>カードをめくる</button>
+                <button class="compat-back-btn" id="tarotStep3BackBtn" onclick="confirmTarotStep3Back()">← 戻る</button>
+            </div>
+<!-- ローディング -->
+<div id="tarotLoading" style="display: none;">
+    <div style="display: flex; flex-direction: column; align-items: center; padding: 40px 20px;">
+        <div id="lottieContainer" style="width: 250px; height: 250px;"></div>
+        <p id="tarotLoadingText" style="margin-top: 20px; font-size: 1.1em; opacity: 0.9;">カードが語りかけています...</p>
+    </div>
+</div>
+            
+            <!-- 結果表示 -->
+            <div id="tarotResult" style="display: none;">
+                <div class="tarot-result-cards" id="resultCards"></div>
+                <div class="result-card">
+                    <div id="tarotFortuneText" class="fortune-text"></div>
+                </div>
+<div class="result-buttons">
+                    <button class="submit-btn" onclick="retryTarot()">🃏 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- 相性占い画面 -->
+    <div id="compatibilityScreen" class="screen">
+        <div class="container">
+ <header class="app-header">
+                <h1 style="font-size: 1.8em;">💕 相性占い</h1>
+                <p>2人の情報で相性を占います</p>
+<p style="font-size: 0.85em; opacity: 0.8;">※名前 + (生年月日・血液型・性別・音声)のうち最低1つ入力</p>
+   <p class="screen-ticket">🍀 1枚（声録音する場合は1人1枚）</p>
+            </header>
+                        
+<!-- Step1: 人物1の情報 -->
+            <div id="compatStep1">
+                <h3 class="step-title">👤 人物1の情報</h3>
+                <div class="compat-form">
+                    <div class="form-group">
+                        <label>名前 <span style="color: #ff6b6b;">*必須</span></label>
+                        <input type="text" id="compat1Name" placeholder="例：太郎">
+                    </div>
+<div class="form-group">
+                        <label>生年月日（任意・星座＆干支も計算！）</label>
+                        <div class="birthday-row">
+                            <input type="date" id="compat1Birthday" onchange="showZodiacAndEto(1)">
+                            <span id="compat1Zodiac" class="zodiac-display"></span>
+                            <span id="compat1Eto" class="zodiac-display"></span>
+                        </div>
+                    </div>
+<div class="form-group">
+                        <label>血液型（任意）</label>
+                        <select id="compat1Blood">
+                            <option value="">選択してください</option>
+                            <option value="A">A型</option>
+                            <option value="B">B型</option>
+                            <option value="O">O型</option>
+                            <option value="AB">AB型</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>性別（任意）</label>
+                        <select id="compat1Gender">
+                            <option value="">選択してください</option>
+                            <option value="male">男性</option>
+                            <option value="female">女性</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+<label>音声で占う（任意・なんでもOK！）</label>
+                        <button class="voice-record-btn" id="compat1VoiceBtn" onclick="recordCompatVoice(1)">🎤 録音する</button>
+                        <p id="compat1VoiceStatus" class="voice-status"></p>
+                    </div>
+<button class="submit-btn" onclick="goToCompatStep2()">次へ →</button>
+                    <button class="compat-back-btn" onclick="confirmCompatStep1Back()">← 戻る</button>
+                </div>
+            </div>
+            
+<!-- Step2: 人物2の情報 -->
+            <div id="compatStep2" style="display: none;">
+                <h3 class="step-title">👤 人物2の情報</h3>
+                <div class="compat-form">
+                    <div class="form-group">
+                        <label>名前 <span style="color: #ff6b6b;">*必須</span></label>
+                        <input type="text" id="compat2Name" placeholder="例：花子">
+                    </div>
+<div class="form-group">
+                        <label>生年月日（任意・星座＆干支も計算！）</label>
+                        <div class="birthday-row">
+                            <input type="date" id="compat2Birthday" onchange="showZodiacAndEto(2)">
+                            <span id="compat2Zodiac" class="zodiac-display"></span>
+                            <span id="compat2Eto" class="zodiac-display"></span>
+                        </div>
+                    </div>
+<div class="form-group">
+                        <label>血液型（任意）</label>
+                        <select id="compat2Blood">
+                            <option value="">選択してください</option>
+                            <option value="A">A型</option>
+                            <option value="B">B型</option>
+                            <option value="O">O型</option>
+                            <option value="AB">AB型</option>
+                        </select>
+                    </div>
+<div class="form-group">
+                        <label>性別（任意）</label>
+                        <select id="compat2Gender">
+                            <option value="">選択してください</option>
+                            <option value="male">男性</option>
+                            <option value="female">女性</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>二人の関係</label>
+<select id="compatRelation">
+                            <option value="">選択してください</option>
+                            <option value="crush">片思い中</option>
+                            <option value="dating">交際中</option>
+                            <option value="friend">友人</option>
+                            <option value="coworker">同僚・仕事仲間</option>
+                            <option value="ex">元恋人</option>
+                            <option value="family">家族</option>
+                            <option value="oshi">推し・ファン</option>
+                            <option value="celebrity">有名人・芸能人</option>
+                            <option value="idol">憧れの人</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>音声で占う（任意・なんでもOK！）</label>
+<button class="voice-record-btn" id="compat2VoiceBtn" onclick="recordCompatVoice(2)">🎤 録音する</button>
+                        <p id="compat2VoiceStatus" class="voice-status"></p>
+                    </div>
+<button class="submit-btn" onclick="startCompatibilityFortune()">💕 相性を占う</button>
+                    <button class="compat-back-btn" id="compatStep2BackBtn" onclick="confirmCompatStep2Back()">← 戻る</button>
+                </div>
+            </div>
+            
+            <!-- ローディング -->
+            <div id="compatLoading" style="display: none;">
+                <div class="fortune-loading">
+                    <div class="loading-spinner"></div>
+                    <p>相性を占っています...</p>
+                </div>
+            </div>
+            
+            <!-- 結果 -->
+            <div id="compatResult" style="display: none;">
+                <div class="compat-score">
+                    <div class="score-circle" id="compatScoreCircle">
+                        <span id="compatScore">??</span>%
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div id="compatFortuneText" class="fortune-text"></div>
+                </div>
+<div class="result-buttons">
+                    <button class="submit-btn" onclick="retryCompatibility()">💕 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+<!-- 夢占い画面 -->
+    <div id="dreamScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1 style="font-size: 1.8em;">🌙 夢占い</h1>
+                <p>見た夢の内容を教えてください</p>
+            </header>
+            
+            <!-- Step1: 占い方法選択 -->
+            <div id="dreamStep1">
+                <h3 class="step-title">どう占いますか？</h3>
+                <div class="spread-cards">
+                    <div class="spread-card" onclick="selectDreamType('simple')">
+                        <div class="spread-card-icon">🌙</div>
+                        <div class="spread-card-title">シンプルに占う</div>
+                        <div class="spread-card-desc">夢の内容のみで占います</div>
+                        <div class="spread-card-cost">🍀 1枚</div>
+                    </div>
+<div class="spread-card" onclick="selectDreamType('detailed')">
+                        <div class="spread-card-icon">✨</div>
+                        <div class="spread-card-title">詳しく占う</div>
+                        <div class="spread-card-desc">詳細情報も含めて深く分析</div>
+                        <div class="spread-card-cost">🍀 2枚</div>
+                    </div>
+                </div>
+                <button class="compat-back-btn" onclick="goBack()">← 戻る</button>
+            </div>
+            
+            <!-- Step2: 入力方法選択 -->
+            <div id="dreamStep2" style="display: none;">
+                <h3 class="step-title">夢の内容をどう伝えますか？</h3>
+                <div class="category-grid">
+                    <button class="category-btn" onclick="selectDreamInput('text')">📝 テキストで書く</button>
+                    <button class="category-btn" onclick="selectDreamInput('voice')">🎤 声で話す</button>
+                </div>
+                
+                <!-- テキスト入力 -->
+<div id="dreamTextInput" style="display: none;">
+                    <textarea id="dreamText" class="dream-textarea" placeholder="例：空を飛んでいて、友達と一緒に雲の上を歩いていました..."></textarea>
+                    <button class="submit-btn" onclick="submitDreamContent()">次へ →</button>
+                    <button class="compat-back-btn" onclick="backToDreamStep1()">← 戻る</button>
+                </div>
+                
+                <!-- 音声入力 -->
+<div id="dreamVoiceInput" style="display: none;">
+                    <p style="text-align: center; opacity: 0.8; margin: 15px 0;">夢の内容を話してください（最大15秒）</p>
+ <button class="voice-record-btn" id="dreamVoiceBtn" onclick="recordDreamVoice()">🎤 録音する</button>
+                    <button class="voice-record-btn recording" id="dreamVoiceStopBtn" onclick="stopDreamVoice()" style="display: none;">⏹️ 録音停止</button>
+                    <p id="dreamVoiceStatus" class="voice-status"></p>
+                    <button class="submit-btn" id="dreamVoiceNext" onclick="submitDreamContent()" style="display: none;">次へ →</button>
+                    <button class="compat-back-btn" onclick="backToDreamStep1()">← 戻る</button>
+                </div>
+            </div>
+            <!-- Step3: 詳細情報（詳しく占う の場合のみ） -->
+            <div id="dreamStep3" style="display: none;">
+                <h3 class="step-title">詳細情報を入力してください</h3>
+                <div class="dream-details-form">
+                    <div class="form-group">
+                        <label>いつ見た夢ですか？</label>
+                        <select id="dreamWhen">
+                            <option value="">選択してください</option>
+                            <option value="今朝">今朝</option>
+                            <option value="昨夜">昨夜</option>
+                            <option value="数日前">数日前</option>
+                            <option value="繰り返し見る夢">繰り返し見る夢</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>夢の中の感情は？</label>
+                        <select id="dreamEmotion">
+                            <option value="">選択してください</option>
+                            <option value="楽しい">😊 楽しい</option>
+                            <option value="怖い">😨 怖い</option>
+                            <option value="悲しい">😢 悲しい</option>
+                            <option value="不安">😰 不安</option>
+                            <option value="穏やか">😌 穏やか</option>
+                            <option value="その他">🤔 その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>印象的だったシーン・人物・物は？（任意）</label>
+                        <input type="text" id="dreamImpression" placeholder="例：青い海、母親、白い犬など">
+                    </div>
+                    <div class="form-group">
+                        <label>夢の色彩は？</label>
+                        <select id="dreamColor">
+                            <option value="">選択してください</option>
+                            <option value="カラー">🌈 カラー</option>
+                            <option value="白黒">⬛ 白黒</option>
+                            <option value="覚えていない">❓ 覚えていない</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>目覚めた時の気分は？</label>
+                        <select id="dreamWakeup">
+                            <option value="">選択してください</option>
+                            <option value="スッキリ">😃 スッキリ</option>
+                            <option value="モヤモヤ">😕 モヤモヤ</option>
+                            <option value="怖かった">😱 怖かった</option>
+                            <option value="幸せ">🥰 幸せ</option>
+                            <option value="その他">🤷 その他</option>
+                        </select>
+                    </div>
+<button class="submit-btn" onclick="submitDreamFortune()">🌙 夢を占う</button>
+                    <button class="compat-back-btn" onclick="backToDreamStep2()">← 戻る</button>
+                </div>
+            </div>
+            
+            <!-- ローディング -->
+            <div id="dreamLoading" style="display: none;">
+                <div class="fortune-loading">
+                    <div class="loading-spinner"></div>
+                    <p>夢を分析しています...</p>
+                </div>
+            </div>
+            
+            <!-- 結果 -->
+            <div id="dreamResult" style="display: none;">
+                <div class="dream-symbol">
+                    <span id="dreamSymbolIcon">🌙</span>
+                </div>
+                <div class="result-card">
+                    <div id="dreamFortuneText" class="fortune-text"></div>
+                </div>
+<div class="result-buttons">
+                    <button class="submit-btn" onclick="retryDream()">🌙 もう一度占う</button>
+                    <button class="back-btn" onclick="goBack()">← 戻る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+ <!-- 魂の暴露占い画面 -->
+<div id="soulScreen" class="screen">
+    <div class="container">
+        <header class="app-header">
+            <h1>🔮魂の暴露占い</h1>
+        </header>
+        
+        <!-- Step1: 説明画面 -->
+        <div id="soulStep1">
+            <div class="soul-intro">
+                <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 20px;">
+                    あなたの深層心理を徹底的に暴きます。<br>
+                    30の質問であなたの闇と光を解き明かします。
+                </p>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                    <p style="font-size: 1em; margin-bottom: 10px;">🔒 <strong>安心してください</strong></p>
+                    <ul style="text-align: left; padding-left: 20px; line-height: 2;">
+                        <li>回答内容は保存されません</li>
+                        <li>本音で答えるほど深い鑑定ができます</li>
+                        <li>正解/不正解はありません</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(255,100,100,0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <p>⚠️ 容赦のない鑑定結果が出ます</p>
+                    <p>⏱️ 所要時間: 10〜15分</p>
+                    <p>🎫 消費: 3チケット</p>
+                </div>
+                
+                <button class="submit-btn" onclick="startSoulQuestions()">始める</button>
+                <button class="compat-back-btn" onclick="goBack()">← 戻る</button>
+            </div>
+        </div>
+        
+        <!-- Step2: 質問画面 -->
+        <div id="soulStep2" style="display: none;">
+            <div class="soul-progress">
+                <span id="soulQuestionNum">1</span> / <span id="soulQuestionTotal">30</span>
+            </div>
+            <div class="soul-category" id="soulCategory">🧒 ルーツ・過去</div>
+            <div class="soul-question" id="soulQuestion">親との関係はどうだった？</div>
+            <textarea id="soulAnswer" class="soul-textarea" placeholder="本音で答えてください..."></textarea>
+            <p style="font-size: 0.85em; opacity: 0.7; margin: 10px 0;">🔒 この回答は保存されません</p>
+            <div class="soul-buttons">
+                <button class="soul-back-btn" id="soulBackBtn" onclick="prevSoulQuestion()">← 戻る</button>
+                <button class="soul-skip-btn" id="soulSkipBtn" onclick="skipSoulQuestion()" style="display: none;">スキップ</button>
+                <button class="soul-next-btn" onclick="nextSoulQuestion()">次へ →</button>
+            </div>
+        </div>
+        
+        <!-- Step3: 深掘り画面 -->
+        <div id="soulStep3" style="display: none;">
+            <div class="soul-progress">
+                <span id="soulDeepNum">1</span> / <span id="soulDeepTotal">30</span>
+            </div>
+            <div class="soul-deep-label">💭 深掘り質問</div>
+            <div class="soul-question" id="soulDeepQuestion">それが今の自分にどう影響してると思う？</div>
+            <textarea id="soulDeepAnswer" class="soul-textarea" placeholder="もう少し詳しく..."></textarea>
+            <p style="font-size: 0.85em; opacity: 0.7; margin: 10px 0;">🔒 この回答は保存されません</p>
+            <div class="soul-buttons">
+                <button class="soul-back-btn" onclick="backToSoulMain()">← 戻る</button>
+                <button class="soul-next-btn" onclick="submitSoulDeep()">次へ →</button>
+            </div>
+        </div>
+        
+        <!-- Step4: 最後の音声 -->
+        <div id="soulStep4" style="display: none;">
+            <div class="soul-final-intro">
+                <h3>🎤 最後の質問</h3>
+                <p style="margin: 20px 0;">これは声で答えてください。</p>
+                <p style="font-size: 0.85em; opacity: 0.7;">🔒 この回答は保存されません</p>
+            </div>
+            <div class="soul-final-question">
+                「今の自分に、一言伝えるとしたら？」
+            </div>
+            <button class="voice-record-btn" id="soulVoiceBtn" onclick="recordSoulVoice()">🎤 録音する</button>
+            <p id="soulVoiceStatus" class="voice-status"></p>
+            <button class="submit-btn" id="soulSubmitBtn" onclick="submitSoulFortune()" style="display: none;">🔮 鑑定する</button>
+            <button class="compat-back-btn" onclick="backToSoulQuestions()">← 戻る</button>
+        </div>
+        
+        <!-- ローディング -->
+        <div id="soulLoading" style="display: none;">
+            <div class="fortune-loading">
+                <div class="loading-spinner"></div>
+                <p>魂を分析しています...</p>
+            </div>
+        </div>
+        
+        <!-- 結果 -->
+        <div id="soulResult" style="display: none;">
+            <div class="result-card">
+                <h2 style="text-align: center; margin-bottom: 20px;">🔮 魂の暴露鑑定書</h2>
+                <div id="soulFortuneText" class="fortune-text"></div>
+            </div>
+            <div class="result-buttons">
+                <button class="submit-btn" onclick="retrySoul()">🔮 もう一度占う</button>
+                <button class="back-btn" onclick="goBack()">← 戻る</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 引き継ぎ画面 -->
+<div id="transferScreen" class="screen">
+    <div class="container">
+        <header class="app-header">
+            <h1 style="font-size: 1.6em;">📱 機種変更・引き継ぎ</h1>
+        </header>
+        
+        <button class="form-back-btn" onclick="goBack()">← 戻る</button>
+        
+        <div style="background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2)); padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 2px solid rgba(102,126,234,0.4);">
+            <h3 style="margin-bottom: 15px; font-size: 1.2em;">🔑 あなたの引き継ぎコード</h3>
+            <p style="font-size: 0.9em; margin-bottom: 15px; opacity: 0.8;">このコードで別の端末やアプリ版にデータを引き継げます</p>
+            <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 15px;">
+                <span id="transferCodeDisplay" style="font-size: 2em; font-weight: bold; letter-spacing: 5px; color: #FFD700;">--------</span>
+            </div>
+            <button onclick="copyTransferCode()" style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer;">📋 コードをコピー</button>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px;">
+            <h3 style="margin-bottom: 15px; font-size: 1.2em;">🔄 別の端末から引き継ぐ</h3>
+            <p style="font-size: 0.9em; margin-bottom: 15px; opacity: 0.8;">以前の端末の引き継ぎコードを入力してください</p>
+            <input type="text" id="transferCodeInput" placeholder="引き継ぎコードを入力" maxlength="8" style="width: 100%; padding: 15px; font-size: 1.3em; text-align: center; border-radius: 10px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 15px;">
+            <button onclick="applyTransferCode()" style="width: 100%; background: linear-gradient(135deg, #00b386, #00d2a0); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer;">🔄 このコードで引き継ぐ</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 0.85em; color: #ff6b6b;">⚠️ 現在のデータは上書きされます</p>
+        </div>
+    </div>
+</div>
+
+<!-- 購入画面 -->
+    <div id="purchaseScreen" class="screen">
+        <div class="container">
+            <header class="app-header">
+                <h1 style="font-size: 1.6em;">🍀クローバー購入</h1>
+                <p>現在: <span id="currentTickets">0</span>枚</p>
+            </header>
+            
+<button class="form-back-btn" onclick="goBack()">← 戻る</button>
+            <div class="purchase-options">
+                <div class="purchase-card" onclick="purchaseTickets(1, 100)">
+                    <div class="ticket-amount">🍀 1回分</div>
+                    <div class="ticket-price">¥100</div>
+                    <div class="ticket-unit">お試し</div>
+                </div>
+                
+                <div class="purchase-card" onclick="purchaseTickets(10, 200)">
+                    <div class="ticket-amount">🍀 10回分</div>
+                    <div class="ticket-price">¥200</div>
+                    <div class="ticket-unit">¥20/回</div>
+                </div>
+                
+                <div class="purchase-card" onclick="purchaseTickets(25, 500)">
+                    <div class="ticket-amount">🍀 25回分</div>
+                    <div class="ticket-price">¥500</div>
+                    <div class="ticket-unit">¥20/回</div>
+                </div>
+                
+                <div class="purchase-card popular" onclick="purchaseTickets(30, 500)">
+                    <div class="popular-badge">人気!</div>
+                    <div class="ticket-amount">🍀 30回分</div>
+                    <div class="ticket-price">¥500</div>
+                    <div class="ticket-unit">¥16.7/回</div>
+                </div>
+            </div>
+            
+<h2 style="text-align: center; margin: 20px 0 15px;">👑 プレミアムプラン</h2>
+            <div class="purchase-card premium" onclick="purchasePremium()">
+                <div class="ticket-amount">占い放題（1日20回）</div>
+                <div class="ticket-price">¥1,480/月</div>
+                <div class="ticket-unit">広告なし</div>
+            </div>
+            
+            <div class="free-ticket-section">
+                <h2>🎁 無料でクローバー獲得</h2>
+<button class="free-ticket-btn video" onclick="watchAdForTicket()">
+    🎥 動画を見て☘️＋１獲得
+</button>
+                <button class="free-ticket-btn referral" onclick="showReferralScreen()">
+                    🌸 友達紹介で🍀＋１獲得
+                </button>
+                <button class="free-ticket-btn sns" onclick="shareToSNS()">
+                    📱 SNS投稿で🍀＋１獲得
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!-- PAY.JP -->
+    <script type="text/javascript" src="https://js.pay.jp/"></script>
+    <script src="supabase-config.js"></script>
+<script src="app.js?v=158"></script>
+
+<!-- 共通ローディングモーダル -->
+<div id="globalLoading" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 15, 35, 0.95); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="display: flex; flex-direction: column; align-items: center; padding: 40px 20px;">
+        <div id="globalLottieContainer" style="width: 250px; height: 250px;"></div>
+        <p id="globalLoadingText" style="margin-top: 20px; font-size: 1.1em; color: white; opacity: 0.9;">占っています...</p>
+    </div>
+</div>
+
+</body>
+</html>

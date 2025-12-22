@@ -1,0 +1,2250 @@
+/* ベースリセット */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a4e 15%, #2d1b69 30%, #1b3a6e 50%, #2d1b69 70%, #1a1a4e 85%, #0f0f23 100%);
+    background-size: 400% 400%;
+    animation: auroraBg 8s ease infinite;
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+@keyframes auroraBg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* キラキラエフェクト */
+.sparkle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, white 0%, rgba(255,200,255,0.8) 50%, transparent 100%);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 15px rgba(255, 255, 255, 1), 
+        0 0 30px rgba(255, 200, 255, 0.8),
+        0 0 45px rgba(150, 100, 255, 0.5);
+    pointer-events: none;
+    z-index: 2;
+    animation: sparkleFloat 6s infinite ease-in-out;
+}
+
+@keyframes sparkleFloat {
+    0%, 100% { 
+        opacity: 0; 
+        transform: translateY(0) scale(0.5); 
+    }
+    25% { 
+        opacity: 0.8; 
+        transform: translateY(-20px) scale(1); 
+    }
+    50% { 
+        opacity: 0.4; 
+        transform: translateY(-40px) scale(0.8); 
+    }
+    75% { 
+        opacity: 0.6; 
+        transform: translateY(-60px) scale(0.6); 
+    }
+}
+
+/* 星空エフェクト */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 60% 70%, white, transparent),
+        radial-gradient(1px 1px at 50% 50%, white, transparent),
+        radial-gradient(1px 1px at 80% 10%, white, transparent),
+        radial-gradient(2px 2px at 90% 60%, white, transparent),
+        radial-gradient(1px 1px at 33% 80%, white, transparent),
+        radial-gradient(1px 1px at 15% 55%, white, transparent),
+        radial-gradient(1.5px 1.5px at 70% 25%, white, transparent),
+        radial-gradient(1px 1px at 45% 90%, white, transparent),
+        radial-gradient(2px 2px at 5% 45%, white, transparent);
+    background-size: 200% 200%;
+    animation: twinkle 15s ease-in-out infinite;
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* グラデーションオーバーレイ */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 105, 180, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(100, 149, 237, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 90% 20%, rgba(255, 200, 100, 0.08) 0%, transparent 30%);
+    pointer-events: none;
+    z-index: 1;
+    animation: glowPulse 10s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.7; }
+}
+
+/* 画面共通 */
+.screen {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.screen.active {
+    display: block;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+/* ヘッダー */
+.app-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.app-header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+}
+
+.app-header h1.main-title {
+    font-weight: 900;
+    letter-spacing: 8px;
+    animation: titleGlow 3s ease-in-out infinite;
+    text-shadow: 
+        0 0 10px rgba(255, 105, 180, 1),
+        0 0 20px rgba(255, 105, 180, 0.9),
+        0 0 40px rgba(255, 105, 180, 0.8),
+        0 0 60px rgba(255, 105, 180, 0.6),
+        0 0 80px rgba(255, 105, 180, 0.4),
+        0 2px 5px rgba(0,0,0,0.5);
+}
+
+.app-header p {
+    font-size: 1em;
+    opacity: 0.8;
+}
+
+@keyframes titleGlow {
+    0%, 100% { 
+        text-shadow: 
+            0 0 10px rgba(255, 105, 180, 1),
+            0 0 20px rgba(255, 105, 180, 0.9),
+            0 0 40px rgba(255, 105, 180, 0.8),
+            0 0 60px rgba(255, 105, 180, 0.6),
+            0 0 80px rgba(255, 105, 180, 0.4),
+            0 2px 5px rgba(0,0,0,0.5);
+    }
+    50% { 
+        text-shadow: 
+            0 0 15px rgba(255, 105, 180, 1),
+            0 0 30px rgba(255, 105, 180, 1),
+            0 0 50px rgba(255, 105, 180, 0.9),
+            0 0 80px rgba(255, 105, 180, 0.7),
+            0 0 100px rgba(255, 105, 180, 0.5),
+            0 2px 5px rgba(0,0,0,0.5);
+    }
+}
+
+/* メインエリア（キャラ＆カレンダー） */
+.main-info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.character-area {
+    background: linear-gradient(135deg, rgba(255,255,0,0.15), rgba(255,255,255,0.1));
+    border: 2px solid rgba(255,255,0,0.8);
+    border-radius: 15px;
+    overflow: hidden;
+    min-width: 0;
+    height: 100%;
+    cursor: pointer;
+    box-shadow: 
+        0 0 10px rgba(255,255,0,0.6),
+        0 0 20px rgba(255,255,0,0.4),
+        0 0 40px rgba(255,255,0,0.3);
+    position: relative;
+}
+
+.character-image {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.1);
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.calendar-area {
+    background: linear-gradient(135deg, rgba(255,107,157,0.15), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,107,157,0.4);
+    border-radius: 15px;
+    padding: 5px;
+    flex: 2;
+    overflow: visible;
+    min-width: 0;
+}
+
+.user-stats {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 5px;
+    font-size: 0.85em;
+    flex: 1;
+}
+
+/* プロフィール行 */
+.profile-line {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    flex-wrap: wrap;
+}
+
+.profile-sep {
+    opacity: 0.4;
+}
+
+/* キャラの言葉/占い結果 */
+.speech-bubble {
+    background: rgba(255,255,255,0.95);
+    color: #333;
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 1em;
+    text-align: center;
+    margin-bottom: 15px;
+}
+/* メイン占いボタン */
+.main-fortune-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 18px;
+    font-size: 1.3em;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.6), 0 0 40px rgba(118, 75, 162, 0.3);
+    animation: btnPulse 2s ease-in-out infinite;
+}
+
+@keyframes btnPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.6), 0 0 40px rgba(118, 75, 162, 0.3); 
+    }
+    50% { 
+        transform: scale(1.02); 
+        box-shadow: 0 0 30px rgba(102, 126, 234, 0.8), 0 0 60px rgba(118, 75, 162, 0.5); 
+    }
+}
+
+.main-fortune-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* アクション行 */
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.ticket-info {
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,255,255,0.1));
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,215,0,0.3);
+}
+.ticket-free, .ticket-earned {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.ticket-divider {
+    opacity: 0.4;
+    margin: 0 12px;
+}
+
+.ticket-info:hover {
+    background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,255,255,0.15));
+    border-color: rgba(255,215,0,0.5);
+}
+
+.side-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.side-buttons button {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.side-buttons button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.ad-btn, .invite-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ad-btn:hover, .invite-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* その他占いセクション */
+.other-fortune-section {
+    margin-top: 20px;
+}
+
+.other-fortune-section h2 {
+    text-align: center;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.fortune-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.fortune-card {
+    background: linear-gradient(135deg, rgba(100,200,255,0.15), rgba(255,255,255,0.05));
+    border: 2px solid rgba(100,200,255,0.4);
+    color: white;
+    padding: 20px 15px;
+    border-radius: 15px;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 5px;
+}
+
+.fortune-card:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    border-color: rgba(255,255,255,0.4);
+}
+
+.fortune-card:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.fortune-card.coming-soon {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* タップ反応 */
+button, .ticket-info, .fortune-card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+/* ========================================
+   カレンダー追加スタイル
+   ======================================== */
+
+.calendar-header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-size: 0.75em;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0px;
+    text-align: center;
+    font-size: 0.5em;
+    line-height: 1.6;
+}
+/* ========================================
+   キャラ選択画面
+   ======================================== */
+
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.character-select-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    border: 3px solid rgba(255,255,255,0.2);
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.character-select-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.character-select-card.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+}
+
+.character-select-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.character-select-card .name {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.back-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+/* ========================================
+   占い画面
+   ======================================== */
+
+.fortune-char-area {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.fortune-char-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.fortune-char-speech {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+/* 録音ボタン */
+.record-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: white;
+    border: none;
+    padding: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.record-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+}
+
+.record-btn.recording {
+    background: linear-gradient(135deg, #ff4757, #ff3838);
+    animation: pulse-record 1s infinite;
+}
+
+@keyframes pulse-record {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* 音量メーター */
+.voice-meter {
+    height: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.voice-level {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    border-radius: 10px;
+    transition: width 0.1s ease;
+}
+
+/* カウントダウン */
+.countdown {
+    font-size: 3em;
+    font-weight: bold;
+    text-align: center;
+    color: #ff6b6b;
+    min-height: 1.2em;
+}
+
+/* ローディング */
+.fortune-loading {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.fortune-loading p {
+    font-size: 1.2em;
+}
+
+/* 結果カード */
+.result-card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.fortune-text {
+    font-size: 1.1em;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.lucky-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.lucky-item {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+}
+/* ========================================
+   カレンダー詳細スタイル
+   ======================================== */
+
+.calendar-grid .day {
+    padding: 2px;
+    border-radius: 3px;
+    font-size: 0.7em;
+}
+
+.calendar-grid .today {
+    background: rgba(102, 126, 234, 0.5);
+    font-weight: bold;
+}
+
+.calendar-grid .checked {
+    background: rgba(74, 222, 128, 0.5);
+    position: relative;
+}
+
+.calendar-grid .checked::after {
+    content: '✓';
+    font-size: 0.6em;
+    position: absolute;
+    bottom: 0;
+    right: 2px;
+}
+
+.calendar-grid .weekday {
+    font-size: 0.65em;
+    opacity: 0.7;
+}
+/* ========================================
+   カレンダーモーダル
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: rgba(20, 20, 40, 0.9);
+    border-radius: 20px;
+    padding: 15px;
+    width: 90%;
+    max-width: 340px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 3px solid #FFB6C1;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.3),
+        0 0 30px rgba(255, 105, 180, 0.5);
+    color: white;
+    animation: modalSlideIn 0.3s ease;
+}
+
+.modal-header h2 {
+    font-size: 1em;
+    margin: 0;
+    color: white;
+}
+
+@keyframes modalSlideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-20px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.modal-header h2 {
+    font-size: 1em;
+    margin: 0;
+    color: white;
+}
+
+.modal-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ff6b9d;
+    border: 2px solid #ff1493;
+    color: white;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 1.1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, rgba(255,182,193,0.2), rgba(255,240,245,0.1));
+    border: 2px solid rgba(255,107,157,0.4);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(255,107,157,0.3);
+}
+
+.modal-calendar-grid .weekday {
+    text-align: center;
+    font-size: 0.75em;
+    font-weight: bold;
+    padding: 5px 2px;
+    color: white;
+}
+
+.modal-calendar-grid .weekday:first-child {
+    color: #DC143C;
+}
+
+.modal-calendar-grid .weekday:last-child {
+    color: #4169E1;
+}
+
+.modal-calendar-grid .day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 240, 245, 0.15);
+    border: 1px solid rgba(255, 182, 193, 0.5);
+    font-weight: 600;
+    font-size: 0.85em;
+    color: white;
+}
+.modal-calendar-grid .day:hover {
+    transform: scale(1.05);
+    background: #FFE4E1;
+}
+
+.modal-calendar-grid .day.empty {
+    background: transparent;
+    border: none;
+}
+
+.modal-calendar-grid .day.today {
+    border: 3px solid #DC143C;
+    background: rgba(255, 240, 245, 0.15);
+    color: white;
+    box-shadow: 0 0 10px rgba(220,20,60,0.5);
+}
+
+.modal-calendar-grid .day.checked {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: 2px solid #16a34a;
+    color: white;
+    font-weight: 900;
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.6);
+}
+
+@keyframes checkGlow {
+    0%, 100% { 
+        box-shadow: 0 0 15px rgba(74, 222, 128, 0.6);
+    }
+    50% { 
+        box-shadow: 0 0 25px rgba(74, 222, 128, 0.9);
+    }
+}
+
+
+.modal-calendar-grid .day.selected {
+    border: 2px solid #667eea;
+}
+
+.modal-calendar-grid .day.empty {
+    cursor: default;
+}
+.modal-calendar-grid .day.sunday {
+    color: #DC143C !important;
+}
+
+.modal-calendar-grid .day.saturday {
+    color: #4169E1 !important;
+}
+
+.modal-calendar-grid .day.sunday.today,
+.modal-calendar-grid .day.saturday.today {
+    color: white;
+}
+
+/* カレンダーナビゲーション */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.calendar-nav h2 {
+    font-size: 1.1em;
+    margin: 0;
+    color: #333;
+    white-space: nowrap;
+    min-width: 100px;
+    text-align: center;
+}
+
+.nav-btn {
+    background: linear-gradient(135deg, #ff6b9d, #ff8ec4);
+    border: 2px solid #ff1493;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    background: linear-gradient(135deg, rgba(255,107,157,0.5), rgba(255,107,157,0.3));
+    box-shadow: 0 0 15px rgba(255,107,157,0.6);
+    transform: scale(1.1);
+}
+.modal-history {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    min-height: 120px;
+}
+
+.history-placeholder {
+    text-align: center;
+    opacity: 0.6;
+    margin: 0;
+}
+
+.history-content {
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+.history-content .history-date {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #667eea;
+}
+
+.history-content .history-fortune {
+    margin-bottom: 10px;
+}
+
+.history-content .history-lucky {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+/* ========================================
+   購入画面
+   ======================================== */
+
+.purchase-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.purchase-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.purchase-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.purchase-card.popular {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+}
+
+.popular-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.ticket-amount {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.ticket-price {
+    font-size: 2em;
+    font-weight: bold;
+    color: #4ade80;
+    margin-bottom: 5px;
+}
+
+.ticket-unit {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+/* プレミアムカード */
+.purchase-card.premium {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.2));
+    border-color: #FFD700;
+}
+
+/* 無料獲得セクション */
+.free-ticket-section {
+    margin-top: 25px;
+}
+
+.free-ticket-section h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.free-ticket-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.free-ticket-btn.video {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+}
+
+.free-ticket-btn.referral {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border: none;
+    color: white;
+}
+
+.free-ticket-btn.sns {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+}
+
+.free-ticket-btn:hover {
+    transform: translateY(-2px);
+}
+/* ========================================
+   設定画面
+   ======================================== */
+
+.settings-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.settings-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-btn::before {
+    content: attr(data-icon);
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-10deg);
+    font-size: 8em;
+    opacity: 0.35;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.settings-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+.settings-btn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
+
+.settings-btn.danger {
+    border-color: rgba(255, 100, 100, 0.5);
+}
+
+.settings-btn.danger:hover {
+    background: rgba(255, 100, 100, 0.2);
+}
+
+.settings-icon {
+    font-size: 1.3em;
+    margin-right: 15px;
+}
+
+.settings-text {
+    flex: 1;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.settings-arrow {
+    opacity: 0.5;
+}
+
+.app-info {
+    text-align: center;
+    opacity: 0.5;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+}
+
+.app-info p {
+    margin: 5px 0;
+}
+
+/* ========================================
+   プロフィール編集画面
+   ======================================== */
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 40px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.95em;
+    opacity: 0.9;
+}
+
+.form-group input,
+.form-group select {
+    padding: 15px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 1em;
+}
+
+.form-group input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.form-group select option {
+    background: #2a2a4e;
+    color: white;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 50px;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+}
+/* ========================================
+   履歴画面
+   ======================================== */
+
+.history-layout {
+    display: flex;
+    gap: 15px;
+    min-height: 60vh;
+}
+
+.history-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.history-sidebar .history-tab {
+    width: 100%;
+    text-align: left;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.history-sidebar .history-tab.active {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.history-sidebar .history-tab:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.history-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.history-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.history-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.history-item-type {
+    font-size: 1.2em;
+}
+
+.history-item-date {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
+.history-item-summary {
+    font-size: 0.95em;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.history-empty {
+    text-align: center;
+    padding: 40px 20px;
+    opacity: 0.6;
+}
+
+.history-empty p {
+    margin: 10px 0;
+}
+/* ========================================
+   ヘッダー戻るボタン
+   ======================================== */
+
+.app-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.header-back-btn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.header-back-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+/* ========================================
+   個別戻るボタン
+   ======================================== */
+
+.grid-with-back {
+    position: relative;
+}
+
+.grid-back-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.grid-back-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.form-back-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 1em;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    width: auto;
+    align-self: flex-start;
+}
+
+.form-back-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.purchase-options {
+    position: relative;
+}
+  
+/* ========================================
+   タロット占い
+   ======================================== */
+
+.step-title {
+    text-align: center;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+}
+
+.spread-selection {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.spread-option {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    max-width: 150px;
+}
+
+.spread-option:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-3px);
+}
+
+.spread-option.selected {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.3);
+}
+
+.spread-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.spread-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.spread-cost {
+    font-size: 0.85em;
+    color: #FFD700;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.category-btn {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 15px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.category-btn.selected {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.3);
+}
+
+.back-link {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95em;
+    cursor: pointer;
+    margin-top: 15px;
+    display: block;
+    text-align: center;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+.selected-info {
+    text-align: center;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.tarot-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tarot-card {
+    aspect-ratio: 2/3;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+}
+
+.tarot-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.tarot-card.selected {
+    border-color: #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.tarot-card.revealed {
+    background: white;
+    color: #333;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tarot-result-cards {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.result-tarot-card {
+    width: 80px;
+    height: 120px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: 0.8em;
+    text-align: center;
+    padding: 5px;
+}
+
+.result-tarot-card .card-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}/* ========================================
+   タロット改善スタイル
+   ======================================== */
+
+.spread-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.spread-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.spread-card:hover {
+    transform: translateY(-3px);
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.2));
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.spread-card-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+
+.spread-card-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.spread-card-desc {
+    font-size: 0.95em;
+    opacity: 0.8;
+    margin-bottom: 15px;
+}
+
+.spread-card-cost {
+    font-size: 1.1em;
+    color: #FFD700;
+    font-weight: bold;
+}
+
+.voice-option {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.voice-category-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.voice-category-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 107, 107, 0.5);
+}
+/* ========================================
+   相性占い
+   ======================================== */
+
+.compat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.compat-score {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #c44569);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.5);
+}
+
+.score-circle span {
+    font-size: 1.2em;
+}
+/* 相性占い 音声録音ボタン */
+.voice-record-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.voice-record-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.voice-record-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.voice-record-btn.recorded {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+}
+
+.voice-status {
+    text-align: center;
+    font-size: 0.9em;
+    margin-top: 8px;
+    min-height: 1.2em;
+}
+/* 星座表示 */
+.birthday-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.birthday-row input {
+    flex: 1;
+}
+
+.zodiac-display {
+    font-size: 1em;
+    color: #FFD700;
+    white-space: nowrap;
+    min-width: 80px;
+}
+/* ========================================
+   夢占い
+   ======================================== */
+
+.dream-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 1em;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.dream-textarea::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.dream-details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.dream-symbol {
+    text-align: center;
+    font-size: 4em;
+    margin-bottom: 20px;
+}
+/* セクション戻るボタン */
+.section-back-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.section-back-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* 結果ボタン横並び */
+.result-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.result-buttons .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.result-buttons .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+/* 声占い画面の戻るボタン */
+.fortune-back-btn {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.fortune-char-area {
+    position: relative;
+}
+/* 相性占い戻るボタン */
+.compat-back-btn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.compat-back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.compat-back-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+/* 履歴画面レイアウト */
+.history-layout {
+    display: flex;
+    gap: 15px;
+    min-height: 60vh;
+}
+
+.history-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.history-sidebar .history-tab {
+    width: 100%;
+    text-align: left;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.history-sidebar .history-tab.active {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.history-list {
+    flex: 1;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+/* 履歴画面レイアウト */
+.history-layout {
+    display: flex;
+    gap: 15px;
+    min-height: 60vh;
+}
+
+.history-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.history-sidebar .history-tab {
+    width: 100%;
+    text-align: left;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.history-sidebar .history-tab.active {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.history-list {
+    flex: 1;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+/* 初回登録画面 */
+.registration-form {
+    padding: 20px;
+}
+
+.welcome-text {
+    text-align: center;
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border-radius: 10px;
+    font-size: 1em;
+}
+
+.input-group input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.referral-input-box {
+    margin: 25px 0;
+    padding: 15px;
+    background: rgba(255,215,0,0.15);
+    border-radius: 12px;
+    border: 2px dashed rgba(255,215,0,0.5);
+}
+
+.referral-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.referral-input-box input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid rgba(255,215,0,0.4);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border-radius: 8px;
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+.referral-hint {
+    font-size: 0.85em;
+    color: rgba(255,255,255,0.7);
+    margin-top: 8px;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-size: 1.2em;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.modal-calendar-grid .day.today {
+    border: 3px solid #DC143C !important;
+    box-shadow: 0 0 10px rgba(220,20,60,0.5) !important;
+}
+
+.modal-calendar-grid .day.today.checked {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: 3px solid #DC143C !important;
+    color: white;
+    box-shadow: 0 0 10px rgba(220,20,60,0.5), 0 0 15px rgba(74, 222, 128, 0.6) !important;
+}
+
+.character-confirm-body {
+    text-align: center;
+    padding: 20px 15px;
+    font-size: 1em;
+    color: white;
+}
+
+.character-name-input {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.character-name-input label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.character-name-input input {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(255,182,193,0.5);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-size: 1.1em;
+    text-align: center;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.character-name-input input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.character-name-input input:focus {
+    border-color: #ff6b9d;
+    box-shadow: 0 0 15px rgba(255,105,180,0.4);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    padding: 0 15px 20px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 25px;
+    border: 2px solid rgba(255,255,255,0.3);
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-btn.cancel {
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+
+.modal-btn.cancel:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.modal-btn.confirm {
+    background: linear-gradient(135deg, #ff6b9d, #ff8ec4);
+    border: 2px solid #ff1493;
+    color: white;
+    box-shadow: 0 0 15px rgba(255,105,180,0.5);
+}
+
+.modal-btn.confirm:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255,105,180,0.7);
+}
+
+.character-name-display {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+    padding: 4px 12px;
+    font-size: 0.75em;
+    font-weight: bold;
+    color: #1a1a2e;
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px solid #d4af37;
+    border-radius: 3px;
+    letter-spacing: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.character-name-display::before {
+    content: '✧ ';
+    color: #d4af37;
+}
+
+.character-name-display::after {
+    content: ' ✧';
+    color: #d4af37;
+}
+
+/* 必須マーク */
+.required {
+    color: #ff6b6b;
+    font-size: 0.85em;
+    margin-left: 8px;
+}
+/* プロフィール編集画面の余白 */
+#editScreen .container {
+    padding-bottom: 100px !important;
+}
+/* タロット テキスト入力 */
+.tarot-text-input {
+    padding: 0 10px;
+}
+
+.tarot-text-input input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 1em;
+    text-align: center;
+}
+
+.tarot-text-input input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.tarot-text-input input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+}
+/* ========================================
+   魂の暴露占い
+======================================== */
+
+.soul-intro {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.soul-progress {
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: rgba(255,255,255,0.8);
+}
+
+.soul-category {
+    text-align: center;
+    font-size: 0.95em;
+    color: #FFD700;
+    margin-bottom: 10px;
+}
+
+.soul-deep-label {
+    text-align: center;
+    font-size: 1em;
+    color: #FF6B9D;
+    margin-bottom: 10px;
+}
+
+.soul-question {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 15px;
+    font-size: 1.15em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.soul-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 15px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 1em;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.soul-textarea::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.soul-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.soul-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.soul-back-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.soul-skip-btn {
+    flex: 1;
+    background: rgba(255,200,100,0.2);
+    border: 2px solid rgba(255,200,100,0.5);
+    color: #FFD700;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.soul-next-btn {
+    flex: 2;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.soul-final-intro {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.soul-final-intro h3 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+
+.soul-final-question {
+    background: linear-gradient(135deg, rgba(102,126,234,0.3), rgba(118,75,162,0.3));
+    padding: 30px;
+    border-radius: 20px;
+    font-size: 1.2em;
+    text-align: center;
+    margin-bottom: 30px;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+/* 生年月日ドロップダウン */
+.birthday-select-row {
+    display: flex;
+    gap: 8px;
+}
+
+.birthday-select-row select {
+    flex: 1;
+    padding: 12px 8px;
+    font-size: 1em;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
