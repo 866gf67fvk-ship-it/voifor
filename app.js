@@ -579,6 +579,13 @@ async function getDeviceId() {
     
     let deviceId = null;
     
+    // デバッグ: Capacitor存在確認
+    const hasCapacitor = typeof Capacitor !== 'undefined';
+    const hasPlugins = hasCapacitor && Capacitor.Plugins;
+    const hasPrefs = hasPlugins && Capacitor.Plugins.Preferences;
+    
+    alert('デバッグ:\nCapacitor: ' + hasCapacitor + '\nPlugins: ' + hasPlugins + '\nPreferences: ' + hasPrefs);
+    
     // Capacitor Preferencesから取得
     if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Preferences) {
         try {
