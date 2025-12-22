@@ -129,17 +129,65 @@ ${characterPersonality}
 3. 具体的で実践的なアドバイスを含めてください
 4. 150-200文字程度で簡潔に
 5. 必ず前向きで温かいメッセージを
+6. 以下のJSON形式で必ず返してください（他の文字は含めないで）
 
-占い結果:`;
+{
+  "fortune": "占い結果のメッセージ",
+  "luckyItem": "ラッキーアイテム（具体的でユニークなもの）",
+  "luckyColor": "ラッキーカラー（具体的な色名）",
+  "luckyNumber": 1から99の数字,
+  "stars": 1から5の数字（総合運勢）,
+  "extra1": {
+    "type": "keyword/action/avoid のどれか1つ",
+    "label": "💫 今日のキーワード/✨ 開運アクション/⚠️ 避けること",
+    "value": "具体的な内容"
+  },
+  "extra2": {
+    "type": "animal/music/food のどれか1つ",
+    "label": "🐾 ラッキー動物/🎵 ラッキー音楽/🍽️ ラッキーフード",
+    "value": "具体的な内容"
+  },
+  "extra3": {
+    "type": "direction/time/spot のどれか1つ",
+    "label": "🧭 ラッキー方角/⏰ ラッキー時間/📍 ラッキースポット",
+    "value": "具体的な内容"
+  }
+}`;
 
         const message = await anthropic.messages.create({
             model: 'claude-sonnet-4-20250514',
-            max_tokens: 500,
+            max_tokens: 800,
             messages: [{ role: 'user', content: prompt }]
         });
 
+        // JSONをパース
+        let result;
+        try {
+            const responseText = message.content[0].text;
+            // JSON部分を抽出（余計なテキストがある場合に対応）
+            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                result = JSON.parse(jsonMatch[0]);
+            } else {
+                throw new Error('JSON not found');
+            }
+        } catch (parseError) {
+            console.error('JSONパースエラー:', parseError.message);
+            // フォールバック
+            result = {
+                fortune: message.content[0].text,
+                luckyItem: '四つ葉のクローバー',
+                luckyColor: 'ゴールド',
+                luckyNumber: Math.floor(Math.random() * 99) + 1,
+                stars: Math.floor(Math.random() * 5) + 1,
+                extra1: { type: 'keyword', label: '💫 今日のキーワード', value: '新しい出会い' },
+                extra2: { type: 'animal', label: '🐾 ラッキー動物', value: 'うさぎ' },
+                extra3: { type: 'direction', label: '🧭 ラッキー方角', value: '東' }
+            };
+        }
+
         res.json({ 
-            fortune: message.content[0].text,
+            ...result,
             transcription
         });
 

@@ -2248,3 +2248,24 @@ button, .ticket-info, .fortune-card {
     background: rgba(255, 255, 255, 0.1);
     color: white;
 }
+/* 運勢スター表示 */
+.lucky-stars-area {
+    text-align: center;
+    margin: 15px 0;
+    padding: 10px;
+    background: rgba(255, 215, 0, 0.15);
+    border-radius: 15px;
+}
+
+.stars-label {
+    display: block;
+    font-size: 0.85em;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.stars-display {
+    font-size: 1.5em;
+    color: #FFD700;
+    letter-spacing: 3px;
+}

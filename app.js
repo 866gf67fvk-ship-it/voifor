@@ -55,6 +55,20 @@ document.addEventListener('click', function startBGMOnce() {
     document.removeEventListener('click', startBGMOnce);
 }, { once: true });
 
+// マークダウン記号を除去
+function removeMarkdown(text) {
+    if (!text) return text;
+    return text
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\*(.+?)\*/g, '$1')
+        .replace(/__(.+?)__/g, '$1')
+        .replace(/_(.+?)_/g, '$1')
+        .replace(/~~(.+?)~~/g, '$1')
+        .replace(/`(.+?)`/g, '$1')
+        .replace(/^#+\s/gm, '')
+        .replace(/^\s*[-*+]\s/gm, '・');
+}
+
 // ========================================
 // VOIFOR -声占い- メインアプリ
 // ========================================
@@ -612,8 +626,7 @@ async function getDeviceId() {
         }
     }
     
-    debugMsg += '最終ID: ' + deviceId;
-    alert(debugMsg);
+debugMsg += '最終ID: ' + deviceId;
     
     cachedDeviceId = deviceId;
    
@@ -623,8 +636,6 @@ async function getDeviceId() {
 // ユーザーデータ読み込み
 async function loadUserData() {
     const deviceId = await getDeviceId();
-    
-    alert('loadUserData開始\ndeviceId: ' + deviceId);
         
     try {
         // Supabaseから取得
@@ -666,7 +677,6 @@ userData.isRegistered = data.is_registered || false;
         }
 } catch (err) {
         console.error('❌ データ読み込みエラー:', err);
-        alert('catchエラー: ' + err.message);
     }
 }
 
@@ -1388,7 +1398,7 @@ const data = await response.json();
         renderCalendar();
         
         // 結果表示
-        showFortuneResult(data.fortune);
+        showFortuneResult(data);
         
  } catch (error) {
         console.error('❌ 占いエラー:', error);
@@ -1399,28 +1409,57 @@ const data = await response.json();
 }
 
 // 占い結果表示
-function showFortuneResult(fortune) {
+function showFortuneResult(data) {
     hideGlobalLoading();
     document.getElementById('fortuneResult').style.display = 'block';
     
-    document.getElementById('fortuneText').textContent = fortune || '今日のあなたは運気上昇中！';
+    // データがオブジェクトか文字列か判定
+    let fortune, luckyItem, luckyColor, luckyNumber, stars, extra1, extra2, extra3;
     
-    const luckyItems = ['四つ葉のクローバー', 'キラキラペン', 'お気に入りの音楽', '温かい飲み物', 'ふわふわクッション'];
-    const luckyColors = ['ゴールド', 'スカイブルー', 'ピンク', 'グリーン', 'パープル'];
+    if (typeof data === 'object' && data.fortune) {
+        fortune = data.fortune;
+        luckyItem = data.luckyItem || '四つ葉のクローバー';
+        luckyColor = data.luckyColor || 'ゴールド';
+        luckyNumber = data.luckyNumber || Math.floor(Math.random() * 9) + 1;
+        stars = data.stars || Math.floor(Math.random() * 5) + 1;
+        extra1 = data.extra1 || { label: '💫 キーワード', value: '幸運' };
+        extra2 = data.extra2 || { label: '🐾 ラッキー動物', value: '猫' };
+        extra3 = data.extra3 || { label: '🧭 ラッキー方角', value: '東' };
+    } else {
+        fortune = data;
+        luckyItem = '四つ葉のクローバー';
+        luckyColor = 'ゴールド';
+        luckyNumber = Math.floor(Math.random() * 9) + 1;
+        stars = Math.floor(Math.random() * 5) + 1;
+        extra1 = { label: '💫 キーワード', value: '幸運' };
+        extra2 = { label: '🐾 ラッキー動物', value: '猫' };
+        extra3 = { label: '🧭 ラッキー方角', value: '東' };
+    }
     
-    const luckyItem = luckyItems[Math.floor(Math.random() * luckyItems.length)];
-    const luckyColor = luckyColors[Math.floor(Math.random() * luckyColors.length)];
-    const luckyNumber = Math.floor(Math.random() * 9) + 1;
+    document.getElementById('fortuneText').textContent = removeMarkdown(fortune) || '今日のあなたは運気上昇中！';
     
+    // 固定3つ
     document.getElementById('luckyItem').textContent = luckyItem;
     document.getElementById('luckyColor').textContent = luckyColor;
     document.getElementById('luckyNumber').textContent = luckyNumber;
     
+    // ランダム3つ（AIが選んだもの）
+    document.getElementById('luckyRandom1Label').textContent = extra1.label;
+    document.getElementById('luckyRandom1Value').textContent = extra1.value;
+    document.getElementById('luckyRandom2Label').textContent = extra2.label;
+    document.getElementById('luckyRandom2Value').textContent = extra2.value;
+    document.getElementById('luckyRandom3Label').textContent = extra3.label;
+    document.getElementById('luckyRandom3Value').textContent = extra3.value;
+    
+    // 総合運勢スター
+    const starsText = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+    document.getElementById('luckyStars').textContent = starsText;
+    
     const character = characterTemplates[userData.selectedCharacter] || characterTemplates.devilMale;
     document.getElementById('fortuneCharSpeech').textContent = character.speech;
     
-// メイン画面の吹き出しに要約を保存
-    const summary = `🍀${luckyItem} 🎨${luckyColor} 🔢${luckyNumber}`;
+    // メイン画面の吹き出しに要約を保存
+    const summary = `⭐${starsText} 🍀${luckyItem}`;
     const today = new Date().toISOString().split('T')[0];
     
     localStorage.setItem('voifor_today_fortune', JSON.stringify({
@@ -1428,7 +1467,7 @@ function showFortuneResult(fortune) {
         summary: summary
     }));
     
-// 履歴に保存
+    // 履歴に保存
     saveFortuneHistory(today, fortune, summary, 'voice');
 }
 
@@ -2648,8 +2687,7 @@ function showTarotResult(cards, fortune) {
     });
     document.getElementById('resultCards').innerHTML = cardsHtml;
     
-    document.getElementById('tarotFortuneText').textContent = fortune || 'カードがあなたの運命を示しています。';
-}
+    document.getElementById('tarotFortuneText').textContent = removeMarkdown(fortune) || 'カードがあなたの運命を示しています。';
 
 // もう一度占う
 function retryTarot() {
@@ -3226,7 +3264,7 @@ function showCompatResult(score, fortune) {
     document.getElementById('compatResult').style.display = 'block';
     
     document.getElementById('compatScore').textContent = score;
-    document.getElementById('compatFortuneText').textContent = fortune;
+    document.getElementById('compatFortuneText').textContent = removeMarkdown(fortune);
 }
 
 // もう一度占う
@@ -3672,8 +3710,7 @@ hideGlobalLoading();
 function showDreamResult(fortune) {
     hideGlobalLoading();
     document.getElementById('dreamResult').style.display = 'block';
-    document.getElementById('dreamFortuneText').innerHTML = fortune.replace(/\n/g, '<br>');
-    
+    document.getElementById('dreamFortuneText').innerHTML = removeMarkdown(fortune).replace(/\n/g, '<br>');
     // 履歴に保存
     const today = new Date().toISOString().split('T')[0];
     saveFortuneHistory(today + '_dream_' + Date.now(), fortune, '🌙 夢占い', 'dream');

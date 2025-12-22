@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <script>alert('HTML読込開始');</script>
     <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,9 +8,7 @@
     <meta name="theme-color" content="#667eea">
     
 <!-- Supabase SDK（ローカル） -->
-    <script src="supabase.min.js"></script>
-    <script>alert('SDK読込後: ' + typeof window.supabase);</script>
-    
+    <script src="supabase.min.js"></script>    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -241,12 +238,20 @@
                 <div class="result-card">
                     <div id="fortuneText" class="fortune-text"></div>
                 </div>
+                <div class="lucky-stars-area">
+                    <span class="stars-label">今日の運勢</span>
+                    <span id="luckyStars" class="stars-display">★★★☆☆</span>
+                </div>
                 <div class="lucky-info">
                     <div class="lucky-item">🍀 <span id="luckyItem"></span></div>
                     <div class="lucky-item">🎨 <span id="luckyColor"></span></div>
                     <div class="lucky-item">🔢 <span id="luckyNumber"></span></div>
+                    <div class="lucky-item"><span id="luckyRandom1Label">💫 キーワード</span> <span id="luckyRandom1Value"></span></div>
+                    <div class="lucky-item"><span id="luckyRandom2Label">🐾 動物</span> <span id="luckyRandom2Value"></span></div>
+                    <div class="lucky-item"><span id="luckyRandom3Label">🧭 方角</span> <span id="luckyRandom3Value"></span></div>
                 </div>
 <div class="result-buttons">
+    
                     <button class="record-btn" onclick="retryFortune()">🔮 もう一度占う</button>
                     <button class="back-btn" onclick="goBack()">← 戻る</button>
                 </div>
