@@ -1459,7 +1459,7 @@ function showFortuneResult(data) {
     document.getElementById('fortuneCharSpeech').textContent = character.speech;
     
     // メイン画面の吹き出しに要約を保存
-    const summary = `⭐${starsText} 🍀${luckyItem}`;
+    const summary = `⭐${starsText}\n🍀${luckyItem} 🎨${luckyColor} 🔢${luckyNumber}\n${extra1.label}: ${extra1.value}\n${extra2.label}: ${extra2.value}\n${extra3.label}: ${extra3.value}`;
     const today = new Date().toISOString().split('T')[0];
     
     localStorage.setItem('voifor_today_fortune', JSON.stringify({
