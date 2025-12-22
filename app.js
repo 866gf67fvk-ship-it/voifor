@@ -304,7 +304,9 @@ let userData = {
 // 初期化
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🌟 VOIFOR 起動中...');
-        
+   // 生年月日セレクト初期化
+    initBirthdaySelects();
+
     // デバッグ：ストレージ確認
     console.log('📦 NativeStorage存在:', !!window.NativeStorage);
     if (window.NativeStorage) {
@@ -2100,7 +2102,7 @@ function showEditScreen() {
     
     // 現在の値をセット
     document.getElementById('editName').value = userData.name || '';
-    document.getElementById('editBirth').value = userData.birth || '';
+ setBirthdayToSelects('editBirth', userData.birth);
     document.getElementById('editBloodType').value = userData.bloodType || '';
     document.getElementById('editGender').value = userData.gender || '';
 }
@@ -2108,7 +2110,7 @@ function showEditScreen() {
 // プロフィール保存
 async function saveProfile() {
     userData.name = document.getElementById('editName').value;
-    userData.birth = document.getElementById('editBirth').value;
+userData.birth = getBirthdayFromSelects('editBirth');
     userData.bloodType = document.getElementById('editBloodType').value;
     userData.gender = document.getElementById('editGender').value;
     
@@ -3244,6 +3246,79 @@ function hideCompatBackBtns() {
     const btn1 = document.querySelector('#compatStep1 .compat-back-btn');
     if (btn1) btn1.style.display = 'none';
 }
+
+// ========================================
+// 生年月日ドロップダウン生成
+// ========================================
+
+function initBirthdaySelects() {
+    const currentYear = new Date().getFullYear();
+    
+    // 年の選択肢を生成（1920年〜現在）
+    const yearSelects = ['regBirthYear', 'editBirthYear'];
+    yearSelects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.innerHTML = '<option value="">年</option>';
+            for (let y = currentYear; y >= 1920; y--) {
+                select.innerHTML += `<option value="${y}">${y}年</option>`;
+            }
+        }
+    });
+    
+    // 月の選択肢を生成
+    const monthSelects = ['regBirthMonth', 'editBirthMonth'];
+    monthSelects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.innerHTML = '<option value="">月</option>';
+            for (let m = 1; m <= 12; m++) {
+                select.innerHTML += `<option value="${m}">${m}月</option>`;
+            }
+        }
+    });
+    
+    // 日の選択肢を生成
+    const daySelects = ['regBirthDay', 'editBirthDay'];
+    daySelects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.innerHTML = '<option value="">日</option>';
+            for (let d = 1; d <= 31; d++) {
+                select.innerHTML += `<option value="${d}">${d}日</option>`;
+            }
+        }
+    });
+}
+
+// 生年月日を取得（YYYY-MM-DD形式）
+function getBirthdayFromSelects(prefix) {
+    const year = document.getElementById(prefix + 'Year')?.value;
+    const month = document.getElementById(prefix + 'Month')?.value;
+    const day = document.getElementById(prefix + 'Day')?.value;
+    
+    if (year && month && day) {
+        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    }
+    return '';
+}
+
+// 生年月日をセット
+function setBirthdayToSelects(prefix, dateStr) {
+    if (!dateStr) return;
+    
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        const yearSelect = document.getElementById(prefix + 'Year');
+        const monthSelect = document.getElementById(prefix + 'Month');
+        const daySelect = document.getElementById(prefix + 'Day');
+        
+        if (yearSelect) yearSelect.value = parseInt(parts[0]);
+        if (monthSelect) monthSelect.value = parseInt(parts[1]);
+        if (daySelect) daySelect.value = parseInt(parts[2]);
+    }
+}
+
 console.log('📱 app.js 読み込み完了');
 
 // ========================================
@@ -3845,7 +3920,7 @@ const totalTickets = userData.freeTickets + userData.earnedTickets;
 // 初回登録完了処理
 async function completeRegistration() {
     const name = document.getElementById('regName').value.trim();
-    const birth = document.getElementById('regBirth').value;
+ const birth = getBirthdayFromSelects('regBirth');
     const bloodType = document.getElementById('regBloodType').value;
     const gender = document.getElementById('regGender').value;
     const referralCode = document.getElementById('referralCodeInput').value.trim().toUpperCase();

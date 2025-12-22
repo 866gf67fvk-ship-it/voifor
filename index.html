@@ -42,10 +42,20 @@
                     <input type="text" id="regName" placeholder="ニックネームでOK" maxlength="10">
                 </div>
                 
-                <div class="input-group">
-                    <label>生年月日</label>
-                    <input type="date" id="regBirth" min="1900-01-01" max="2025-12-31">
-                </div>
+<div class="input-group">
+    <label>生年月日</label>
+    <div class="birthday-select-row">
+        <select id="regBirthYear">
+            <option value="">年</option>
+        </select>
+        <select id="regBirthMonth">
+            <option value="">月</option>
+        </select>
+        <select id="regBirthDay">
+            <option value="">日</option>
+        </select>
+    </div>
+</div>
                 
                 <div class="input-group">
                     <label>血液型</label>
@@ -367,10 +377,20 @@
     <input type="text" id="editName" placeholder="ニックネームでOK" maxlength="10">
 </div>
     
-    <div class="form-group">
-        <label>生年月日</label>
-        <input type="date" id="editBirth">
+<div class="form-group">
+    <label>生年月日</label>
+    <div class="birthday-select-row">
+        <select id="editBirthYear">
+            <option value="">年</option>
+        </select>
+        <select id="editBirthMonth">
+            <option value="">月</option>
+        </select>
+        <select id="editBirthDay">
+            <option value="">日</option>
+        </select>
     </div>
+</div>
     
 <div class="form-group">
     <label>血液型</label>
