@@ -2688,6 +2688,7 @@ function showTarotResult(cards, fortune) {
     document.getElementById('resultCards').innerHTML = cardsHtml;
     
     document.getElementById('tarotFortuneText').textContent = removeMarkdown(fortune) || 'カードがあなたの運命を示しています。';
+}
 
 // もう一度占う
 function retryTarot() {
